@@ -195,6 +195,7 @@ Automated tools catch roughly a third of issues; the report must not imply other
 | UI-G6 | copy lint | banned word, exclamation mark, grade level > 9 |
 | UI-G7 | reduced-motion pass | a transition surviving `reduce` |
 | UI-G8 | "no upload" assertion in Playwright | any request leaving the origin during a tool run |
+| UI-G9 | content-in-HTML: built page fetched with JavaScript disabled | missing heading, description or limits text — the page only exists after hydration |
 
 Each gate needs a deliberately bad fixture proving it can fail — otherwise it is a wish, exactly
 as the SUS gate registry argues.
