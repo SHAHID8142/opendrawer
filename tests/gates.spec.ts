@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/tools/inspect-pdf'];
+const ROUTES = ['/', '/tools/inspect-pdf', '/tools/pdf-to-image'];
 
 test.describe('UI-G9 content in HTML', () => {
   test('tool page is readable with JavaScript disabled', async ({ browser }) => {
@@ -119,6 +119,46 @@ test.describe('UI-G8 and the file flow', () => {
     await expect(page.getByRole('status')).toContainText('Report ready', { timeout: 20_000 });
     await expect(page.getByText('Gate fixture')).toBeVisible();
     await expect(page.getByText('A4')).toBeVisible();
+
+    const origin = new URL(page.url()).origin;
+    const foreign = requests.filter((url) => {
+      if (url.startsWith('data:') || url.startsWith('blob:')) return false;
+      return new URL(url).origin !== origin;
+    });
+    expect(foreign, 'requests that left the origin').toEqual([]);
+  });
+
+  test('renders two pages to a ZIP without leaving the origin', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+
+    await page.goto('/tools/pdf-to-image');
+    // The island hydrates when it becomes visible; settings chosen before that would be reset.
+    await page.waitForSelector('[data-ready="true"]');
+    await page.selectOption('#render-format', 'jpeg');
+    await page.selectOption('#render-dpi', '72');
+
+    const pdf = await PDFDocument.create();
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    for (const label of ['first', 'second']) {
+      const created = pdf.addPage([595.28, 841.89]);
+      created.drawText(`page ${label}`, { x: 72, y: 700, size: 18, font });
+    }
+    const bytes = await pdf.save();
+
+    await page.locator('#render-file').setInputFiles({
+      name: 'two-pages.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from(bytes),
+    });
+
+    await expect(page.getByRole('status')).toContainText('2 pages rendered', { timeout: 60_000 });
+    await expect(page.getByText('two-pages-page-001.jpg')).toBeVisible();
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the ZIP' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('two-pages-images.zip');
 
     const origin = new URL(page.url()).origin;
     const foreign = requests.filter((url) => {
