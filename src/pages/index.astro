@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import { liveTools } from '../lib/tools';
+---
+
+<Base
+  title="OpenDrawer — free PDF tools that never upload your files"
+  description="Free, open-source PDF tools that run entirely in your browser. Merge, split, inspect and edit PDFs without uploading them. No account, no ads, no file-size limit."
+>
+  <div class="stack-lg">
+    <section class="stack" aria-labelledby="hero-heading">
+      <p class="tag">Free · open source · no account</p>
+      <h1 id="hero-heading">Document tools that never upload your files</h1>
+      <p>
+        OpenDrawer runs in your browser. The PDF you choose is read on your own device, by your own
+        processor. There is no server to send it to, so there is nothing to trust us with.
+      </p>
+      <p>
+        <a class="btn btn--primary" href="/tools/inspect-pdf">Inspect a PDF</a>
+      </p>
+    </section>
+
+    <section class="stack" id="tools" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">Tools</h2>
+      <p class="muted">
+        One tool is built. The rest of the suite is being added in order, each with its limits
+        written on its own page.
+      </p>
+      <ul class="card-grid">
+        {
+          liveTools.map((tool) => (
+            <li class="card">
+              <h3><a href={`/tools/${tool.id}`}>{tool.name}</a></h3>
+              <p>{tool.blurb}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="stack" id="privacy" aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading">How to check that nothing is uploaded</h2>
+      <p>
+        You do not have to believe a privacy policy. Open the developer tools in your browser
+        (F12, or Cmd+Option+I on a Mac), switch to the Network tab, and then use a tool. No request
+        leaves this page. You can also switch off Wi-Fi after the page loads: the tools keep
+        working.
+      </p>
+      <p>
+        The site is built so that this stays true. Its Content-Security-Policy only permits
+        requests to its own origin, so a future change that tried to send your file somewhere else
+        would be blocked by the browser rather than trusted to good behaviour.
+      </p>
+      <div class="note">
+        <h3>What is not here</h3>
+        <p>
+          Office documents to PDF, PDF/A archiving, and certified e-signatures are not offered.
+          They need software that cannot run reliably in a browser, and pretending otherwise would
+          waste your time.
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>

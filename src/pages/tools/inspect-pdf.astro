@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/inspect-pdf/Tool';
+
+const title = 'Inspect a PDF: pages, metadata, scripts and signatures';
+const description =
+  'See what a PDF contains before you send it: page count and sizes, author and software metadata, embedded files, JavaScript and signatures. Runs in your browser, nothing uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Inspect PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is my PDF uploaded anywhere?',
+    answer:
+      'No. The file is read in your browser and is never sent over the network. You can confirm this in the Network tab of your browser developer tools.',
+  },
+  {
+    question: 'Can this tool remove the metadata it finds?',
+    answer:
+      'Not in this build. Inspecting is read-only. A metadata editor is planned; until it exists, this page only reports what is there.',
+  },
+  {
+    question: 'Why can it not read an encrypted PDF?',
+    answer:
+      'An encrypted PDF hides its structure behind the password. The page count and page sizes can still be read, but metadata, fonts and embedded files cannot.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <nav aria-label="Breadcrumb">
+      <p class="muted"><a href="/">Home</a> / Inspect PDF</p>
+    </nav>
+
+    <section class="stack" aria-labelledby="tool-heading">
+      <h1 id="tool-heading">Inspect a PDF</h1>
+      <p>
+        Find out what a document carries before you send it: how many pages, what size they are,
+        who is named as the author, which software produced it, and whether it contains scripts,
+        embedded files or a signature.
+      </p>
+    </section>
+
+    <LimitsNote
+      title="What this tool cannot do"
+      items={[
+        'It does not read the text on the pages, only the structure of the file.',
+        'It cannot reveal the contents of a password-protected PDF.',
+        'It does not change or clean the file. Inspection is read-only.',
+        'Files over 100 MB are refused so a very large document cannot freeze the tab.',
+      ]}
+    />
+
+    <Tool client:visible />
+
+    <section class="stack" aria-labelledby="how-heading">
+      <h2 id="how-heading">What the report tells you</h2>
+      <p>
+        The file is parsed directly, without rendering it. That means the page count, page sizes,
+        rotation and document properties are exact, and the flags come from the file's own
+        dictionaries rather than from guesses.
+      </p>
+      <p>
+        A warning about earlier revisions matters more than it looks. When a PDF is edited, the
+        older version usually stays inside the file. Text that was removed can still be extracted
+        from it, which is why a proper redaction has to rebuild the page instead of covering text.
+      </p>
+    </section>
+
+    <section class="stack" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Questions</h2>
+      {faq.map((item) => (
+        <div class="note">
+          <h3>{item.question}</h3>
+          <p>{item.answer}</p>
+        </div>
+      ))}
+    </section>
+  </div>
+</Base>

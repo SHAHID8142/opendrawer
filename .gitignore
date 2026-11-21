@@ -8,6 +8,7 @@ build/
 out/
 .next/
 .vite/
+.astro/
 coverage/
 
 # Env and secrets — never commit these
