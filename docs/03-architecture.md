@@ -3,7 +3,7 @@
 ## Shape of the system
 
 ```
-Static site (React + TS + Vite)  ──►  CDN / static host  ──►  browser tab
+Static site (Astro + React islands)  ──►  CDN / static host  ──►  browser tab
                                                               │
                                             ┌─────────────────┴─────────────────┐
                                             │  main thread: UI, routing, state   │
@@ -20,27 +20,50 @@ There is no server, no API, no database, no queue. The "backend" is the visitor'
 
 | Concern | Choice | Note |
 | --- | --- | --- |
-| Framework | React 19 + TypeScript (strict) | Boring, widely known, good ecosystem for PDF wrappers |
-| Build | Vite | Fast, simple, static output |
-| Routing | Client-side routes, one route per tool (`/tools/<id>`) | Static hosting needs a SPA fallback |
-| Styling | Plain CSS modules + design tokens | No CSS-in-JS runtime, no UI kit bloat |
+| Framework | **Astro 5** (content + routing) with **React 19 islands** for tool UI, TypeScript strict | Pages are HTML; React runs only inside the tool that needs it |
+| Build | Vite (via Astro) | Same fast build, static HTML per route |
+| Routing | File-based routes, one **statically generated page** per tool (`/tools/<id>`) | No SPA fallback, no soft 404s |
+| Styling | Plain CSS + design tokens (`src/styles/tokens.css`, rules in `09-ui-ux-design-system.md`) | No CSS-in-JS runtime, no UI kit bloat |
 | State | Local component state + URL params | No global store |
 | i18n | `i18next` with JSON catalogues, lazy-loaded | Added in phase 3; keep strings out of components from day one |
-| PWA | `vite-plugin-pwa` (Workbox) | Precache the shell; engines cached on first use |
-| Tests | Vitest (unit, engine fixtures) + Playwright (smoke, network assertions) | Optional E2E, mandatory unit |
+| PWA | `vite-plugin-pwa` via the Astro integration (phase 2) | Precache the shell; engines cached on first use |
+| Tests | Vitest (unit, engine fixtures) + Playwright with `@axe-core/playwright` (UI gates, network assertions) | Optional E2E, mandatory unit |
 | Hosting | Cloudflare Workers static assets (or Pages, Netlify, GitHub Pages) | Pure static; any host works |
+
+## Rendering model and SEO
+
+This is the reason the framework is Astro rather than a Vite SPA, so it is a constraint, not a
+preference.
+
+- Every route is **rendered to HTML at build time**. A crawler, a link preview, an AI crawler or a
+  reader with JavaScript disabled receives the title, description, `h1`, the tool's explanation,
+  its limits and its FAQ as text — before a single byte of JavaScript runs.
+- React hydrates **only the tool island** on the page it belongs to (`client:visible`), so a
+  content page ships no React at all. Engines load from inside that island, on first use.
+- The home page, `/tools/<id>`, `/docs/*` and `/about` are all static files. There is no SPA
+  fallback, so an unknown path is a real 404 rather than a 200 with an empty shell.
+- Each tool page carries its own `<title>`, meta description, canonical URL, Open Graph tags and
+  `SoftwareApplication` / `FAQPage` structured data, generated from the tool's `meta.ts`.
+- `sitemap.xml` and `robots.txt` are generated at build time, so a new tool is discoverable the
+  moment it deploys.
+- Gate **UI-G9** enforces it: the built page is fetched with JavaScript disabled and the heading,
+  description and limits text must be present. If a tool stops being crawlable, the build fails.
+
+Tool logic itself lives in framework-agnostic modules under `src/tools/<id>/`; the island is a
+thin mount. Swapping the shell later would not require rewriting a tool.
 
 ## Module layout
 
 ```
 src/
-  app/            shell: router, layout, theme, error boundary
-  components/     drop zone, file list, progress, result panel, warnings, a11y primitives
+  pages/          file-based routes: index, tools/<id>.astro, docs/*, sitemap.xml.ts
+  layouts/        Base.astro — head, meta, canonical, theme, skip link
+  components/     shared .astro chrome (header, footer, limits note) and React UI pieces
   tools/
-    registry.ts   the single list of tools (id, group, meta, lazy component)
-    <tool-id>/    meta.ts, Tool.tsx, engine.ts, worker.ts, limits.ts, __fixtures__/
+    <tool-id>/    meta.ts, Tool.tsx (the island), logic.ts, limits.ts, __fixtures__/
+  lib/            units, coordinates, file-type sniffing, zip, download, formatting, tool list
+  styles/         tokens.css (the only place literals live), global.css
   engines/        thin, shared wrappers only: pdfLib.ts, pdfJs.ts, qpdf.ts, gs.ts, ocr.ts
-  lib/            units, coordinates, file-type sniffing, zip, download, formatting
   i18n/           catalogues
   wasm/           vendored binaries + build notes (see licensing doc)
 ```
@@ -98,7 +121,9 @@ immutable` on hashed assets, WASM served from the same origin (never a CDN), and
 
 `/` home · `/tools/<id>` a tool · `/docs/privacy`, `/docs/limits`, `/docs/licence`, `/about`.
 Tool URLs are permanent. Every page must work on first load without JavaScript errors when the
-heavy engines fail to download (degrade to a clear message plus a retry).
+heavy engines fail to download (degrade to a clear message plus a retry). Because the routes are
+static files, the home page and every tool page also work with JavaScript disabled — the tool
+degrades to its explanation and a "JavaScript is required to process the file" notice.
 
 ## Offline behaviour
 
@@ -124,6 +149,9 @@ button, and keyboard-only operability of the whole file flow.
   1-page, 500-page).
 - **Property:** redaction output must not contain the redacted string; merge output page count
   equals the sum of inputs.
+- **UI gates (Playwright + `@axe-core/playwright`):** axe on every route, viewport matrix,
+  target sizes, reduced motion, no off-origin request, and **UI-G9 content-in-HTML** (JavaScript
+  disabled). Defined in `09-ui-ux-design-system.md`.
 - **Smoke (Playwright):** open each tool, run one fixture, assert a download appears and that
   no request left the origin.
 - **Manual, per release:** one real phone, one low-end laptop, Wi-Fi switched off.

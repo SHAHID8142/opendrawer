@@ -19,38 +19,52 @@ processing; every tool declares its limits in the UI.
 
 ## Step 1 — Scaffold (target: one short session)
 
+**Astro, not a Vite SPA** — see "Rendering model and SEO" in `03-architecture.md`. Forty tool
+pages whose whole job is to be found in search must exist as HTML; social and AI crawlers do not
+run JavaScript at all.
+
 ```bash
-pnpm create vite . --template react-ts    # in an empty directory or a fresh clone
-pnpm add pdf-lib pdfjs-dist
-pnpm add -D vitest @vitest/coverage-v8 @playwright/test eslint prettier typescript
+npm create astro@latest . -- --template minimal --typescript strict --no-install
+npm add astro @astrojs/react react react-dom pdf-lib pdfjs-dist
+npm add -D @astrojs/check typescript vitest @vitest/coverage-v8 @playwright/test \
+  @axe-core/playwright stylelint prettier
 ```
 
 Deliverables:
 
 | File | Purpose |
 | --- | --- |
-| `index.html`, `vite.config.ts` | shell, worker + WASM asset handling |
+| `astro.config.mjs` | React integration, `site` URL for canonical/sitemap, static output |
+| `tsconfig.json` | `astro/tsconfigs/strict` + `react-jsx` |
 | `public/_headers` | CSP, nosniff, referrer policy, cache policy |
-| `src/app/App.tsx`, `router.tsx` | routes: `/`, `/tools/:id`, `/docs/*`, `/about` |
-| `src/app/theme.css` | design tokens: type scale, spacing, colours, focus ring |
-| `src/tools/registry.ts` | the single tool list (id, group, meta loader, component loader) |
+| `src/layouts/Base.astro` | head, per-page meta, canonical, OG, skip link, theme |
+| `src/pages/index.astro`, `src/pages/tools/<id>.astro` | static pages, one per route |
+| `src/styles/tokens.css` | design tokens: type scale, spacing, colours, focus ring (rules in `09`) |
+| `src/styles/global.css` | element and layout rules, tokens only |
+| `src/lib/tools.ts` | the single tool list (id, group, name, blurb, status) |
 | `src/components/FileDrop.tsx` | drop zone + "choose files" button (keyboard path) |
 | `src/components/FileList.tsx` | names, sizes, remove |
 | `src/components/Progress.tsx` | determinate where possible, `aria-live` |
 | `src/components/ResultPanel.tsx` | before/after size, download, warnings |
-| `src/components/LimitsNote.tsx` | "what this cannot do" disclosure |
+| `src/components/LimitsNote.astro` | "what this cannot do" disclosure, rendered as static HTML |
 | `src/lib/download.ts` | object-URL download + revoke |
 | `src/lib/format.ts` | byte formatting, file-type sniffing |
 | `src/lib/coords.ts` | PDF ↔ CSS coordinate transform **with unit tests** |
 | `src/engines/pdfLib.ts` | lazy pdf-lib loader + shared helpers |
+| `scripts/gates/*.mjs` | UI-G1 token lint, UI-G2 contrast, UI-G6 copy lint |
+| `tests/gates.spec.ts` | UI-G3–G9: axe, viewports, target size, reduced motion, no off-origin, content-in-HTML |
 
-**Done when:** `pnpm dev` serves the home page; the CSP is active; `pnpm typecheck` and
-`pnpm test` pass; the shell is ≤ 150 KB gzip; no third-party request appears in the Network tab.
+**Done when:** `npm run dev` serves the home page; `npm run gates` passes (token, contrast,
+copy, build, Playwright); the shell is ≤ 150 KB gzip; no third-party request appears in the
+Network tab; and the built tool page contains its heading and limits text with JavaScript
+disabled (UI-G9).
 
 ## Step 2 — First real tool: `inspect-pdf`
 
-Read-only, no writes, smallest possible surface. It proves the whole pipeline (load engine in a
-worker → report → render results) without risk of corrupting a file.
+Read-only, no writes, smallest possible surface. It proves the whole pipeline (static page →
+hydrate the island → load the engine → report → render results) without risk of corrupting a file.
+It lives at `src/pages/tools/inspect-pdf.astro` wrapping `src/tools/inspect-pdf/Tool.tsx`, with
+all parsing in `src/tools/inspect-pdf/inspect.ts` (no React import, so it is unit-testable).
 
 Shows: page count, page sizes and rotation, encryption state, signature presence, fonts, image
 count, metadata, and a plain-language privacy verdict ("this file contains an author name").
@@ -89,6 +103,7 @@ Step 1 and a text-layer overlay; wave 3 adds Tesseract and the conversion tools.
 | merge page-count property | silent page loss |
 | redaction text-absence test (wave 2) | the worst possible failure: a fake redaction |
 | "no off-origin request" Playwright check | a dependency phoning home |
+| UI-G9 content-in-HTML check | a tool page that only exists after hydration, so it cannot be found or shared |
 | encrypted fixture round-trip | pdf-lib's `ignoreEncryption` trap |
 | truncated-file fixture | an unhandled crash instead of a clear message |
 
