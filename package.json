@@ -17,5 +17,19 @@
     "gate:copy": "node scripts/gates/copy.mjs",
     "gate:ui": "playwright test",
     "gates": "npm run gate:tokens && npm run gate:contrast && npm run gate:copy && npm run build && npm run gate:ui"
+  },
+  "dependencies": {
+    "@astrojs/react": "^7.1.9",
+    "astro": "^7.4.13",
+    "pdf-lib": "^1.17.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "typescript": "^6.0.3"
   }
 }
