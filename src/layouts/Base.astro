@@ -1,0 +1,64 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/components.css';
+import { THEME_COLOR_DARK, THEME_COLOR_LIGHT } from '../lib/theme-colors';
+
+interface Props {
+  title: string;
+  description: string;
+  jsonLd?: Record<string, unknown>;
+}
+
+const { title, description, jsonLd } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const siteName = 'OpenDrawer';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content={THEME_COLOR_LIGHT} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={THEME_COLOR_DARK} media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary" />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap site-header__inner">
+        <a class="brand" href="/">OpenDrawer</a>
+        <nav class="site-nav" aria-label="Main">
+          <a href="/#tools">All tools</a>
+          <a href="/#privacy">How privacy works</a>
+          <a href="https://github.com/SHAHID8142/opendrawer" rel="noopener">Source code</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          OpenDrawer is free and open source under the AGPL-3.0. There is no account, no
+          advertising and no upload: files are processed inside your browser.
+        </p>
+        <p><a href="/#privacy">How to verify that nothing is uploaded</a></p>
+      </div>
+    </footer>
+  </body>
+</html>

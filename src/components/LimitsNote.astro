@@ -1,0 +1,15 @@
+---
+interface Props {
+  title: string;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<section class="note note--warning" aria-labelledby="limits-heading">
+  <h2 id="limits-heading">{title}</h2>
+  <ul>
+    {items.map((item) => <li>{item}</li>)}
+  </ul>
+</section>
