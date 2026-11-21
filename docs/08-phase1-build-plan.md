@@ -1,0 +1,115 @@
+# 08 — Phase 1 build plan
+
+The actionable version of `06-roadmap.md`: what to create, in what order, and how each step is
+proved done. Written so a developer — or an AI agent with `AGENTS.md` loaded — can start without
+asking questions.
+
+**Guardrails for the whole phase:** `AGENTS.md` rules; AGPL headers; no network requests during
+processing; every tool declares its limits in the UI.
+
+---
+
+## Step 0 — Repository hygiene (already done)
+
+- [x] Documentation set committed
+- [x] `LICENSE` (full AGPL-3.0 text)
+- [x] `.gitignore`, `THIRD-PARTY-NOTICES.md`, `mcp.example.json`, `skills/pdf-tools/SKILL.md`
+- [ ] Branch protection on `main` (human action, optional)
+- [ ] GitHub repository description + topics (human action, optional)
+
+## Step 1 — Scaffold (target: one short session)
+
+```bash
+pnpm create vite . --template react-ts    # in an empty directory or a fresh clone
+pnpm add pdf-lib pdfjs-dist
+pnpm add -D vitest @vitest/coverage-v8 @playwright/test eslint prettier typescript
+```
+
+Deliverables:
+
+| File | Purpose |
+| --- | --- |
+| `index.html`, `vite.config.ts` | shell, worker + WASM asset handling |
+| `public/_headers` | CSP, nosniff, referrer policy, cache policy |
+| `src/app/App.tsx`, `router.tsx` | routes: `/`, `/tools/:id`, `/docs/*`, `/about` |
+| `src/app/theme.css` | design tokens: type scale, spacing, colours, focus ring |
+| `src/tools/registry.ts` | the single tool list (id, group, meta loader, component loader) |
+| `src/components/FileDrop.tsx` | drop zone + "choose files" button (keyboard path) |
+| `src/components/FileList.tsx` | names, sizes, remove |
+| `src/components/Progress.tsx` | determinate where possible, `aria-live` |
+| `src/components/ResultPanel.tsx` | before/after size, download, warnings |
+| `src/components/LimitsNote.tsx` | "what this cannot do" disclosure |
+| `src/lib/download.ts` | object-URL download + revoke |
+| `src/lib/format.ts` | byte formatting, file-type sniffing |
+| `src/lib/coords.ts` | PDF ↔ CSS coordinate transform **with unit tests** |
+| `src/engines/pdfLib.ts` | lazy pdf-lib loader + shared helpers |
+
+**Done when:** `pnpm dev` serves the home page; the CSP is active; `pnpm typecheck` and
+`pnpm test` pass; the shell is ≤ 150 KB gzip; no third-party request appears in the Network tab.
+
+## Step 2 — First real tool: `inspect-pdf`
+
+Read-only, no writes, smallest possible surface. It proves the whole pipeline (load engine in a
+worker → report → render results) without risk of corrupting a file.
+
+Shows: page count, page sizes and rotation, encryption state, signature presence, fonts, image
+count, metadata, and a plain-language privacy verdict ("this file contains an author name").
+**Done when:** a fixture PDF with metadata and encryption is correctly described, and an
+encrypted file does not crash the tab.
+
+## Step 3 — Wave 1 tools, in this order
+
+Each item is one folder under `src/tools/<id>/` and one line in `registry.ts`.
+
+1. `pdf-to-image` — renders pages; the simplest way to validate PDF.js + canvas + worker plumbing.
+2. `images-to-pdf` — pdf-lib creation path.
+3. `merge-pdf` — first multi-file, drag-order tool.
+4. `split-pdf` + `split-each-page` + `extract-pages` — one engine, three UIs.
+5. `rotate-pdf`, `reorder-pages`, `delete-pages`, `duplicate-pages` — share a page-thumbnail grid.
+6. `page-numbers`, `watermark-pdf`, `crop-pdf`.
+7. `protect-pdf` + `unlock-pdf` — first qpdf WASM tool; test encrypted fixtures both ways.
+8. `metadata-editor`, `flatten-pdf`.
+9. `compress-pdf` — start with lossless re-save + image recompression; add Ghostscript last.
+10. `sanitise-pdf`, `repair-pdf`.
+
+**Done when:** the wave-1 exit criteria in `06-roadmap.md` hold on a real phone.
+
+## Step 4 — Waves 2 and 3
+
+Per `06-roadmap.md`. Wave 2 begins with `edit-text`, which needs the coordinate transform from
+Step 1 and a text-layer overlay; wave 3 adds Tesseract and the conversion tools.
+
+---
+
+## Testing that must exist from day one
+
+| Test | Guards against |
+| --- | --- |
+| `coords.test.ts` | annotations misplaced on rotated or scaled pages |
+| merge page-count property | silent page loss |
+| redaction text-absence test (wave 2) | the worst possible failure: a fake redaction |
+| "no off-origin request" Playwright check | a dependency phoning home |
+| encrypted fixture round-trip | pdf-lib's `ignoreEncryption` trap |
+| truncated-file fixture | an unhandled crash instead of a clear message |
+
+## Fixtures to generate (script, not committed binaries over ~100 KB)
+
+Synthetic files only: 1-page text, 20-page scan-like, rotated page, A4 + Letter mixed,
+non-Latin text (Devanagari + Arabic), password-protected, owner-password-only, signed, truncated,
+zero-page, 500-page. Never commit a real person's document.
+
+## Definition of done for phase 1
+
+- Wave 1 tools all ship with limits stated, fixtures, and passing tests.
+- A mid-range Android phone can compress a 20 MB scan to under 2 MB without crashing.
+- Zero network requests during processing, proved in the Network tab and by CSP.
+- Every produced file opens in Chrome and Firefox without a repair prompt.
+- Lighthouse accessibility ≥ 95 on home and tool pages.
+- `LICENSE` and `THIRD-PARTY-NOTICES.md` are accurate for everything actually shipped.
+
+## Open decisions before coding starts
+
+1. **Ghostscript or not.** Including it (AGPL) gives real compression on scans; excluding it
+   keeps a permissive-only subset possible. Recommendation: include it.
+2. **Language of the UI.** English only at first, with all strings externalised for translation.
+3. **Hosting target.** Cloudflare static assets (recommended) or any static host; no server.
