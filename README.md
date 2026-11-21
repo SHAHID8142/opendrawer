@@ -11,9 +11,9 @@ no advertising, no payment, no file-size limit and no daily cap. Turn off the in
 page loads and it keeps working.
 
 > Status: **documentation and tooling only.** No application code has been written yet.
-> This repository currently contains the product plan, the full tool catalogue, the architecture,
-> the licensing decision, the honest limitations page copy, the roadmap, and the developer /
-> AI-agent setup pack (MCP config, project skill, AGENTS.md).
+> This repository contains the product plan, the full tool catalogue, the architecture, the
+> licensing decision, the honest limitations copy, the roadmap, the phase-1 build plan, and the
+> developer / AI-agent setup pack (MCP config, project skill, AGENTS.md).
 
 ---
 
@@ -51,24 +51,30 @@ Two consequences follow, and both are promised on every page of the site:
 ## What is in this repository today
 
 ```
-README.md                     you are here
-AGENTS.md                     hard rules for any AI coding agent working in this repo
-CONTRIBUTING.md               how to add a tool, PR checklist
-mcp.example.json              MCP server template for AI-assisted development
-skills/pdf-tools/SKILL.md     project skill teaching the "one tool = one folder" pattern
+README.md                       you are here
+LICENSE                         full AGPL-3.0 text
+LICENSE-NOTICE.md               licence decision, in plain language
+AGENTS.md                       hard rules for any AI coding agent working in this repo
+CONTRIBUTING.md                 how to add a tool, PR checklist
+THIRD-PARTY-NOTICES.md          every dependency, its licence and its obligations
+mcp.example.json                MCP server template for AI-assisted development
+skills/pdf-tools/SKILL.md       project skill teaching the "one tool = one folder" pattern
 
-docs/01-product-plan.md       vision, users, principles, non-goals, success criteria
-docs/02-tool-catalog.md       every planned tool, its engine, licence and known limits
-docs/03-architecture.md       stack, module layout, workers, WASM budgets, hosting, security
-docs/04-licensing.md          why AGPL-3.0, dependency licence table, obligations
-docs/05-limitations.md        the user-facing honesty copy (and why each limit exists)
-docs/06-roadmap.md            three delivery waves with acceptance criteria
-docs/07-setup-and-tooling.md  developer setup, MCP + skills installation, verification
-LICENSE-NOTICE.md             licence decision and where the full AGPL text goes
+docs/01-product-plan.md         vision, users, principles, non-goals, success criteria
+docs/02-tool-catalog.md         every planned tool, its engine, licence and known limits
+docs/03-architecture.md         stack, module layout, workers, WASM budgets, hosting, security
+docs/04-licensing.md            why AGPL-3.0, dependency licence table, obligations
+docs/05-limitations.md          the user-facing honesty copy (and why each limit exists)
+docs/06-roadmap.md              three delivery waves with acceptance criteria
+docs/07-setup-and-tooling.md    developer setup, MCP + skills installation, verification
+docs/08-phase1-build-plan.md    ordered build tasks for phase 1, with proof of done
 ```
 
 Read in this order: `01-product-plan` → `02-tool-catalog` → `03-architecture` →
-`04-licensing` → `06-roadmap` → `07-setup-and-tooling`.
+`04-licensing` → `06-roadmap` → `08-phase1-build-plan` → `07-setup-and-tooling`.
+
+**Building?** Start with `08-phase1-build-plan.md`. It lists the scaffold files in order, the
+first tool to build (`inspect-pdf`), and the wave-1 sequence. `AGENTS.md` is binding.
 
 ---
 
@@ -118,6 +124,6 @@ makes zero network requests while the tool runs".
 ## Name check
 
 `OpenDrawer` was chosen after a quick availability check (AnyKit, EveryTool, PaperPilot,
-Docsmith and openDesk are all taken). **Before the first public release, confirm the GitHub
-organisation name, the domain, and run a proper trademark check** in your own jurisdiction.
-This document does not constitute legal clearance.
+Docsmith and openDesk are all taken). **Before the first public release, confirm the domain, and
+run a proper trademark check** in your own jurisdiction. This document does not constitute legal
+clearance.
