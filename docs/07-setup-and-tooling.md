@@ -44,8 +44,9 @@ Use `git commit -s` for every commit: the DCO sign-off is part of the contributi
 Never commit `.env` files, tokens, or local MCP configuration that contains a secret — the
 `.gitignore` already excludes them, so do not override it with `git add -f`.
 
-**Before publishing:** confirm the domain is free, and run a trademark search for "OpenDrawer"
-in your jurisdiction. `AnyKit` is already a registered US trademark, which is why it was rejected.
+**Before publishing:** confirm the GitHub organisation/user name and the domain are free, and
+run a trademark search for "OpenDrawer" in your jurisdiction. `AnyKit` is already a registered
+US trademark, which is why it was rejected.
 
 ## 3. Scaffold the app (wave 0)
 
@@ -62,8 +63,7 @@ pnpm dev
 
 Then add, in this order: router, design tokens, `src/tools/registry.ts`, the shared file-flow
 components, `inspect-pdf` (the simplest real tool), and the CSP `_headers` file. Do not add the
-Ghostscript or Tesseract engines until their wave. The full task list is in
-`docs/08-phase1-build-plan.md`.
+Ghostscript or Tesseract engines until their wave.
 
 Scripts to define in `package.json`: `dev`, `build`, `preview`, `lint`, `typecheck`, `test`,
 `test:e2e`, `fixtures`.
@@ -95,7 +95,7 @@ The ready-to-use template is `mcp.example.json` at the repository root.
 4. Confirm each package name still exists: `npx -y @playwright/mcp@latest --help`.
 5. For GitHub, create a **fine-grained** personal access token (repo contents, issues, PRs only)
    and put it in your shell environment as `GITHUB_PERSONAL_ACCESS_TOKEN`. Never commit it;
-   `.gitignore` already excludes `.env*` and local MCP configs.
+   `.gitignore` should exclude `.env*` and any local MCP config that contains secrets.
 
 ### What MCP must never be given
 
@@ -147,7 +147,7 @@ Publish a preview first, verify the checklist above on the real URL, then make i
 
 ## 8. What still needs a human decision
 
-- Final domain (trademark check required).
+- Final name, domain and GitHub organisation (trademark check required).
 - Whether to use Ghostscript (AGPL, strong compression) or stay permissive with qpdf only.
 - Whether public hosting is the same repository as the self-host bundle (recommended: yes, one
   codebase, the licence already covers network use).
