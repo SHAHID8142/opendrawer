@@ -1,0 +1,21 @@
+{
+  "name": "opendrawer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "gate:tokens": "node scripts/gates/tokens.mjs",
+    "gate:contrast": "node scripts/gates/contrast.mjs",
+    "gate:copy": "node scripts/gates/copy.mjs",
+    "gate:ui": "playwright test",
+    "gates": "npm run gate:tokens && npm run gate:contrast && npm run gate:copy && npm run build && npm run gate:ui"
+  }
+}
