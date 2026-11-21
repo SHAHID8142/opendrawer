@@ -22,6 +22,14 @@ export const tools: ToolEntry[] = [
       'See what a PDF really contains before you send it: page sizes, metadata, embedded files, scripts and signatures.',
     status: 'live',
   },
+  {
+    id: 'pdf-to-image',
+    name: 'PDF to image',
+    group: 'Convert',
+    blurb:
+      'Turn pages into PNG or JPEG images at 72, 150 or 300 DPI, one page or a whole ZIP of them.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');
