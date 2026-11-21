@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+out/
+.next/
+.vite/
+coverage/
+
+# Env and secrets — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local editor / agent configuration that may contain a token
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+npm-debug.log*
+pnpm-debug.log*
+tmp/
+.cache/
+
+# Test artefacts
+test-results/
+playwright-report/
+blob-report/
