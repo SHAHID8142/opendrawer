@@ -1,0 +1,24 @@
+{
+  "_comment": "OpenDrawer MCP template. Copy to .mcp.json (Claude Code), .cursor/mcp.json (Cursor) or .vscode/mcp.json (VS Code, rename the key to 'servers'). Explanations: docs/07-setup-and-tooling.md. Secrets come from environment variables; never commit a token. All servers are optional — the project builds without any of them.",
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--browser", "chromium"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    }
+  }
+}
