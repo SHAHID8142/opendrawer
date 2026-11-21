@@ -11,9 +11,9 @@ no advertising, no payment, no file-size limit and no daily cap. Turn off the in
 page loads and it keeps working.
 
 > Status: **documentation and tooling only.** No application code has been written yet.
-> This repository contains the product plan, the full tool catalogue, the architecture, the
-> licensing decision, the honest limitations copy, the roadmap, the phase-1 build plan, and the
-> developer / AI-agent setup pack (MCP config, project skill, AGENTS.md).
+> This repository currently contains the product plan, the full tool catalogue, the architecture,
+> the licensing decision, the honest limitations page copy, the roadmap, and the developer /
+> AI-agent setup pack (MCP config, project skill, AGENTS.md).
 
 ---
 
@@ -124,6 +124,6 @@ makes zero network requests while the tool runs".
 ## Name check
 
 `OpenDrawer` was chosen after a quick availability check (AnyKit, EveryTool, PaperPilot,
-Docsmith and openDesk are all taken). **Before the first public release, confirm the domain, and
-run a proper trademark check** in your own jurisdiction. This document does not constitute legal
-clearance.
+Docsmith and openDesk are all taken). **Before the first public release, confirm the GitHub
+organisation name, the domain, and run a proper trademark check** in your own jurisdiction.
+This document does not constitute legal clearance.
