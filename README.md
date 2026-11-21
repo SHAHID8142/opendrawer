@@ -68,13 +68,16 @@ docs/05-limitations.md          the user-facing honesty copy (and why each limit
 docs/06-roadmap.md              three delivery waves with acceptance criteria
 docs/07-setup-and-tooling.md    developer setup, MCP + skills installation, verification
 docs/08-phase1-build-plan.md    ordered build tasks for phase 1, with proof of done
+docs/09-ui-ux-design-system.md  principles, laws (corrected), tokens, components, a11y gates
 ```
 
 Read in this order: `01-product-plan` → `02-tool-catalog` → `03-architecture` →
 `04-licensing` → `06-roadmap` → `08-phase1-build-plan` → `07-setup-and-tooling`.
 
 **Building?** Start with `08-phase1-build-plan.md`. It lists the scaffold files in order, the
-first tool to build (`inspect-pdf`), and the wave-1 sequence. `AGENTS.md` is binding.
+first tool to build (`inspect-pdf`), and the wave-1 sequence. `AGENTS.md` is binding, and
+`09-ui-ux-design-system.md` defines the interface rules (tokens only, WCAG 2.2 AA floor, motion
+contract, eight executable UI gates).
 
 ---
 
