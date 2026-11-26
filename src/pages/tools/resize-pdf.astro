@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/resize-pdf/Tool';
+
+const title = 'Resize PDF pages: fit them to A4, Letter or A5';
+const description =
+  'Scale every page to a chosen paper size, keeping its shape and centring it with margins. Runs in your browser; nothing is uploaded and no account is needed.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Resize PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does resizing stretch the page?',
+    answer:
+      'No. The page is scaled uniformly until it fits, then centred. Where the proportions differ from the new paper, the leftover becomes a margin.',
+  },
+  {
+    question: 'Why did my links and forms stop working?',
+    answer:
+      'Each page is rebuilt on the new paper size, so interactive elements are not carried across. Flatten forms first if the values matter, or keep the original file for signing.',
+  },
+  {
+    question: 'Can I choose a custom size or orientation?',
+    answer: 'Not in this build. A4, US Letter and A5 are the available targets.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Resize PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Resize PDF pages</h1>
+      <p>
+        Put every page on the same paper size. Pages keep their proportions and are centred, so a
+        mixed-size document prints without surprises.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'The document is rebuilt, so links, form fields, comments and bookmarks are lost.',
+            'Pages rotated in the original may come out upright and need rotating again.',
+            'There is no custom paper size, orientation switch or per-page target.',
+            'Digital signatures stop being valid because the file changes.',
+            'Password-protected PDFs are refused.',
+          ]}
+        />
+        <section className="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -591,6 +591,30 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('report-with-image.pdf');
+  });
+
+  test('resizes pages to US Letter and downloads the rebuilt PDF', async ({ page }) => {
+    await page.goto('/tools/resize-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#resize-input').setInputFiles({
+      name: 'mixed.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(2),
+    });
+    await expect(page.getByRole('status')).toContainText('2 pages ready');
+    await page.selectOption('#resize-paper', 'letter');
+    await page.getByRole('button', { name: 'Resize the pages' }).click();
+    await expect(page.getByRole('status')).toContainText('Resized 2 pages', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('mixed-letter.pdf');
+    const bytes = readFileSync((await saved.path())!);
+    const pdf = await PDFDocument.load(bytes);
+    expect(pdf.getPageCount()).toBe(2);
+    expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
+    expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
   });
 
   test('refuses more than 20 OCR pages and serves the OCR assets itself', async ({ page, request }) => {

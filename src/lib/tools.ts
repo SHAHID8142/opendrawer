@@ -256,6 +256,17 @@ export const tools: ToolEntry[] = [
       'Read scanned pages with a self-hosted OCR engine and download the recognised text as a .txt file.',
     status: 'live',
   },
+  {
+    id: 'resize-pdf',
+    name: 'Resize pages',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    short: 'Fit pages to A4 or Letter.',
+    blurb:
+      'Scale every page onto A4, US Letter or A5, keeping its shape and centring it with margins.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');
