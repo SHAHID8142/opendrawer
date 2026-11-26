@@ -1,5 +1,5 @@
 /*
- * Catalogue shell — centered hero, trust chips, category tiles, and directory.
+ * Catalogue shell — centered hero, trust chips, focused filter pills, and colophon.
  */
 
 .page-head {
@@ -49,92 +49,82 @@
 
 .catalog {
   display: grid;
-  gap: var(--space-7);
+  gap: var(--space-6);
   align-items: start;
   width: 100%;
   max-width: var(--container-md);
   margin-inline: auto;
 }
 
-/* Category tile grid — visual category cards with icons and status. */
-.cat-grid {
+.catalog__main {
   display: grid;
-  gap: var(--space-4);
-  text-align: center;
+  gap: var(--space-5);
+  width: 100%;
+  min-width: 0;
 }
 
-.cat-grid__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
-  gap: var(--space-3);
+/* Focused task filter tabs — centered, exact height alignment, >= 44px touch targets. */
+.group-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.cat-tile {
-  display: flex;
-  flex-direction: column;
+.group-tabs > li {
+  margin: 0;
+}
+
+.group-tab {
+  display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-5) var(--space-3);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-4);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  transition: border-color var(--duration-fast) var(--ease-out);
-}
-
-.cat-tile:hover {
-  border-color: var(--color-border);
-}
-
-.cat-tile--active {
+  border-radius: var(--radius-full);
   box-shadow: var(--shadow-clay-sm);
-}
-
-.cat-tile__name {
+  color: var(--color-text-muted);
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.group-tab:hover {
+  border-color: var(--color-border);
   color: var(--color-text);
 }
 
-.cat-tile__status {
-  font-size: var(--text-xs);
+.group-tab__count {
   color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
 }
 
-.cat-tile--active .cat-tile__status {
-  color: var(--color-accent-strong);
-  font-weight: var(--weight-bold);
+.group-tab[aria-pressed='true'] {
+  background: var(--tab-tint, var(--color-accent-subtle));
+  border-color: var(--tab-ink, var(--color-accent));
+  color: var(--tab-ink, var(--color-accent-strong));
+  box-shadow: none;
 }
 
-/* Accent border on hover per category tone. */
-.cat-tile--documents:hover { border-color: var(--color-documents); }
-.cat-tile--images:hover { border-color: var(--color-images); }
-.cat-tile--audio:hover { border-color: var(--color-audio); }
-.cat-tile--textdata:hover { border-color: var(--color-textdata); }
-.cat-tile--everyday:hover { border-color: var(--color-everyday); }
-
-.catalog__main {
-  display: grid;
-  gap: var(--space-4);
-  width: 100%;
-  min-width: 0;
+.group-tab[aria-pressed='true'] .group-tab__count {
+  color: inherit;
 }
 
-.catalog__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.catalog__head h2 {
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  color: var(--color-text);
-}
+.group-tab--all { --tab-ink: var(--color-text); --tab-tint: var(--color-surface-subtle); }
+.group-tab--inspect { --tab-ink: var(--color-inspect); --tab-tint: var(--color-inspect-subtle); }
+.group-tab--convert { --tab-ink: var(--color-convert); --tab-tint: var(--color-convert-subtle); }
+.group-tab--create { --tab-ink: var(--color-everyday); --tab-tint: var(--color-everyday-subtle); }
+.group-tab--organise { --tab-ink: var(--color-documents); --tab-tint: var(--color-documents-subtle); }
 
 .rail-note {
   padding: var(--space-4) var(--space-5);
@@ -154,7 +144,6 @@
 }
 
 /* Colophon — closes the page cleanly across all viewport widths. */
-
 .colophon {
   display: flex;
   flex-wrap: wrap;
@@ -167,15 +156,4 @@
   font-size: var(--text-xs);
   font-weight: var(--weight-medium);
   text-align: center;
-}
-
-@media (max-width: 40rem) {
-  .cat-grid__list {
-    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-    gap: var(--space-2);
-  }
-
-  .cat-tile {
-    padding: var(--space-4) var(--space-2);
-  }
 }

@@ -5,8 +5,8 @@ export type ToolStatus = 'live' | 'planned';
 /** Top-level product category. New categories are a product decision; see docs/10. */
 export type ToolCategory = 'Documents' | 'Images' | 'Audio & video' | 'Text & data' | 'Everyday';
 
-/** Visual service accent for tool tiles and cards. */
-export type ToolAccent = 'inspect' | 'convert' | 'create';
+/** Visual service accent for tool tiles and cards — one distinct color per tool. */
+export type ToolAccent = 'inspect' | 'convert' | 'create' | 'merge' | 'split' | 'rotate';
 
 export interface ToolEntry {
   id: string;
@@ -59,7 +59,7 @@ export const tools: ToolEntry[] = [
     name: 'Merge PDF',
     category: 'Documents',
     group: 'Organise',
-    accent: 'convert',
+    accent: 'merge',
     blurb:
       'Combine several PDFs into one file, in the order you set, without re-rendering a single page.',
     status: 'live',
@@ -69,7 +69,7 @@ export const tools: ToolEntry[] = [
     name: 'Split PDF',
     category: 'Documents',
     group: 'Organise',
-    accent: 'convert',
+    accent: 'split',
     blurb:
       'Split a PDF by page ranges or into one file per page, with pages copied rather than re-rendered.',
     status: 'live',
@@ -79,7 +79,7 @@ export const tools: ToolEntry[] = [
     name: 'Rotate PDF',
     category: 'Documents',
     group: 'Organise',
-    accent: 'convert',
+    accent: 'rotate',
     blurb:
       'Turn selected pages or the whole document by 90, 180 or 270 degrees without re-rendering anything.',
     status: 'live',

@@ -5,6 +5,9 @@ export type GlyphKind =
   | 'inspect-pdf'
   | 'pdf-to-image'
   | 'images-to-pdf'
+  | 'merge-pdf'
+  | 'split-pdf'
+  | 'rotate-pdf'
   | 'documents'
   | 'images'
   | 'audio'
@@ -21,6 +24,9 @@ export type GlyphTone =
   | 'inspect'
   | 'convert'
   | 'create'
+  | 'merge'
+  | 'split'
+  | 'rotate'
   | 'documents'
   | 'images'
   | 'audio'
@@ -49,7 +55,7 @@ const { kind, tone = 'inspect', size = 'md', contained = false } = Astro.props;
         </text>
         <path d="M6 15.5h3.5" />
         <path d="M6 18h2.2" />
-        <circle cx="16" cy="16" r="3.8" fill="var(--color-inspect-subtle)" />
+        <circle cx="16" cy="16" r="3.8" fill="var(--color-surface)" />
         <path d="m18.8 18.8 2.7 2.7" />
       </svg>
     )
@@ -63,7 +69,7 @@ const { kind, tone = 'inspect', size = 'md', contained = false } = Astro.props;
         <text x="4.6" y="11.8" font-size="4.1" font-weight="700" fill="currentColor" stroke="none">
           PDF
         </text>
-        <rect x="9.5" y="10" width="11.5" height="10.5" rx="2" fill="var(--color-convert-subtle)" />
+        <rect x="9.5" y="10" width="11.5" height="10.5" rx="2" fill="var(--color-surface)" />
         <circle cx="13" cy="13.2" r="1" fill="currentColor" stroke="none" />
         <path d="m10.5 18.8 3-3.2 2.1 2 1.8-1.9 2.6 3.1" />
       </svg>
@@ -75,11 +81,54 @@ const { kind, tone = 'inspect', size = 'md', contained = false } = Astro.props;
         <rect x="2.5" y="4" width="11" height="10" rx="2" />
         <circle cx="5.8" cy="7.1" r="1" fill="currentColor" stroke="none" />
         <path d="m3.5 12.4 2.8-2.8 1.9 1.8 1.7-1.7 2.6 2.7" />
-        <path d="M12.5 8h5.5l3 3v8.5a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5V14" fill="var(--color-everyday-subtle)" />
+        <path d="M12.5 8h5.5l3 3v8.5a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5V14" fill="var(--color-surface)" />
         <path d="M18 8v3h3" />
         <text x="12.2" y="17.8" font-size="3.9" font-weight="700" fill="currentColor" stroke="none">
           PDF
         </text>
+      </svg>
+    )
+  }
+  {
+    kind === 'merge-pdf' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h6l3 3v9.5a1.5 1.5 0 0 1-1.5 1.5h-7.5A1.5 1.5 0 0 1 4 16.5v-11Z" />
+        <path d="M9.5 8.5A1.5 1.5 0 0 1 11 7h5.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5H11A1.5 1.5 0 0 1 9.5 19V8.5Z" fill="var(--color-surface)" />
+        <path d="M16.5 7v3.5H20" />
+        <text x="11.2" y="15.8" font-size="3.8" font-weight="700" fill="currentColor" stroke="none">
+          PDF
+        </text>
+        <path d="M13.5 18.2h3" />
+        <path d="M15 16.7v3" />
+      </svg>
+    )
+  }
+  {
+    kind === 'split-pdf' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.5 4H5a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 0 5 20h4.5" />
+        <path d="M14.5 4H17l3.5 3.5v11a1.5 1.5 0 0 1-1.5 1.5h-4.5" />
+        <path d="M17 4v3.5h3.5" />
+        <path d="M12 2.5v3" />
+        <path d="M12 8.5v3" />
+        <path d="M12 14.5v3" />
+        <path d="M12 20v1.5" />
+        <text x="5.2" y="13.5" font-size="3.9" font-weight="700" fill="currentColor" stroke="none">
+          PDF
+        </text>
+      </svg>
+    )
+  }
+  {
+    kind === 'rotate-pdf' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 5h6.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 19V6.5A1.5 1.5 0 0 1 6 5Z" />
+        <path d="M12.5 5v3.5H16" />
+        <text x="6.5" y="14.5" font-size="4.1" font-weight="700" fill="currentColor" stroke="none">
+          PDF
+        </text>
+        <path d="M18.5 10.5a6.5 6.5 0 0 0-4.2-6.8" />
+        <path d="M20.2 8.2 18.6 10.8 16 9.3" />
       </svg>
     )
   }

@@ -16,6 +16,10 @@
   list-style: none;
 }
 
+.value-cards > li {
+  margin: 0;
+}
+
 .value-card {
   display: grid;
   gap: var(--space-3);

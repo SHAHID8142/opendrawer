@@ -33,13 +33,13 @@
 }
 
 .glyph--lg {
-  width: var(--space-7);
-  height: var(--space-7);
+  width: var(--space-8);
+  height: var(--space-8);
 }
 
 .glyph--lg svg {
-  width: var(--space-7);
-  height: var(--space-7);
+  width: var(--space-8);
+  height: var(--space-8);
 }
 
 /* Contained variant — only when an icon needs its own background tile (e.g. standalone). */
@@ -62,14 +62,20 @@
 .glyph--contained.glyph--create,
 .glyph--contained.glyph--everyday { background: var(--color-everyday-subtle); }
 
-.glyph--documents { color: var(--color-accent-strong); }
+.glyph--merge,
+.glyph--documents { color: var(--color-documents); }
+.glyph--contained.glyph--merge,
 .glyph--contained.glyph--documents { background: var(--color-documents-subtle); }
 
 .glyph--images { color: var(--color-images); }
 .glyph--contained.glyph--images { background: var(--color-images-subtle); }
 
+.glyph--split,
 .glyph--audio { color: var(--color-audio); }
+.glyph--contained.glyph--split,
 .glyph--contained.glyph--audio { background: var(--color-audio-subtle); }
 
+.glyph--rotate,
 .glyph--textdata { color: var(--color-textdata); }
+.glyph--contained.glyph--rotate,
 .glyph--contained.glyph--textdata { background: var(--color-textdata-subtle); }
