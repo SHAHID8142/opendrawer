@@ -162,7 +162,8 @@ export const tools: ToolEntry[] = [
     name: 'Reorder pages',
     category: 'Documents',
     group: 'Organise',
-    accent: 'convert',
+    accent: 'inspect',
+    short: 'Move or reverse page order.',
     blurb:
       'Move pages into a new order or reverse the document, then download it without re-rendering a page.',
     status: 'live',

@@ -93,7 +93,6 @@ const grouped = categories.map((cat) => ({
                       <ToolGlyph kind={cat.tone} tone={cat.tone} size="md" />
                       <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
                       <span class="cat-section__count">{cat.items.length}</span>
-                      <InfoTip label={`About ${cat.id} tools`} text={cat.summary} />
                     </span>
                   </header>
 
@@ -125,26 +124,17 @@ const grouped = categories.map((cat) => ({
         <li class="value-card">
           <ToolGlyph kind="device" tone="inspect" size="lg" />
           <h3>Runs on your device</h3>
-          <p>
-            Processed in browser memory.
-            <InfoTip label="Local processing details" text="Your browser decodes and converts every file in local memory, even on slow mobile data." />
-          </p>
+          <p>Files stay in browser memory, even offline.</p>
         </li>
         <li class="value-card">
           <ToolGlyph kind="shield" tone="convert" size="lg" />
           <h3>Zero uploads</h3>
-          <p>
-            No server receives files.
-            <InfoTip label="CSP enforcement details" text="No upload server exists, and the Content-Security-Policy blocks all off-origin requests." />
-          </p>
+          <p>No upload server; CSP blocks off-origin calls.</p>
         </li>
         <li class="value-card">
           <ToolGlyph kind="heart" tone="documents" size="lg" />
           <h3>Public goodwill</h3>
-          <p>
-            Free AGPL-3.0 software.
-            <InfoTip label="Open-source commitment" text="No quotas, no watermarks, no accounts, and no advertising anywhere in the app." />
-          </p>
+          <p>Free AGPL-3.0 software with zero quotas or ads.</p>
         </li>
       </ul>
     </section>

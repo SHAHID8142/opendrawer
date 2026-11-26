@@ -1,6 +1,6 @@
 /*
- * Tool directory — responsive search bar and terse service-tinted cards with stretched link.
- * Zero nested cards or icon containers; "i" InfoTip carries longer details cleanly.
+ * Tool directory — responsive search bar and crisp white porcelain cards with distinct accents.
+ * Pure neutral card surfaces (zero background gradients); color lives in icon, footer, and hover rim.
  */
 
 .tool-search {
@@ -55,7 +55,6 @@
   text-align: center;
 }
 
-/* Responsive grid: 1 col (<560px), 2 cols (560–860px), 3 cols (860–1160px), 4 cols (1160px+). */
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
@@ -65,72 +64,48 @@
   list-style: none;
 }
 
-.tool-grid > li {
-  margin: 0;
-  min-width: 0;
-}
+.tool-grid > li { margin: 0; min-width: 0; }
 
-/* Tool card — soft service wash, stretched link covers card while InfoTip sits at z-index 2. */
+/* Crisp porcelain card — flat clean white surface, colored icon/footer, colored hover ring. */
 .tool-card {
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--space-4);
   height: 100%;
   min-width: 0;
-  padding: var(--space-6);
-  background: linear-gradient(155deg, var(--card-tint, var(--color-surface)) 0%, var(--color-surface) 58%);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-clay-sm);
+  box-shadow: var(--shadow-md);
   color: var(--color-text);
   text-align: left;
+  text-decoration: none;
   transition:
     border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out),
     transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-card[data-accent='inspect']   { --card-ink: var(--color-inspect); --card-tint: var(--color-inspect-subtle); }
-.tool-card[data-accent='convert']   { --card-ink: var(--color-convert); --card-tint: var(--color-convert-subtle); }
+.tool-card[data-accent='inspect']   { --card-ink: var(--color-inspect); }
+.tool-card[data-accent='convert']   { --card-ink: var(--color-convert); }
 .tool-card[data-accent='create'],
-.tool-card[data-accent='everyday']  { --card-ink: var(--color-everyday); --card-tint: var(--color-everyday-subtle); }
+.tool-card[data-accent='everyday']  { --card-ink: var(--color-everyday); }
 .tool-card[data-accent='merge'],
-.tool-card[data-accent='documents'] { --card-ink: var(--color-documents); --card-tint: var(--color-documents-subtle); }
+.tool-card[data-accent='documents'] { --card-ink: var(--color-documents); }
 .tool-card[data-accent='split'],
-.tool-card[data-accent='audio']     { --card-ink: var(--color-audio); --card-tint: var(--color-audio-subtle); }
+.tool-card[data-accent='audio']     { --card-ink: var(--color-audio); }
 .tool-card[data-accent='rotate'],
-.tool-card[data-accent='textdata']  { --card-ink: var(--color-textdata); --card-tint: var(--color-textdata-subtle); }
-.tool-card[data-accent='delete']    { --card-ink: var(--color-danger); --card-tint: var(--color-danger-subtle); }
-.tool-card[data-accent='images']    { --card-ink: var(--color-images); --card-tint: var(--color-images-subtle); }
+.tool-card[data-accent='textdata']  { --card-ink: var(--color-textdata); }
+.tool-card[data-accent='delete']    { --card-ink: var(--color-danger); }
+.tool-card[data-accent='images']    { --card-ink: var(--color-images); }
 
 .tool-card:hover,
-.tool-card:has(.tool-card__link:focus-visible) {
+.tool-card:focus-visible {
   border-color: var(--card-ink, var(--color-border));
   box-shadow: var(--shadow-clay-lift);
+  color: var(--color-text);
   transform: translateY(calc(var(--space-1) * -0.5));
-}
-
-.tool-card__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  width: 100%;
-}
-
-.tool-card__meta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.tool-card__group {
-  color: var(--card-ink, var(--color-accent-strong));
-  font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
 }
 
 .tool-card__body {
@@ -144,79 +119,56 @@
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-snug);
   line-height: var(--leading-snug);
-  margin: 0;
-}
-
-.tool-card__link {
   color: var(--color-text);
-  text-decoration: none;
-}
-
-.tool-card__link::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-}
-
-.tool-card__link:focus-visible {
-  outline: none;
-}
-
-.tool-card:has(.tool-card__link:focus-visible) {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--focus-offset);
 }
 
 .tool-card__blurb {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
-  margin: 0;
 }
 
-.tool-card__action {
-  display: inline-flex;
+.tool-card__foot {
+  display: flex;
   align-items: center;
-  gap: var(--space-1);
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
   margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.tool-card__group {
   color: var(--card-ink, var(--color-accent-strong));
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
 }
 
-.tool-card__action svg {
-  width: var(--space-4);
-  height: var(--space-4);
-  transition: transform var(--duration-fast) var(--ease-out);
+.tool-card__arrow {
+  display: inline-flex;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-card:hover .tool-card__action svg {
+.tool-card__arrow svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.tool-card:hover .tool-card__arrow,
+.tool-card:focus-visible .tool-card__arrow {
+  color: var(--card-ink, var(--color-accent-strong));
   transform: translateX(var(--space-1));
 }
 
 @media (max-width: 40rem) {
-  .tool-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-
-  .tool-card {
-    padding: var(--space-5);
-  }
-
-  .tool-search__kbd {
-    display: none;
-  }
-
-  .tool-search__input {
-    padding-right: var(--space-4);
-  }
+  .tool-grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  .tool-card { padding: var(--space-5); }
+  .tool-search__kbd { display: none; }
+  .tool-search__input { padding-right: var(--space-4); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .tool-card:hover,
-  .tool-card:has(.tool-card__link:focus-visible) {
-    transform: none;
-  }
+  .tool-card:focus-visible { transform: none; }
 }
