@@ -1,69 +1,77 @@
 # 11 — Brand assets
 
-The mark is the supplied drawer/document logo (Adobe Illustrator export, 72 × 72). It is the
-product's one symbol: an open drawer seen from the front. The wordmark is set in the system serif
-already used for display type, so the site and the exported lockups share one voice.
+The mark is the supplied open-drawer artwork (`Logo.svg`, 4 paths), normalized into a `72 × 72`
+viewBox (`translate(3.6 8.3) scale(0.90)`) with the drawer tray shifted `+1.1` units down so the
+tray-to-drawer gap stays a crisp `3.35` units from `16 px` to `512 px`.
 
-Source of truth: `public/brand/master-logo.svg` (the original export, unchanged).
+Both the wordmark and the site use **one single sans-serif font family**
+(`-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`) — no
+serif font pairing.
+
+**No-container rule:** The mark is always freestanding. Never wrap it inside a red or coloured
+box, tile, or badge in lockups, headers, or app icons.
+
+Source of truth: `public/brand/master-logo.svg` (normalized 4-path geometry, no fill).
 
 ## Files
 
 | File | What it is | Use |
 | --- | --- | --- |
-| `master-logo.svg` | Original export, 72 × 72 paths, no fill | Archive only; never reference it from a page |
-| `mark-ink.svg` | Mark in ink `#17150F` | Default mark on paper or white |
-| `mark-red.svg` | Mark in proofing red `#BF3A14` | Accent moment, favicon, app icon |
-| `mark-paper.svg` | Mark in paper `#FFFDF8` | On ink or red grounds |
-| `lockup-ink.svg` | Mark + wordmark, ink | Header, documents, signatures |
-| `lockup-red.svg` | Mark + wordmark, red | Accent lockups, social cards |
-| `lockup-paper.svg` | Mark + wordmark, paper | On ink or red grounds |
-| `favicon.svg` | Red mark on transparent, 72 × 72 | Browser tab |
-| `apple-touch-icon.png` | 180 × 180, paper ground | iOS home screen |
-| `icon-512.png` | 512 × 512, red ground | App icon / social avatar |
-| `og.png` | 1200 × 630 social card | Open Graph and Twitter/X |
+| `master-logo.svg` | Normalized 4-path archive source, 72 × 72, no fill | Archive only; never reference from a page |
+| `mark-color.svg` | Primary freestanding 3-tone mark (`#16140f` ink, `#fffdf8` sheet, `#b83510` rules) | Header, cards, and light surfaces |
+| `mark-ink.svg` | Single-ink cutout in `#16140f` (no sheet `<rect>`) | Monochrome light grounds |
+| `mark-red.svg` | Single-ink cutout in `#b83510` (no sheet `<rect>`) | Monochrome vermilion accent use |
+| `mark-paper.svg` | Single-ink cutout in `#fffdf8` (no sheet `<rect>`) | Dark ink or vermilion grounds |
+| `lockup-color.svg` | Freestanding 3-tone mark + `#16140f` sans-serif wordmark (`372 × 72`) | Primary horizontal lockup |
+| `lockup-ink.svg` | Monochrome `#16140f` mark + wordmark (`372 × 72`) | Monochrome documents, signatures |
+| `lockup-red.svg` | Monochrome `#b83510` mark + wordmark (`372 × 72`) | Accent lockups |
+| `lockup-paper.svg` | Monochrome `#fffdf8` mark + wordmark (`372 × 72`) | Dark ink or vermilion grounds |
+| `favicon.svg` | `mark-color.svg` with dark-mode `@media` CSS (`.od-ink` -> `#f4f0e8`, `.od-rule` -> `#e05a33`) | Browser tabs in light and dark OS chrome |
+| `apple-touch-icon.png` | `180 × 180` sunlit `#fcfaf6` clay ground, freestanding `mark-color.svg` at ~68% | iOS home screen |
+| `icon-512.png` | `512 × 512` sunlit `#fcfaf6` clay ground, freestanding `mark-color.svg` at ~68% | App icon and social avatar |
+| `og.png` | `1200 × 630` sculpted light-clay card on `#f4f0e8` ground with `#b83510` top rule | Open Graph and social previews |
 
 ## Which colour on which ground
 
 | Ground | Mark / lockup | Contrast |
 | --- | --- | --- |
-| Paper `#F3EFE6` | ink | 15.9:1 |
-| Surface `#FBF8F2` | ink | 17.2:1 |
-| Paper `#F3EFE6` | red | 4.8:1 (graphic, passes 3:1) |
-| Proofing red `#BF3A14` | paper | 5.5:1 |
-| Ink `#17150F` | paper | 15.9:1 |
-| Photography or a busy colour | paper lockup over a 40 % ink scrim, or do not place it | verify 3:1 |
+| Warm clay `#f4f0e8` | `mark-color.svg` / `lockup-color.svg` / ink `#16140f` | 16.0:1 |
+| Elevated clay surface `#fcfaf6` | `mark-color.svg` / `lockup-color.svg` / ink `#16140f` | 17.5:1 |
+| Crisp sheet `#fffdf8` | Proofing vermilion `#b83510` rules | 5.7:1 (passes text & graphic) |
+| Warm clay `#f4f0e8` | Proofing vermilion `#b83510` | 5.1:1 |
+| Ink `#16140f` | Paper `#fffdf8` | 17.9:1 |
+| Photography or a busy colour | `lockup-paper.svg` over a 40% ink scrim, or do not place it | verify >= 3:1 |
 
-Never place the red mark on the warning tint, the success tint or a category tint: the mark is a
-logo, not body text, and those combinations fall below 3:1.
+Never place the vermilion mark on warning, success, or category tints; those combinations fall
+below 3:1 contrast.
 
 ## Clear space and minimum sizes
 
-- **Clear space:** one drawer-handle height on every side — 18 units of the 72-unit box
-  (0.25 × the mark height). Nothing enters it: no type, rules, buttons or image edges.
-- **Minimum mark:** 16 px (favicon), 24 px inside the tile in interface. The header tile is
-  40 px with a 24 px glyph; the wordmark is 26 px.
-- **Minimum lockup:** 140 px wide; below that use the mark alone.
-- **Lockup spacing is fixed:** wordmark starts 20 units after the mark (92 of 372). Do not tighten
-  or loosen it.
+- **Clear space:** one drawer-handle height on every side — `18` units of the `72`-unit box
+  (`0.25 ×` the mark height). Nothing enters it: no type, rules, buttons, or image edges.
+- **Minimum mark:** `16 px` (`favicon.svg`), `24 px–36 px` freestanding in the interface header.
+- **Minimum lockup:** `140 px` wide; below that use the mark alone.
+- **Lockup spacing is fixed:** the sans-serif `OpenDrawer` wordmark starts at `x=92` (`20` units
+  after the `72`-unit mark in `viewBox="0 0 372 72"`). Do not tighten or loosen it.
 
 ## Do not
 
-- Rotate, skew, stretch or outline the mark.
-- Recolour it outside ink, paper and proofing red.
-- Add a shadow, gradient, glow or stroke.
-- Put it on a photograph without a scrim.
-- Rebuild the wordmark in another typeface for the site; the serif is part of the identity.
-- Reference `master-logo.svg` from a page — it has no fill and renders black.
+- Wrap the mark in a coloured box, tile, or container in headers, lockups, or app icons.
+- Rotate, skew, stretch, or outline the mark.
+- Recolour it outside `#16140f`, `#fffdf8`, `#f4f0e8`, and `#b83510` (plus `#e05a33` in dark-chrome
+  `favicon.svg`).
+- Add a drop shadow, neon glow, or serif font pairing.
+- Reference `master-logo.svg` from a page — it has no fill and renders flat black.
 
 ## In the site
 
-- Header: `mark-paper.svg` inside a proofing-red tile, then the wordmark as live text
-  (`--font-display`). This stays crisp and accessible at any zoom.
-- `Base.astro`: favicon, Apple touch icon and Open Graph image are linked for every route.
-- Social preview text is the page title and description; the card is `og.png`.
+- Header: freestanding `mark-color.svg` beside the `OpenDrawer` wordmark directly on the surface
+  (no box container around the mark).
+- `Base.astro`: `favicon.svg`, `apple-touch-icon.png`, and `og.png` are linked for every route.
 
 ## Regenerating the PNGs
 
-The PNGs are rendered from HTML with the site's own colours and type, at 1× for icons and
-1200 × 630 for the social card. Re-run the export whenever the mark, the palette or the tagline
-changes, and commit the new PNGs with the SVGs. Do not edit the PNGs by hand.
+Run `node scripts/build-brand.mjs` whenever `mark-color.svg`, the palette, or the OG copy changes.
+The script uses Playwright Chromium (`@playwright/test`) to render `apple-touch-icon.png` (`180 × 180`),
+`icon-512.png` (`512 × 512`), and `og.png` (`1200 × 630`) directly from `public/brand/mark-color.svg`.
+Commit the regenerated PNGs alongside the script and SVG changes; do not edit the PNGs by hand.
