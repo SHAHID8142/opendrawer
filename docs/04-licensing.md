@@ -16,6 +16,9 @@ needs-verification / rejected.
 | Vite | build | MIT | approved | — |
 | pdf-lib | structure edits, forms, creation | MIT | approved | 1.17.1; maintenance has slowed, so wrap it behind `engines/pdfLib.ts` to allow replacement |
 | PDF.js (`pdfjs-dist`) | rendering, text extraction | Apache-2.0 | approved | Mozilla; actively maintained; the engine behind Firefox's viewer |
+| Tesseract.js | OCR worker API | Apache-2.0 | approved | 7.0.0; worker, cores and English data are self-hosted from `/ocr/` |
+| tesseract.js-core | OCR WebAssembly | Apache-2.0 | approved | 6.1.2; three LSTM cores copied by `scripts/copy-ocr-assets.mjs` |
+| `@tesseract.js-data/eng` | English traineddata | MIT package / Apache-2.0 data | approved | 4.0.0_best_int, 2.8 MB gzip, served from this site; no CDN |
 | jsPDF | text/Markdown → PDF | MIT | approved | Generation only; weak layout engine |
 | pdfmake | alternative layout engine | MIT | needs-verification | Only if jsPDF proves too limited |
 | qpdf (via `qpdf-run` or `@lipoe/browser-qpdf`) | encryption, decryption, repair, lossless optimisation | Apache-2.0 (qpdf); wrapper licences vary (MIT/ISC/Apache-2.0) | approved | ~2.1 MB WASM; verify the wrapper you pick and record its version |

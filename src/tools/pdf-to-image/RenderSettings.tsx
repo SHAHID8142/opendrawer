@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Output format, resolution, and page-range controls for PDF to image.
-import { DPI_CHOICES, type ImageFormat } from './render';
+import { FORMATS, FORMAT_ORDER, type ImageFormat } from './formats';
+import { DPI_CHOICES } from './render';
 
 export interface RenderSettingsProps {
   format: ImageFormat;
@@ -10,6 +11,7 @@ export interface RenderSettingsProps {
   disabled: boolean;
   hasFile: boolean;
   busy: boolean;
+  availableFormats: Record<ImageFormat, boolean>;
   onFormatChange: (value: ImageFormat) => void;
   onDpiChange: (value: number) => void;
   onRangeChange: (value: string) => void;
@@ -24,6 +26,7 @@ export function RenderSettings({
   disabled,
   hasFile,
   busy,
+  availableFormats,
   onFormatChange,
   onDpiChange,
   onRangeChange,
@@ -43,10 +46,17 @@ export function RenderSettings({
               id="render-format"
               className="input"
               value={format}
-              onChange={(event) => onFormatChange(event.target.value === 'jpeg' ? 'jpeg' : 'png')}
+              onChange={(event) => {
+                const next = event.target.value as ImageFormat;
+                if (next in FORMATS) onFormatChange(next);
+              }}
             >
-              <option value="png">PNG (lossless, larger)</option>
-              <option value="jpeg">JPEG (smaller, slight loss)</option>
+              {FORMAT_ORDER.map((value) => (
+                <option key={value} value={value} disabled={!availableFormats[value]}>
+                  {FORMATS[value].label}
+                  {availableFormats[value] ? '' : ' — not supported here'}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -95,7 +105,10 @@ export function RenderSettings({
           </div>
         </div>
 
-        <p className="muted">PNG at 150 DPI suits most screens; 300 DPI is for printing.</p>
+        <p className="muted">
+          PNG at 150 DPI suits most screens; WebP is smaller for the web, and 300 DPI is for
+          printing.
+        </p>
 
         {hasFile && !busy && (
           <div className="drop-bar__actions">

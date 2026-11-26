@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Pure PDF-to-image rendering engine with range validation and abort support.
 import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+import {
+  FORMATS,
+  detectFormats,
+  imageFileName,
+  type ImageFormat,
+} from './formats';
 
 export { validatePageRangeSyntax };
-export type ImageFormat = 'png' | 'jpeg';
+export type { ImageFormat };
 
 export interface RenderOptions {
   format: ImageFormat;
@@ -34,7 +40,9 @@ function throwIfAborted(signal?: AbortSignal): void {
   if (signal?.aborted) throw new DOMException('Rendering was cancelled.', 'AbortError');
 }
 
-function canvasToBytes(canvas: HTMLCanvasElement, format: ImageFormat, quality: number): Promise<Uint8Array> {
+const QUALITY: Record<ImageFormat, number> = { png: 1, jpeg: 0.92, webp: 0.9, avif: 0.8 };
+
+function canvasToBytes(canvas: HTMLCanvasElement, format: ImageFormat): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
@@ -47,8 +55,8 @@ function canvasToBytes(canvas: HTMLCanvasElement, format: ImageFormat, quality: 
           .then((buffer) => resolve(new Uint8Array(buffer)))
           .catch(() => reject(new Error('The rendered image could not be read back.')));
       },
-      format === 'png' ? 'image/png' : 'image/jpeg',
-      quality,
+      FORMATS[format].mime,
+      QUALITY[format],
     );
   });
 }
@@ -65,6 +73,11 @@ export async function renderPdfToImages(
   signal?: AbortSignal,
 ): Promise<RenderSummary> {
   throwIfAborted(signal);
+  if (!detectFormats()[options.format]) {
+    throw new Error(
+      `This browser cannot encode ${FORMATS[options.format].label.split(' (')[0]}. Choose PNG or JPEG instead.`,
+    );
+  }
   // Loaded on demand: PDF.js is about a megabyte, and only this tool needs it.
   const pdfjs = await import('pdfjs-dist');
   const workerModule = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
@@ -100,7 +113,6 @@ export async function renderPdfToImages(
 
     onProgress(0, pages.length);
     const scale = options.dpi / 72;
-    const extension = options.format === 'png' ? 'png' : 'jpg';
     const files: RenderedFile[] = [];
     const baseName = safeBaseName(file.name);
     let totalBytes = 0;
@@ -124,14 +136,14 @@ export async function renderPdfToImages(
         const context = canvas.getContext('2d');
         if (!context) throw new Error('This browser did not provide a drawing surface for the page.');
         // JPEG has no transparency, so paint the page white first instead of letting it go black.
-        if (options.format === 'jpeg') {
+        if (FORMATS[options.format].needsWhiteBackground) {
           context.fillStyle = 'white';
           context.fillRect(0, 0, canvas.width, canvas.height);
         }
         await page.render({ canvas, canvasContext: context, viewport }).promise;
         throwIfAborted(signal);
-        const bytes = await canvasToBytes(canvas, options.format, options.format === 'jpeg' ? 0.92 : 1);
-        files.push({ name: `${baseName}-page-${String(pageNumber).padStart(3, '0')}.${extension}`, bytes });
+        const bytes = await canvasToBytes(canvas, options.format);
+        files.push({ name: imageFileName(baseName, pageNumber, options.format), bytes });
         totalBytes += bytes.length;
         onProgress(index + 1, pages.length);
       } finally {

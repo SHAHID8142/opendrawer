@@ -5,12 +5,12 @@ import { FileDrop } from '../../components/FileDrop';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { zipStore } from '../../lib/zip';
+import { FORMATS, detectFormats, type ImageFormat } from './formats';
 import { RenderSettings } from './RenderSettings';
 import { ResultView } from './ResultView';
 import {
   renderPdfToImages,
   validatePageRangeSyntax,
-  type ImageFormat,
   type RenderOptions,
   type RenderSummary,
 } from './render';
@@ -29,6 +29,12 @@ export default function Tool() {
   const [result, setResult] = useState<RenderSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [availableFormats, setAvailableFormats] = useState<Record<ImageFormat, boolean>>({
+    png: true,
+    jpeg: true,
+    webp: false,
+    avif: false,
+  });
 
   const abortRef = useRef<AbortController | null>(null);
   const lastMilestoneRef = useRef(-1);
@@ -36,6 +42,7 @@ export default function Tool() {
   optionsRef.current = { format, dpi, range };
 
   useEffect(() => {
+    setAvailableFormats(detectFormats());
     setReady(true);
     return () => abortRef.current?.abort();
   }, []);
@@ -126,8 +133,7 @@ export default function Tool() {
     if (!result) return;
     if (result.files.length === 1 && result.files[0]) {
       const only = result.files[0];
-      const mime = result.format === 'png' ? 'image/png' : 'image/jpeg';
-      downloadBlob(bytesToBlob(only.bytes, mime), only.name);
+      downloadBlob(bytesToBlob(only.bytes, FORMATS[result.format].mime), only.name);
       return;
     }
     downloadBlob(zipStore(result.files), `${result.baseName}-images.zip`);
@@ -160,6 +166,7 @@ export default function Tool() {
         disabled={!usable}
         hasFile={Boolean(file)}
         busy={busy}
+        availableFormats={availableFormats}
         onFormatChange={setFormat}
         onDpiChange={setDpi}
         onRangeChange={setRange}

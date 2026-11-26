@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { readFileSync } from 'node:fs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -590,6 +591,54 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('report-with-image.pdf');
+  });
+
+  test('refuses more than 20 OCR pages and serves the OCR assets itself', async ({ page, request }) => {
+    await page.goto('/tools/ocr-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#ocr-input').setInputFiles({
+      name: 'long.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(21),
+    });
+    await page.fill('#ocr-range', '1-21');
+    await expect(page.getByText(/OCR stops at 20 pages/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Read the text (OCR)' })).toBeDisabled();
+
+    expect((await request.get('/ocr/worker.min.js')).status()).toBe(200);
+    expect((await request.get('/ocr/core/tesseract-core-simd-lstm.wasm')).status()).toBe(200);
+    expect((await request.get('/ocr/lang/eng.traineddata.gz')).status()).toBe(200);
+  });
+
+  test('renders a page as WebP and disables unsupported formats', async ({ page }) => {
+    await page.goto('/tools/pdf-to-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+
+    const avifSupported = await page.evaluate(() =>
+      document.createElement('canvas').toDataURL('image/avif').startsWith('data:image/avif'),
+    );
+    expect(await page.locator('#render-format option[value="avif"]').isDisabled()).toBe(
+      !avifSupported,
+    );
+
+    await page.selectOption('#render-format', 'webp');
+    await page.selectOption('#render-dpi', '72');
+    await page.fill('#render-range', '1');
+    await page.locator('#render-file').setInputFiles({
+      name: 'one-page.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(1),
+    });
+    await expect(page.getByRole('status')).toContainText('1 page rendered', { timeout: 60_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: /Download the WEBP/ }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('one-page-page-001.webp');
+    const path = await saved.path();
+    const bytes = readFileSync(path!);
+    expect(bytes.subarray(0, 4).toString('latin1')).toBe('RIFF');
+    expect(bytes.subarray(8, 12).toString('latin1')).toBe('WEBP');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

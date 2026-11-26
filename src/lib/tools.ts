@@ -245,6 +245,17 @@ export const tools: ToolEntry[] = [
       'Place a PNG or JPEG in a corner or the centre of chosen pages, with a set width, margin and opacity.',
     status: 'live',
   },
+  {
+    id: 'ocr-pdf',
+    name: 'OCR PDF',
+    category: 'Documents',
+    group: 'Convert',
+    accent: 'convert',
+    short: 'Read scans as text.',
+    blurb:
+      'Read scanned pages with a self-hosted OCR engine and download the recognised text as a .txt file.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

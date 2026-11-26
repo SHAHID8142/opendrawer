@@ -17,8 +17,9 @@ This file must be updated in the same commit that adds or upgrades a dependency.
 | qpdf (WebAssembly build) | 12.x | Apache-2.0 | https://github.com/qpdf/qpdf | Encryption, decryption, repair, lossless optimisation |
 | qpdf browser wrapper | pinned | MIT / ISC / Apache-2.0 (verify) | `qpdf-run` or `@lipoe/browser-qpdf` | Loading the qpdf WASM build |
 | Ghostscript (WebAssembly build) | pinned | **AGPL-3.0** | https://ghostscript.com | Strong compression, image downsampling |
-| Tesseract.js | 6.x | Apache-2.0 | https://github.com/naptha/tesseract.js | OCR |
-| Tesseract `tessdata` language packs | pinned | Apache-2.0 | https://github.com/tesseract-ocr/tessdata | OCR languages (self-hosted) |
+| Tesseract.js | 7.0.0 | Apache-2.0 | https://github.com/naptha/tesseract.js | OCR worker API |
+| tesseract.js-core | 6.1.2 | Apache-2.0 | https://github.com/naptha/tesseract.js-core | OCR WebAssembly cores, self-hosted under `/ocr/core/` |
+| Tesseract `tessdata` language packs | 4.0.0_best_int (eng) | Apache-2.0 | https://github.com/tesseract-ocr/tessdata_best | English OCR model, self-hosted under `/ocr/lang/` |
 | `docx` | 9.x | MIT | https://github.com/dolanmiu/docx | PDF → Word reconstruction |
 | Noto Sans family (incl. Devanagari, Arabic) | pinned | SIL OFL 1.1 | https://fonts.google.com/noto | Embedded fonts for non-Latin text |
 | i18next | 25.x | MIT | https://www.i18next.com | Translations (phase 3) |

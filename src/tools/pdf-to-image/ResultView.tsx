@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { bytesToBlob } from '../../lib/blob';
 import { formatBytes } from '../../lib/format';
+import { FORMATS } from './formats';
 import type { RenderSummary } from './render';
 
 export interface ResultViewProps {
@@ -19,7 +20,7 @@ export function ResultView({ result, onDownload }: ResultViewProps) {
       setPreviewUrl(null);
       return;
     }
-    const mime = result.format === 'png' ? 'image/png' : 'image/jpeg';
+    const mime = FORMATS[result.format].mime;
     const url = URL.createObjectURL(bytesToBlob(firstFile.bytes, mime));
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
