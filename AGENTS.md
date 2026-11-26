@@ -88,7 +88,8 @@ Rules:
 - Any tool touching more than ~5 MB of data must run in a Worker.
 - Release decoded buffers explicitly (`canvas.width = 0`, drop references) and process one page
   at a time. Memory, not file size, is the real limit.
-- Register the tool in `src/tools/registry.ts` only. Do not hand-wire routes.
+- Register the tool in `src/lib/tools.ts` only. Do not hand-wire routes. Categories and scope
+  rules live in `docs/10-scope-and-taxonomy.md`.
 
 ## 4. Definition of done for any tool
 

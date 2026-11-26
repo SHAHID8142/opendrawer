@@ -2,9 +2,10 @@
 
 **One open drawer. Every document tool you need. Free forever, nothing uploaded.**
 
-OpenDrawer is a free, open-source web app for the portable-document jobs people face every day:
-compress a PDF so a job portal accepts it, merge a bundle of receipts, fix a sideways scan,
-sign a form, make a scan searchable, turn photos into one document.
+OpenDrawer is a free, open-source web app for the small file and data jobs of daily life: compress
+a PDF so a job portal accepts it, merge a bundle of receipts, turn pages into images, convert a
+photo, check a unit, split a date range. Documents came first; more categories are added one
+finished tool at a time.
 
 Every tool runs **inside the visitor's browser**. Files are never uploaded, there is no account,
 no advertising, no payment, no file-size limit and no daily cap. Turn off the internet after the
@@ -70,6 +71,7 @@ docs/06-roadmap.md              three delivery waves with acceptance criteria
 docs/07-setup-and-tooling.md    developer setup, MCP + skills installation, verification
 docs/08-phase1-build-plan.md    ordered build tasks for phase 1, with proof of done
 docs/09-ui-ux-design-system.md  principles, laws (corrected), tokens, components, a11y gates
+docs/10-scope-and-taxonomy.md   categories, deliberate exclusions, how to add a tool
 ```
 
 Read in this order: `01-product-plan` → `02-tool-catalog` → `03-architecture` →
