@@ -279,4 +279,15 @@ export const tools: ToolEntry[] = [
       'Read and rewrite the title, author, subject and keywords viewers show in Document properties.',
     status: 'live',
   },
+  {
+    id: 'split-by-bookmarks',
+    name: 'Split by bookmarks',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    short: 'One file per chapter.',
+    blurb:
+      'Turn each top-level bookmark into its own PDF and download the sections as a ZIP.',
+    status: 'live',
+  },
 ];

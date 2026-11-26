@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFString, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks'];
 
 async function createPdf(
   pageCount: number,
@@ -55,6 +55,39 @@ function makePng(size: number): Buffer {
     pngChunk('IDAT', deflateSync(raw)),
     pngChunk('IEND', Buffer.alloc(0)),
   ]);
+}
+
+
+async function makeBookmarkedPdf(pages: number, marks: { title: string; page: number }[]) {
+  const pdf = await PDFDocument.create();
+  for (let index = 0; index < pages; index += 1) {
+    const page = pdf.addPage([300, 400]);
+    page.drawText(`Page ${index + 1}`, { x: 30, y: 360, size: 12 });
+  }
+  const context = pdf.context;
+  const pageRefs = pdf.getPages().map((page) => page.ref);
+  const outlinesRef = context.nextRef();
+  const itemRefs = marks.map(() => context.nextRef());
+  marks.forEach((mark, index) => {
+    const dict = context.obj({
+      Title: PDFString.of(mark.title),
+      Parent: outlinesRef,
+      Dest: context.obj([pageRefs[mark.page - 1]!, PDFName.of('Fit')]),
+    });
+    if (index + 1 < marks.length) dict.set(PDFName.of('Next'), itemRefs[index + 1]!);
+    context.assign(itemRefs[index]!, dict);
+  });
+  context.assign(
+    outlinesRef,
+    context.obj({
+      Type: 'Outlines',
+      First: itemRefs[0]!,
+      Last: itemRefs[itemRefs.length - 1]!,
+      Count: marks.length,
+    }),
+  );
+  pdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+  return Buffer.from(await pdf.save());
 }
 
 async function assertNoHorizontalOverflow(page: Page, context: string): Promise<void> {
@@ -651,6 +684,29 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('splits a PDF at its top-level bookmarks', async ({ page }) => {
+    const bookmarked = await makeBookmarkedPdf(5, [
+      { title: 'Introduction', page: 1 },
+      { title: 'Methods', page: 3 },
+    ]);
+
+    await page.goto('/tools/split-by-bookmarks');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#bookmarks-input').setInputFiles({
+      name: 'paper.pdf',
+      mimeType: 'application/pdf',
+      buffer: bookmarked,
+    });
+    await expect(page.getByRole('status')).toContainText('Found 2 bookmarks');
+    await page.getByRole('button', { name: 'Split at the bookmarks' }).click();
+    await expect(page.getByRole('status')).toContainText('Made 2 sections', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the ZIP' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('paper-bookmarks.zip');
   });
 
   test('edits the document title and downloads the updated PDF', async ({ page }) => {

@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/split-by-bookmarks/Tool';
+
+const title = 'Split a PDF by its bookmarks';
+const description =
+  'Turn each top-level bookmark into its own PDF, zipped for download. The outline is read in your browser and nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Split by bookmarks',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Which bookmarks are used?',
+    answer:
+      'Top-level outline entries that point directly at a page. Nested entries and bookmarks that rely on named destinations are skipped, and the tool tells you how many.',
+  },
+  {
+    question: 'How are the page ranges decided?',
+    answer:
+      'A section runs from its bookmark page to the page before the next bookmark. Pages before the first bookmark become a Front matter file.',
+  },
+  {
+    question: 'Are the new files still bookmarked?',
+    answer:
+      'No. The pages are copied into new documents, so links, forms, annotations and the outline are not carried across.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="split-by-bookmarks"
+      breadcrumbLabel="Split by bookmarks"
+      heading="Split a PDF by its bookmarks"
+      lead="One file per chapter, using the outline the document already has. Front matter is kept as its own section."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'Only top-level bookmarks with a direct page target are used; nested levels are ignored.',
+            'Named destinations and bookmarks without a destination are skipped.',
+            'The new files lose links, forms, annotations and their original bookmarks.',
+            'It stops at 100 sections. Use Split PDF when the outline is unusable.',
+            'Digital signatures stop being valid; password-protected PDFs are refused.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools current="split-by-bookmarks" />
+      </aside>
+    </div>
+  </div>
+</Base>

@@ -54,3 +54,18 @@
   border-radius: var(--radius-sm);
   background: var(--color-surface);
 }
+
+/* Bookmark and section lists: name on the left, page or size on the right. */
+.bookmark-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.bookmark-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
