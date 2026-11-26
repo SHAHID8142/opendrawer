@@ -14,7 +14,6 @@ export interface RenderSettingsProps {
   onDpiChange: (value: number) => void;
   onRangeChange: (value: string) => void;
   onRerender: () => void;
-  onClear: () => void;
 }
 
 export function RenderSettings({
@@ -29,7 +28,6 @@ export function RenderSettings({
   onDpiChange,
   onRangeChange,
   onRerender,
-  onClear,
 }: RenderSettingsProps) {
   return (
     <div className="card">
@@ -108,9 +106,6 @@ export function RenderSettings({
               onClick={onRerender}
             >
               Render again
-            </button>
-            <button type="button" className="btn btn--ghost" onClick={onClear}>
-              Clear
             </button>
           </div>
         )}

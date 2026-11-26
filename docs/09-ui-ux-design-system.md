@@ -4,7 +4,7 @@ The interface rules for OpenDrawer, plus the process that keeps them true. Every
 either **measurable** (a tool can fail it) or **explicitly labelled as judgement** — never dressed
 up as a law.
 
-> Status: proposed for phase 1. It is a design contract, not a description of shipped UI.
+> Status: active phase 1 design contract, kept in sync with `src/styles/` and `scripts/gates/`.
 
 ---
 
@@ -93,8 +93,9 @@ can exist.
 
 **Spacing** — 4 px base, `--space-1…--space-12` (4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96).
 
-**Type** — local families only (no web fonts: they cost bandwidth and make requests). A system
-serif for display headings, a system sans for interface text, mono for numerals and metadata:
+**Type** — local families only (no web fonts: they cost bandwidth and make requests). A **single
+unified sans-serif family** (`--font-sans` = `--font-display` = `--font-mono`) serves display
+headings, interface copy, code chips, and `tabular-nums` metadata:
 
 | Token | Size | Use |
 | --- | --- | --- |
@@ -104,20 +105,27 @@ serif for display headings, a system sans for interface text, mono for numerals 
 | `--text-lg` | 18 | lead paragraph, card title |
 | `--text-xl` / `--text-2xl` | 21 / 26 | section heading |
 | `--text-3xl` / `--text-4xl` | 32 / 40 | page title |
-| `--text-hero` | clamp 34–56 | home hero only |
+| `--text-display` | clamp 34–52 | home hero display heading |
 
-**Colour** — a print-room palette: warm paper surfaces, near-black ink, one proofing-red accent,
-and a separate ink per category. Semantic states:
+**Colour** — bright, clean, white-based porcelain claymorphism: a subtle multi-radial atmospheric
+`--bg-gradient` over a `#fafcff` ground, elevated `#ffffff` clay surfaces, crisp slate ink, one
+primary vermilion clay accent (`--color-accent`), and distinct category/service inks (`documents`,
+`inspect`, `convert`, `images`, `audio`, `textdata`, `everyday`) paired with `*-subtle` tints:
 
-- Body text on background ≥ **7:1**; secondary text ≥ **4.5:1**; large text ≥ **3:1**; borders and
-  focus rings ≥ **3:1**.
-- Accent marks the primary action and focus only; it is never the only signal of a state.
-- Semantic: success, warning, danger — each with an icon or a word, never colour alone.
-- Tinted surfaces (`*-subtle`) carry feedback; the chrome stays paper and ink.
+- Body text on background, surface, and subtle feedback surfaces ≥ **7:1**; secondary text ≥ **4.5:1**;
+  large text ≥ **3:1**; borders and focus rings ≥ **3:1**.
+- Accent marks the primary action and focus; distinct service colours orient tools and categories,
+  never serving as the sole signal of a state.
+- Semantic: success, warning, danger — each paired with a `*-subtle` tint, an icon, and plain words,
+  never colour alone.
+- Familiar universal icons (Jakob's Law — folded-corner PDF + magnifier, image frame, upload arrow,
+  and category glyphs) pair with each service's colour token.
 
-**Shape** — radii `4 / 6 / 10 / 14 / 20 / full`; **borders** carry edges (1 px subtle), shadows
-appear only on interaction or elevation, never as decoration. Motion uses `--duration-fast/base`
-with `--ease-out`; all of it collapses under `prefers-reduced-motion`.
+**Shape & depth** — tactile clay radii `6 / 10 / 14 / 20 / 28 / full` (`--radius-xs` to
+`--radius-full`); subtle 1 px borders paired with sculpted daylight clay shadows (`--shadow-clay`,
+`--shadow-clay-sm`, `--shadow-clay-inset`, `--shadow-clay-press`, `--shadow-clay-accent`, plus
+service clay shadows). Motion uses `--duration-fast/base` with `--ease-out`; all of it collapses
+under `prefers-reduced-motion`.
 
 ---
 
@@ -144,21 +152,21 @@ incomplete. Add a primitive only when a second screen needs it.
 | Primitive | Class / component | States |
 | --- | --- | --- |
 | Button | `.btn` + `--primary` / `--secondary` / `--ghost` / `--danger` | default, hover, focus-visible, active, disabled |
-| Drop zone | `.drop` / `FileDrop.tsx` | idle, drag-over, focus-within, disabled, hydration-pending |
-| Tool directory | `.tool-list` / `.tool-row` | default, hover/focus-within, narrow viewport |
+| Drop zone | `.drop`, `.drop-bar` / `FileDrop.tsx` | idle, drag-over, focus-within, working (`.drop-bar`), disabled, hydration-pending |
+| Tool directory | `.tool-list` / `.tool-row` / `ToolGlyph.astro` | default, service accent, hover/focus-within, narrow viewport |
 | Card | `.card` | default, heading scale, nested note |
 | Field | `.field`, `.input`, `.select`, `.textarea`, `.fieldset` | rest, hover, focus-visible, invalid, disabled |
-| Feedback | `.note--warning/danger/success`, `.status`, `.tag`, `.badge` | info, warning, danger, success, live status |
+| Feedback | `.note--warning/danger/success`, `.flag-list`/`.flag`, `.facts`, `.status`, `.badge` | info, warning, danger, success, live status |
 | Table | `.table-scroll` + `table` | normal, narrow viewport scroll |
-| Progress | `.progress` | determinate (text carries the count) |
-| File list | `.file-list` | one or many files |
+| Progress | `.progress` | determinate and indeterminate (text carries the count) |
+| Results & files | `.result-summary`, `.preview-frame`, `.file-disclosure`, `.file-list` | one file, multi-file with preview, >5 file disclosure |
 | Dialog | `.dialog` (native `<dialog>`) | open, backdrop, Escape close; no consumer yet |
 | Breadcrumb | `Breadcrumb.astro` | current page, mobile wrap |
-| Index rail | `.catalog`, `.cat`, `.cat__leader` | active category, counts, in-progress note |
+| Index rail | `.catalog`, `.cat`, `.cat__count` | active category, counts, in-progress note |
 | Colophon | `.colophon` | page-closing rule and metadata |
 
-Not yet built: toast, result panel with before/after size, side-by-side compare. Build them with
-the same token contract, not as one-off markup.
+Not yet built: toast, before/after size compare, side-by-side compare. Build them with the same
+token contract, not as one-off markup.
 
 ---
 
@@ -210,7 +218,8 @@ Automated tools catch roughly a third of issues; the report must not imply other
 | UI-G9 | content-in-HTML: built page fetched with JavaScript disabled | missing heading, description or limits text — the page only exists after hydration |
 | UI-G10 | file size over `src/` and `scripts/` | a file over 300 lines (target < 220) |
 
-Copy, typography and colour follow section 4: paper, ink, one red, serif display. The directory is
+Copy, typography and colour follow section 4: bright white-gradient porcelain canvas, crisp ink,
+unified sans-serif typography, and joyful distinct service/category clay accents. The directory is
 the primary surface; marketing sections are not part of the shell.
 
 Each gate needs a deliberately bad fixture proving it can fail — otherwise it is a wish, exactly

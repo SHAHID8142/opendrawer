@@ -48,12 +48,14 @@ and every commit builds and passes the gates on its own.
 | `npm run build` | Static build to `dist/` |
 | `npm run preview` | Serve the build |
 | `npm run check` | `astro check` — TypeScript and template diagnostics |
-| `npm run test:unit` | `node:test` suite (spellcheck engine), no DOM |
 | `npm run gate:tokens` | UI-G1: no raw colour, px font-size, ms duration or inline style |
 | `npm run gate:contrast` | UI-G2: token contrast pairs (light theme) |
 | `npm run gate:copy` | UI-G6: hype and placeholder copy |
 | `npm run gate:size` | UI-G10: source files under 300 lines |
 | `npm run gates` | Token, contrast, copy, size, build, then the Playwright UI gates |
+
+> Note: `npm run test:unit` (`node:test` engine suite, no DOM) is planned alongside Wave 1 tool
+> engines and is not yet wired in `package.json`.
 
 Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`. Two tools are live;
 `docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
@@ -119,7 +121,7 @@ file. Keep `AGENTS.md` at the repository root regardless — most agents read it
 
 ## 6. Local verification checklist (run before every release)
 
-1. `npm run gates && npm run test:unit && npm run check` — all green, real exit codes.
+1. `npm run check && npm run gates` — all green, real exit codes (add `npm run test:unit` once Wave 1 engine unit tests land).
 2. `npm run build && npm run preview`, then open each tool with a fixture.
 3. Open DevTools → Network → **Clear**, run a tool: no request may leave the origin.
 4. Set DevTools network to "Offline" after load, run the tool again: it must still work.

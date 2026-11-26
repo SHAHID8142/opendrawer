@@ -95,10 +95,12 @@ export function FileDrop({
     />
   );
 
-  if (selectedFile && !working) {
+  const barDisabled = disabled || working;
+
+  if (selectedFile) {
     return (
       <div
-        className={`drop-bar u-motion${over ? ' drop--over' : ''}${disabled ? ' drop--disabled' : ''}`}
+        className={`drop-bar u-motion${over ? ' drop--over' : ''}`}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -115,7 +117,7 @@ export function FileDrop({
           <button
             type="button"
             className="btn btn--secondary"
-            disabled={disabled}
+            disabled={barDisabled}
             onClick={() => inputRef.current?.click()}
           >
             Choose another
@@ -124,7 +126,7 @@ export function FileDrop({
             <button
               type="button"
               className="btn btn--ghost"
-              disabled={disabled}
+              disabled={barDisabled}
               onClick={onClear}
             >
               Clear
@@ -138,27 +140,27 @@ export function FileDrop({
 
   return (
     <div
-      className={`drop u-motion${over ? ' drop--over' : ''}${disabled ? ' drop--disabled' : ''}`}
+      className={`drop u-motion${over ? ' drop--over' : ''}${working ? ' drop--disabled' : ''}`}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <svg
-        className="drop__icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" />
-        <path d="M14 2v5h5" />
-        <path d="M12 18v-6" />
-        <path d="m9.5 14.5 2.5-2.5 2.5 2.5" />
-      </svg>
+      <span className="drop__icon" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" />
+          <path d="M14 2v5h5" />
+          <path d="M12 18v-7" />
+          <path d="m9.5 13.5 2.5-2.5 2.5 2.5" />
+        </svg>
+      </span>
       <p className="drop__title">{label}</p>
       <p className="drop__note">{hint}</p>
       <button

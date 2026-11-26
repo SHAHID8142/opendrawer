@@ -164,7 +164,6 @@ export default function Tool() {
         onDpiChange={setDpi}
         onRangeChange={setRange}
         onRerender={() => file && void run(file)}
-        onClear={clear}
       />
 
       <p className="status" role="status" aria-live="polite">
