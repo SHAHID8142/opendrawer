@@ -1,28 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
-import ToolGlyph, { type GlyphKind } from '../components/ToolGlyph.astro';
-import { liveTools, type ToolEntry } from '../lib/tools';
+import ToolCard from '../components/ToolCard.astro';
+import ToolGlyph from '../components/ToolGlyph.astro';
+import { categories, liveTools } from '../lib/tools';
 
-type FilterGroup = 'All' | ToolEntry['group'];
-
-const groupTabs: Array<{ id: FilterGroup; label: string; tone: string }> = [
-  { id: 'All', label: 'All PDF tools', tone: 'all' },
-  { id: 'Inspect', label: 'Inspect', tone: 'inspect' },
-  { id: 'Convert', label: 'Convert', tone: 'convert' },
-  { id: 'Create', label: 'Create', tone: 'create' },
-  { id: 'Organise', label: 'Organise', tone: 'organise' },
-];
-
-function groupCount(group: FilterGroup): number {
-  return group === 'All'
-    ? liveTools.length
-    : liveTools.filter((tool) => tool.group === group).length;
-}
+const grouped = categories.map((cat) => ({
+  ...cat,
+  items: liveTools.filter((tool) => tool.category === cat.id),
+}));
 ---
 
 <Base
   title="OpenDrawer — everyday file tools, kept on your device"
-  description="Free, open-source file tools built for public goodwill. Inspect, convert, create, merge, split and rotate PDFs inside your browser: offline after first load, zero accounts, zero tracking, zero uploads."
+  description="Free, open-source file tools built for public goodwill across documents, images, media, text and everyday utilities. Offline after first load, zero accounts, zero tracking, zero uploads."
 >
   <div class="stack-lg page-fill">
     <header class="page-head">
@@ -41,21 +31,27 @@ function groupCount(group: FilterGroup): number {
     </header>
 
     <div class="catalog">
-      <section class="catalog__main" id="tools" aria-labelledby="tools-heading">
-        <h2 id="tools-heading" class="sr-only">Document tools</h2>
-
-        <ul class="group-tabs" role="list" aria-label="Filter tools by task">
+      <section class="catalog__main" id="tools" aria-label="Tool directory">
+        <ul class="cat-tabs" role="list" aria-label="Tool categories">
+          <li>
+            <button type="button" class="cat-tab cat-tab--all" data-cat-filter="All" data-cat-summary="" aria-pressed="true">
+              <span>All tools</span>
+              <span class="cat-tab__count">{liveTools.length}</span>
+            </button>
+          </li>
           {
-            groupTabs.map(({ id, label, tone }) => (
+            grouped.map((cat) => (
               <li>
                 <button
                   type="button"
-                  class={`group-tab group-tab--${tone}`}
-                  data-group-filter={id}
-                  aria-pressed={id === 'All' ? 'true' : 'false'}
+                  class={`cat-tab cat-tab--${cat.tone}`}
+                  data-cat-filter={cat.id}
+                  data-cat-summary={cat.summary}
+                  aria-pressed="false"
                 >
-                  <span>{label}</span>
-                  <span class="group-tab__count">{groupCount(id)}</span>
+                  <ToolGlyph kind={cat.tone} tone={cat.tone} size="sm" />
+                  <span>{cat.id}</span>
+                  {cat.items.length > 0 && <span class="cat-tab__count">{cat.items.length}</span>}
                 </button>
               </li>
             ))
@@ -63,26 +59,16 @@ function groupCount(group: FilterGroup): number {
         </ul>
 
         <div class="tool-search">
-          <label class="sr-only" for="tool-filter">Search tools</label>
+          <label class="sr-only" for="tool-filter">Search all tools</label>
           <div class="tool-search__box">
-            <svg
-              class="tool-search__icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
+            <svg class="tool-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
             </svg>
             <input
               id="tool-filter"
               class="input tool-search__input"
               type="search"
-              placeholder="Search PDF tools, e.g. merge, split, or PNG"
+              placeholder="Search tools, e.g. PDF, merge, PNG"
               autocomplete="off"
               aria-describedby="tool-filter-count"
             />
@@ -93,51 +79,39 @@ function groupCount(group: FilterGroup): number {
           </p>
         </div>
 
-        <ul class="tool-grid" role="list" id="tool-list">
+        <div class="cat-sections" id="cat-sections">
           {
-            liveTools.map((tool) => (
-              <li
-                data-tool-item
-                data-group={tool.group}
-                data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}
-              >
-                <a
-                  class="tool-card"
-                  href={`/tools/${tool.id}`}
-                  data-category={tool.category}
-                  data-tool={tool.id}
-                  data-accent={tool.accent}
-                >
-                  <span class="tool-card__top">
-                    <ToolGlyph kind={tool.id as GlyphKind} tone={tool.accent} size="lg" />
-                    <span class="tool-card__group">{tool.group}</span>
-                  </span>
-                  <span class="tool-card__title">{tool.name}</span>
-                  <span class="tool-card__blurb">{tool.blurb}</span>
-                  <span class="tool-card__action">
-                    Open tool
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
-                    </svg>
-                  </span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+            grouped
+              .filter((cat) => cat.items.length > 0)
+              .map((cat) => (
+                <section class="cat-section" data-cat-section={cat.id} aria-labelledby={`cat-${cat.slug}`}>
+                  <header class="cat-section__head">
+                    <span class="cat-section__title">
+                      <ToolGlyph kind={cat.tone} tone={cat.tone} size="md" />
+                      <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
+                      <span class="badge">{cat.items.length} {cat.items.length === 1 ? 'tool' : 'tools'}</span>
+                    </span>
+                    <p class="cat-section__summary">{cat.summary}</p>
+                  </header>
 
-        <div id="tool-filter-empty" class="note" hidden>
-          <p>No tools match that filter.</p>
-          <p>
-            <button type="button" class="btn btn--secondary" id="tool-filter-reset">
-              Show all tools
-            </button>
-          </p>
+                  <ul class="tool-grid" role="list">
+                    {cat.items.map((tool) => <ToolCard tool={tool} fallbackIcon={cat.tone} />)}
+                  </ul>
+                </section>
+              ))
+          }
+        </div>
+
+        <div id="tool-filter-empty" class="empty-panel" hidden>
+          <h2 id="tool-empty-title">No tools match that filter</h2>
+          <p id="tool-empty-body">Try a different keyword or view every tool currently live.</p>
+          <button type="button" class="btn btn--secondary" id="tool-filter-reset">
+            Show all tools
+          </button>
         </div>
 
         <p class="catalog__foot">
-          Every tool is finished, tested and documented before the next one begins. Images, audio,
-          text and everyday utilities follow next.
+          Every tool is finished, tested and documented before the next one begins.
         </p>
       </section>
 
@@ -178,10 +152,13 @@ function groupCount(group: FilterGroup): number {
     const input = document.getElementById('tool-filter') as HTMLInputElement | null;
     const count = document.getElementById('tool-filter-count');
     const empty = document.getElementById('tool-filter-empty');
+    const emptyTitle = document.getElementById('tool-empty-title');
+    const emptyBody = document.getElementById('tool-empty-body');
     const reset = document.getElementById('tool-filter-reset');
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-cat-section]'));
     const items = Array.from(document.querySelectorAll<HTMLElement>('[data-tool-item]'));
-    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-group-filter]'));
-    let activeGroup = 'All';
+    const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-cat-filter]'));
+    let activeCategory = 'All';
 
     function applyFilter() {
       if (!input || !count || !empty) return;
@@ -189,37 +166,49 @@ function groupCount(group: FilterGroup): number {
       let visible = 0;
 
       for (const item of items) {
-        const haystack = item.dataset.search ?? '';
-        const itemGroup = item.dataset.group ?? '';
-        const groupMatch = activeGroup === 'All' || itemGroup === activeGroup;
-        const queryMatch = query === '' || haystack.includes(query);
-        const match = groupMatch && queryMatch;
+        const catMatch = activeCategory === 'All' || item.dataset.category === activeCategory;
+        const queryMatch = query === '' || (item.dataset.search ?? '').includes(query);
+        const match = catMatch && queryMatch;
         item.hidden = !match;
         if (match) visible += 1;
       }
 
+      for (const section of sections) {
+        const sectionItems = Array.from(section.querySelectorAll<HTMLElement>('[data-tool-item]'));
+        section.hidden = sectionItems.every((item) => item.hidden);
+      }
+
       const word = visible === 1 ? 'tool' : 'tools';
       count.textContent =
-        query === '' && activeGroup === 'All'
+        query === '' && activeCategory === 'All'
           ? `Showing ${visible} of ${items.length} tools`
           : `Showing ${visible} matching ${word} of ${items.length}`;
+
       empty.hidden = visible > 0;
+      if (visible === 0 && emptyTitle && emptyBody) {
+        const activeTab = tabs.find((t) => t.dataset.catFilter === activeCategory);
+        const summary = activeTab?.dataset.catSummary ?? '';
+        if (query === '' && activeCategory !== 'All' && summary) {
+          emptyTitle.textContent = `${activeCategory} tools are queued next`;
+          emptyBody.textContent = summary;
+        } else {
+          emptyTitle.textContent = 'No tools match that filter';
+          emptyBody.textContent = 'Try another keyword or clear the category filter.';
+        }
+      }
     }
 
-    function setGroup(nextGroup: string) {
-      activeGroup = nextGroup;
+    function setCategory(next: string) {
+      activeCategory = next;
       for (const tab of tabs) {
-        tab.setAttribute('aria-pressed', tab.dataset.groupFilter === nextGroup ? 'true' : 'false');
+        tab.setAttribute('aria-pressed', tab.dataset.catFilter === next ? 'true' : 'false');
       }
       applyFilter();
     }
 
     for (const tab of tabs) {
-      tab.addEventListener('click', () => {
-        setGroup(tab.dataset.groupFilter ?? 'All');
-      });
+      tab.addEventListener('click', () => setCategory(tab.dataset.catFilter ?? 'All'));
     }
-
     input?.addEventListener('input', applyFilter);
     input?.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && input.value !== '') {
@@ -229,23 +218,14 @@ function groupCount(group: FilterGroup): number {
       }
     });
     reset?.addEventListener('click', () => {
-      if (!input) return;
-      input.value = '';
-      setGroup('All');
-      input.focus();
+      if (input) input.value = '';
+      setCategory('All');
+      input?.focus();
     });
     window.addEventListener('keydown', (event) => {
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
-      const target = event.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.tagName === 'SELECT' ||
-          target.isContentEditable)
-      ) {
-        return;
-      }
+      const tag = (event.target as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (!input) return;
       event.preventDefault();
       input.focus();

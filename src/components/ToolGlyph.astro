@@ -1,240 +1,32 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Universal, immediately recognizable SVG icons inside joyful pastel clay squircles.
-export type GlyphKind =
-  | 'inspect-pdf'
-  | 'pdf-to-image'
-  | 'images-to-pdf'
-  | 'merge-pdf'
-  | 'split-pdf'
-  | 'rotate-pdf'
-  | 'documents'
-  | 'images'
-  | 'audio'
-  | 'textdata'
-  | 'everyday'
-  | 'device'
-  | 'shield'
-  | 'heart'
-  | 'network'
-  | 'tool'
-  | 'wifi-off';
+// Bare freestanding SVG service/category icons with automatic category-icon fallback.
+import { GLYPH_PATHS, type GlyphKind } from '../lib/glyph-paths';
+import type { ToolAccent } from '../lib/tools';
 
-export type GlyphTone =
-  | 'inspect'
-  | 'convert'
-  | 'create'
-  | 'merge'
-  | 'split'
-  | 'rotate'
-  | 'documents'
-  | 'images'
-  | 'audio'
-  | 'textdata'
-  | 'everyday';
+export type { GlyphKind };
+export type GlyphTone = ToolAccent;
 
 interface Props {
-  kind: GlyphKind;
+  kind: string;
+  fallback?: GlyphKind;
   tone?: GlyphTone;
   size?: 'sm' | 'md' | 'lg';
   contained?: boolean;
 }
 
-const { kind, tone = 'inspect', size = 'md', contained = false } = Astro.props;
+const { kind, fallback = 'documents', tone = 'inspect', size = 'md', contained = false } = Astro.props;
+const svgMarkup = GLYPH_PATHS[kind as GlyphKind] ?? GLYPH_PATHS[fallback];
 ---
 
 <span class={`glyph glyph--${size} glyph--${tone}${contained ? ' glyph--contained' : ''}`} aria-hidden="true">
-  {
-    kind === 'inspect-pdf' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 3h8l4 4v5" />
-        <path d="M12.5 21H5a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 5 3" />
-        <path d="M13 3v4h4" />
-        <text x="5.4" y="12.5" font-size="4.4" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-        <path d="M6 15.5h3.5" />
-        <path d="M6 18h2.2" />
-        <circle cx="16" cy="16" r="3.8" fill="var(--color-surface)" />
-        <path d="m18.8 18.8 2.7 2.7" />
-      </svg>
-    )
-  }
-  {
-    kind === 'pdf-to-image' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4.5 3h7.5l3.5 3.5V10" />
-        <path d="M9.5 19H4.5A1.5 1.5 0 0 1 3 17.5v-13A1.5 1.5 0 0 1 4.5 3" />
-        <path d="M12 3v3.5h3.5" />
-        <text x="4.6" y="11.8" font-size="4.1" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-        <rect x="9.5" y="10" width="11.5" height="10.5" rx="2" fill="var(--color-surface)" />
-        <circle cx="13" cy="13.2" r="1" fill="currentColor" stroke="none" />
-        <path d="m10.5 18.8 3-3.2 2.1 2 1.8-1.9 2.6 3.1" />
-      </svg>
-    )
-  }
-  {
-    kind === 'images-to-pdf' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2.5" y="4" width="11" height="10" rx="2" />
-        <circle cx="5.8" cy="7.1" r="1" fill="currentColor" stroke="none" />
-        <path d="m3.5 12.4 2.8-2.8 1.9 1.8 1.7-1.7 2.6 2.7" />
-        <path d="M12.5 8h5.5l3 3v8.5a1.5 1.5 0 0 1-1.5 1.5H12a1.5 1.5 0 0 1-1.5-1.5V14" fill="var(--color-surface)" />
-        <path d="M18 8v3h3" />
-        <text x="12.2" y="17.8" font-size="3.9" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-      </svg>
-    )
-  }
-  {
-    kind === 'merge-pdf' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h6l3 3v9.5a1.5 1.5 0 0 1-1.5 1.5h-7.5A1.5 1.5 0 0 1 4 16.5v-11Z" />
-        <path d="M9.5 8.5A1.5 1.5 0 0 1 11 7h5.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5H11A1.5 1.5 0 0 1 9.5 19V8.5Z" fill="var(--color-surface)" />
-        <path d="M16.5 7v3.5H20" />
-        <text x="11.2" y="15.8" font-size="3.8" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-        <path d="M13.5 18.2h3" />
-        <path d="M15 16.7v3" />
-      </svg>
-    )
-  }
-  {
-    kind === 'split-pdf' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9.5 4H5a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 0 5 20h4.5" />
-        <path d="M14.5 4H17l3.5 3.5v11a1.5 1.5 0 0 1-1.5 1.5h-4.5" />
-        <path d="M17 4v3.5h3.5" />
-        <path d="M12 2.5v3" />
-        <path d="M12 8.5v3" />
-        <path d="M12 14.5v3" />
-        <path d="M12 20v1.5" />
-        <text x="5.2" y="13.5" font-size="3.9" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-      </svg>
-    )
-  }
-  {
-    kind === 'rotate-pdf' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 5h6.5l3.5 3.5V19a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 19V6.5A1.5 1.5 0 0 1 6 5Z" />
-        <path d="M12.5 5v3.5H16" />
-        <text x="6.5" y="14.5" font-size="4.1" font-weight="700" fill="currentColor" stroke="none">
-          PDF
-        </text>
-        <path d="M18.5 10.5a6.5 6.5 0 0 0-4.2-6.8" />
-        <path d="M20.2 8.2 18.6 10.8 16 9.3" />
-      </svg>
-    )
-  }
-  {
-    kind === 'documents' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 3h8l4 4v12.5a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 6 3Z" />
-        <path d="M14 3v4h4" />
-        <path d="M8 11.5h8" />
-        <path d="M8 15.5h5.5" />
-      </svg>
-    )
-  }
-  {
-    kind === 'images' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
-        <circle cx="8.75" cy="9.5" r="1.4" fill="currentColor" stroke="none" />
-        <path d="m4.5 17 4.5-4.5 3.2 3 2.8-2.8 4.5 4.3" />
-      </svg>
-    )
-  }
-  {
-    kind === 'audio' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 12v0" />
-        <path d="M8 8v8" />
-        <path d="M12 5v14" />
-        <path d="M16 9v6" />
-        <path d="M20 11v2" />
-      </svg>
-    )
-  }
-  {
-    kind === 'textdata' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 5.5c-1.5 0-2.5 1-2.5 2.5v2.2c0 1-.6 1.8-1.5 1.8.9 0 1.5.8 1.5 1.8V16c0 1.5 1 2.5 2.5 2.5" />
-        <path d="M16 5.5c1.5 0 2.5 1 2.5 2.5v2.2c0 1 .6 1.8 1.5 1.8-.9 0-1.5.8-1.5 1.8V16c0 1.5-1 2.5-2.5 2.5" />
-        <path d="M10.5 12h3" />
-      </svg>
-    )
-  }
-  {
-    kind === 'everyday' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
-        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
-        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
-        <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
-      </svg>
-    )
-  }
-  {
-    kind === 'device' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="4" y="4.5" width="16" height="11" rx="2" />
-        <path d="M2.5 19.5h19" />
-      </svg>
-    )
-  }
-  {
-    kind === 'shield' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3 5 6v5.5c0 4.6 3 8.4 7 9.5 4-1.1 7-4.9 7-9.5V6l-7-3Z" />
-        <path d="m9 12 2.2 2.2L15.5 10" />
-      </svg>
-    )
-  }
-  {
-    kind === 'heart' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 20s-7-4.4-7-9.8A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7 3.2C19 15.6 12 20 12 20Z" />
-      </svg>
-    )
-  }
-  {
-    kind === 'network' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="M3.8 12h16.4" />
-        <path d="M12 3.5a12.5 12.5 0 0 1 0 17 12.5 12.5 0 0 1 0-17Z" />
-      </svg>
-    )
-  }
-  {
-    kind === 'tool' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7h16" />
-        <path d="M4 12h16" />
-        <path d="M4 17h16" />
-        <circle cx="9" cy="7" r="2" fill="var(--color-convert-subtle)" />
-        <circle cx="15" cy="12" r="2" fill="var(--color-convert-subtle)" />
-        <circle cx="10" cy="17" r="2" fill="var(--color-convert-subtle)" />
-      </svg>
-    )
-  }
-  {
-    kind === 'wifi-off' && (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 3l18 18" />
-        <path d="M8.5 16.5a5 5 0 0 1 7 0" />
-        <path d="M5 12.8a9.8 9.8 0 0 1 5.2-2.5" />
-        <path d="M15.5 10.6a9.8 9.8 0 0 1 3.5 2.2" />
-        <path d="M2 9.2a14 14 0 0 1 4.2-2.7" />
-        <path d="M12 19.5h.01" />
-      </svg>
-    )
-  }
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.85"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    set:html={svgMarkup}
+  />
 </span>

@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/delete-pages/Tool';
+
+const title = 'Delete pages from a PDF: remove pages and keep the rest';
+const description =
+  'Remove chosen pages from a PDF and download the trimmed file. The kept pages are copied, not re-rendered, and nothing is uploaded. Free and open source.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Delete pages',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is the PDF uploaded to delete pages?',
+    answer:
+      'No. The file is read in this tab and the pages you keep are copied into a new document locally.',
+  },
+  {
+    question: 'Can I remove every page?',
+    answer:
+      'No. A PDF must contain at least one page, so the tool refuses a selection that would leave nothing behind.',
+  },
+  {
+    question: 'Is the deleted content really gone?',
+    answer:
+      'From the downloaded file, yes: the removed pages are not copied into it. The original file on your device is untouched, and some PDF viewers keep cached copies, so treat the original as still sensitive.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Delete pages" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Delete pages</h1>
+      <p>
+        Remove the pages you do not need and download the trimmed document. Everything happens in
+        this tab, and the pages you keep are copied exactly as they were.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It cannot remove every page; a PDF needs at least one.',
+            'Password-protected PDFs are refused. Remove the password first.',
+            'Pages are copied, not compressed, so the file may not get much smaller.',
+            'Bookmarks, form fields and document metadata are not carried into the new file.',
+            'Digital signatures stop being valid once pages are removed.',
+            'Deleting a page is not redaction: the original file still contains it.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,34 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Service-tinted tool directory card with bare icon, left-aligned hierarchy, and no nested boxes.
+import ToolGlyph, { type GlyphKind } from './ToolGlyph.astro';
+import type { ToolEntry } from '../lib/tools';
+
+interface Props {
+  tool: ToolEntry;
+  fallbackIcon: GlyphKind;
+}
+
+const { tool, fallbackIcon } = Astro.props;
+---
+
+<li
+  data-tool-item
+  data-category={tool.category}
+  data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}
+>
+  <a class="tool-card" href={`/tools/${tool.id}`} data-tool={tool.id} data-accent={tool.accent}>
+    <span class="tool-card__top">
+      <ToolGlyph kind={tool.id} fallback={fallbackIcon} tone={tool.accent} size="lg" />
+      <span class="tool-card__group">{tool.group}</span>
+    </span>
+    <span class="tool-card__title">{tool.name}</span>
+    <span class="tool-card__blurb">{tool.blurb}</span>
+    <span class="tool-card__action">
+      Open tool
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
+      </svg>
+    </span>
+  </a>
+</li>

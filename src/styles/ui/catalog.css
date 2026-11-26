@@ -1,5 +1,5 @@
 /*
- * Catalogue shell — centered hero, trust chips, focused filter pills, and colophon.
+ * Catalogue shell — centered hero, trust chips, multi-category tabs, grouped sections, and colophon.
  */
 
 .page-head {
@@ -63,8 +63,8 @@
   min-width: 0;
 }
 
-/* Focused task filter tabs — centered, exact height alignment, >= 44px touch targets. */
-.group-tabs {
+/* Multi-category switcher — centered, exact height alignment, >= 44px touch targets. */
+.cat-tabs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -74,11 +74,11 @@
   list-style: none;
 }
 
-.group-tabs > li {
+.cat-tabs > li {
   margin: 0;
 }
 
-.group-tab {
+.cat-tab {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -98,33 +98,87 @@
     box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.group-tab:hover {
+.cat-tab:hover {
   border-color: var(--color-border);
   color: var(--color-text);
 }
 
-.group-tab__count {
+.cat-tab__count {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
 }
 
-.group-tab[aria-pressed='true'] {
-  background: var(--tab-tint, var(--color-accent-subtle));
-  border-color: var(--tab-ink, var(--color-accent));
-  color: var(--tab-ink, var(--color-accent-strong));
+.cat-tab[aria-pressed='true'] {
+  background: var(--cat-tint, var(--color-surface-subtle));
+  border-color: var(--cat-ink, var(--color-border));
+  color: var(--cat-ink, var(--color-text));
   box-shadow: none;
 }
 
-.group-tab[aria-pressed='true'] .group-tab__count {
+.cat-tab[aria-pressed='true'] .cat-tab__count {
   color: inherit;
 }
 
-.group-tab--all { --tab-ink: var(--color-text); --tab-tint: var(--color-surface-subtle); }
-.group-tab--inspect { --tab-ink: var(--color-inspect); --tab-tint: var(--color-inspect-subtle); }
-.group-tab--convert { --tab-ink: var(--color-convert); --tab-tint: var(--color-convert-subtle); }
-.group-tab--create { --tab-ink: var(--color-everyday); --tab-tint: var(--color-everyday-subtle); }
-.group-tab--organise { --tab-ink: var(--color-documents); --tab-tint: var(--color-documents-subtle); }
+.cat-tab--all      { --cat-ink: var(--color-text); --cat-tint: var(--color-surface-subtle); }
+.cat-tab--documents { --cat-ink: var(--color-documents); --cat-tint: var(--color-documents-subtle); }
+.cat-tab--images    { --cat-ink: var(--color-images); --cat-tint: var(--color-images-subtle); }
+.cat-tab--audio     { --cat-ink: var(--color-audio); --cat-tint: var(--color-audio-subtle); }
+.cat-tab--textdata  { --cat-ink: var(--color-textdata); --cat-tint: var(--color-textdata-subtle); }
+.cat-tab--everyday  { --cat-ink: var(--color-everyday); --cat-tint: var(--color-everyday-subtle); }
+
+/* Category sections inside the directory — scales to many categories cleanly. */
+.cat-sections {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.cat-section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.cat-section__head {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.cat-section__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cat-section__title h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.cat-section__summary {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.empty-panel {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-clay-sm);
+  text-align: center;
+}
+
+.empty-panel p {
+  max-width: var(--measure-tight);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
 
 .rail-note {
   padding: var(--space-4) var(--space-5);

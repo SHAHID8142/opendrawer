@@ -90,12 +90,18 @@
     transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-card[data-accent='inspect'] { --card-ink: var(--color-inspect); --card-tint: var(--color-inspect-subtle); }
-.tool-card[data-accent='convert'] { --card-ink: var(--color-convert); --card-tint: var(--color-convert-subtle); }
-.tool-card[data-accent='create']  { --card-ink: var(--color-everyday); --card-tint: var(--color-everyday-subtle); }
-.tool-card[data-accent='merge']   { --card-ink: var(--color-documents); --card-tint: var(--color-documents-subtle); }
-.tool-card[data-accent='split']   { --card-ink: var(--color-audio); --card-tint: var(--color-audio-subtle); }
-.tool-card[data-accent='rotate']  { --card-ink: var(--color-textdata); --card-tint: var(--color-textdata-subtle); }
+.tool-card[data-accent='inspect']   { --card-ink: var(--color-inspect); --card-tint: var(--color-inspect-subtle); }
+.tool-card[data-accent='convert']   { --card-ink: var(--color-convert); --card-tint: var(--color-convert-subtle); }
+.tool-card[data-accent='create'],
+.tool-card[data-accent='everyday']  { --card-ink: var(--color-everyday); --card-tint: var(--color-everyday-subtle); }
+.tool-card[data-accent='merge'],
+.tool-card[data-accent='documents'] { --card-ink: var(--color-documents); --card-tint: var(--color-documents-subtle); }
+.tool-card[data-accent='split'],
+.tool-card[data-accent='audio']     { --card-ink: var(--color-audio); --card-tint: var(--color-audio-subtle); }
+.tool-card[data-accent='rotate'],
+.tool-card[data-accent='textdata']  { --card-ink: var(--color-textdata); --card-tint: var(--color-textdata-subtle); }
+.tool-card[data-accent='delete']    { --card-ink: var(--color-danger); --card-tint: var(--color-danger-subtle); }
+.tool-card[data-accent='images']    { --card-ink: var(--color-images); --card-tint: var(--color-images-subtle); }
 
 .tool-card:hover,
 .tool-card:focus-visible {

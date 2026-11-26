@@ -1,12 +1,66 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Central tool catalogue metadata and service accent mapping.
+// Central category registry, tool catalogue metadata, and service accent mapping.
+
 export type ToolStatus = 'live' | 'planned';
 
 /** Top-level product category. New categories are a product decision; see docs/10. */
 export type ToolCategory = 'Documents' | 'Images' | 'Audio & video' | 'Text & data' | 'Everyday';
 
-/** Visual service accent for tool tiles and cards — one distinct color per tool. */
-export type ToolAccent = 'inspect' | 'convert' | 'create' | 'merge' | 'split' | 'rotate';
+/** Visual service accent for tool cards and glyphs — maps directly to tokens.css. */
+export type ToolAccent =
+  | 'inspect'
+  | 'convert'
+  | 'create'
+  | 'merge'
+  | 'split'
+  | 'rotate'
+  | 'delete'
+  | 'documents'
+  | 'images'
+  | 'audio'
+  | 'textdata'
+  | 'everyday';
+
+export interface CategoryMeta {
+  id: ToolCategory;
+  slug: string;
+  tone: 'documents' | 'images' | 'audio' | 'textdata' | 'everyday';
+  summary: string;
+}
+
+/** Ordered categories shown in the directory bar and grouped sections. */
+export const categories: CategoryMeta[] = [
+  {
+    id: 'Documents',
+    slug: 'documents',
+    tone: 'documents',
+    summary: 'Inspect, convert, create, combine, split, rotate and trim PDF files locally.',
+  },
+  {
+    id: 'Images',
+    slug: 'images',
+    tone: 'images',
+    summary: 'Convert, resize, crop and compress PNG, JPEG, WebP and SVG photos on your device.',
+  },
+  {
+    id: 'Audio & video',
+    slug: 'audio',
+    tone: 'audio',
+    summary: 'Convert, trim and extract audio or video clips in local browser memory.',
+  },
+  {
+    id: 'Text & data',
+    slug: 'textdata',
+    tone: 'textdata',
+    summary: 'Format JSON and CSV, count words, convert case and compare text without uploads.',
+  },
+  {
+    id: 'Everyday',
+    slug: 'everyday',
+    tone: 'everyday',
+    summary: 'Convert units, check dates and time zones, and generate QR codes offline.',
+  },
+];
 
 export interface ToolEntry {
   id: string;
@@ -82,6 +136,16 @@ export const tools: ToolEntry[] = [
     accent: 'rotate',
     blurb:
       'Turn selected pages or the whole document by 90, 180 or 270 degrees without re-rendering anything.',
+    status: 'live',
+  },
+  {
+    id: 'delete-pages',
+    name: 'Delete pages',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'delete',
+    blurb:
+      'Remove the pages you do not need and keep the rest exactly as they were, without re-rendering.',
     status: 'live',
   },
 ];

@@ -136,8 +136,10 @@ under `prefers-reduced-motion`.
 - **44 × 44 px** minimum touch targets (above the WCAG 2.2 AA floor of 24 × 24 in SC 2.5.8).
 - Primary actions in the lower third (thumb reach); destructive actions never adjacent to the
   primary one.
-- The tool directory is a single list of rows, not a card wall; it stays one column at every width
-  so it scales to forty tools without a layout rewrite.
+- The tool directory organises tools by top-level category (`Documents`, `Images`, `Audio & video`,
+  `Text & data`, `Everyday`), with centered category filter tabs, global keyword search, and a
+  responsive 1-to-3 column card grid grouped under category sections so the directory scales to
+  dozens of tools across file systems.
 - Never rely on hover. Every hover affordance has a focus and a touch equivalent.
 - The app must be usable with images disabled and with JavaScript-heavy engines still loading.
 
@@ -153,7 +155,7 @@ incomplete. Add a primitive only when a second screen needs it.
 | --- | --- | --- |
 | Button | `.btn` + `--primary` / `--secondary` / `--ghost` / `--danger` | default, hover, focus-visible, active, disabled |
 | Drop zone | `.drop`, `.drop-bar` / `FileDrop.tsx` | idle, drag-over, focus-within, working (`.drop-bar`), disabled, hydration-pending |
-| Tool directory | `.tool-list` / `.tool-row` / `ToolGlyph.astro` | default, service accent, hover/focus-within, narrow viewport |
+| Tool directory | `.cat-tabs` / `.cat-section` / `.tool-grid` / `.tool-card` / `ToolGlyph.astro` | category filter, service accent, hover/focus-visible, empty category preview, narrow viewport |
 | Card | `.card` | default, heading scale, nested note |
 | Field | `.field`, `.input`, `.select`, `.textarea`, `.fieldset` | rest, hover, focus-visible, invalid, disabled |
 | Feedback | `.note--warning/danger/success`, `.flag-list`/`.flag`, `.facts`, `.status`, `.badge` | info, warning, danger, success, live status |
@@ -162,7 +164,7 @@ incomplete. Add a primitive only when a second screen needs it.
 | Results & files | `.result-summary`, `.preview-frame`, `.file-disclosure`, `.file-list` | one file, multi-file with preview, >5 file disclosure |
 | Dialog | `.dialog` (native `<dialog>`) | open, backdrop, Escape close; no consumer yet |
 | Breadcrumb | `Breadcrumb.astro` | current page, mobile wrap |
-| Index rail | `.catalog`, `.cat`, `.cat__count` | active category, counts, in-progress note |
+| Value cards | `.value-cards`, `.value-card` | centered icon, heading, body copy (no serial numbers) |
 | Colophon | `.colophon` | page-closing rule and metadata |
 
 Not yet built: toast, before/after size compare, side-by-side compare. Build them with the same

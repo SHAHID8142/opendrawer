@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages'];
 
 async function createPdf(
   pageCount: number,
@@ -385,6 +385,28 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('upright-rotated.pdf');
+  });
+
+  test('deletes chosen pages and downloads a shorter PDF', async ({ page }) => {
+    await page.goto('/tools/delete-pages');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#delete-input').setInputFiles({
+      name: 'keep.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(4),
+    });
+    await expect(page.getByRole('status')).toContainText('4 pages ready');
+
+    await page.fill('#delete-range', '2,4');
+    await page.getByRole('button', { name: 'Remove the pages' }).click();
+    await expect(page.getByRole('status')).toContainText('Removed 2 pages. 2 remain.', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('keep-pages-removed.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

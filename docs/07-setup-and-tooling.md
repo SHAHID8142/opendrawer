@@ -194,6 +194,7 @@ instructions, not runtime code.
 | `design-taste-frontend` | https://github.com/Leonxlnx/taste-skill | 2.x | MIT |
 | `hallmark` | https://github.com/Nutlope/hallmark | 2.0.0 | MIT |
 | `unslop` | https://github.com/heydamir/unslop | current | CC-BY-4.0 (credit kept with the skill) |
+| `custom-icon-pack` | local (`.agents/skills/custom-icon-pack/`) | 1.0.0 | AGPL-3.0-or-later |
 
 The photo/theme preview libraries (`assets/`, `references/themes/*.jpg`, `references/refs/`) are
 **not** vendored: they are tens of megabytes of images with their own licences, and AGENTS §7

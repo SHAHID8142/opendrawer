@@ -79,3 +79,6 @@
 .glyph--textdata { color: var(--color-textdata); }
 .glyph--contained.glyph--rotate,
 .glyph--contained.glyph--textdata { background: var(--color-textdata-subtle); }
+
+.glyph--delete { color: var(--color-danger); }
+.glyph--contained.glyph--delete { background: var(--color-danger-subtle); }
