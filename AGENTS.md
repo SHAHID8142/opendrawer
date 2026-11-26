@@ -135,3 +135,71 @@ Rules:
 - Rename the project, the brand, or the tool IDs (they are permanent URLs).
 - Add generated art, stock photos, or any binary asset larger than 100 KB.
 - Rewrite a working tool's approach "for cleanliness" — match the existing pattern instead.
+
+## 8. Craft and delivery discipline
+
+Binding for every change. These rules exist because "it works" is the start of quality, not the
+end of it.
+
+### 8.1 File size and cohesion
+
+- Target **≤ 200 lines** per source file. **300 is the hard ceiling** (`npm run gate:size`); a
+  file that reaches ~220 is split by responsibility before anything is added to it.
+- One component or one pure concern per file. No `utils.ts` grab bags.
+- Functions stay under ~40 lines and 4 parameters. Prefer small pure helpers over clever
+  abstractions.
+
+### 8.2 No dead weight
+
+- Every dependency must be imported by code and recorded in `docs/04-licensing.md`. Ask before
+  adding one. Before delivery run `npm ls --depth=0` and remove anything unused.
+- Delete code, CSS, tokens and exports that nothing uses. No commented-out code, no empty files,
+  no placeholder markup, no "just in case" variants.
+- A TODO is allowed only as `TODO(reason): …` with a matching row in `docs/08-phase1-build-plan.md`.
+  An untracked TODO is a defect.
+
+### 8.3 Comments
+
+- Every source file opens with `// SPDX-License-Identifier: AGPL-3.0-or-later` and one sentence on
+  why the file exists.
+- Comment *why*: units, coordinate maths, workarounds, safety rules. Never narrate *what* the next
+  line does.
+- Document non-obvious props and exported functions with a one-line JSDoc.
+- A comment that no longer matches the code is a bug: fix both in the same commit.
+
+### 8.4 Placement and cleanliness
+
+- Tool code lives only in `src/tools/<tool-id>/`; shared primitives in `src/styles/ui/`; page
+  composition in `src/styles/patterns.css`; pure helpers in `src/lib/`.
+- Reuse the existing pattern. Do not create parallel "v2" trees, new root folders or one-off
+  component directories.
+- Scratch files, screenshots and experiment output stay in ignored paths (`.astro/`, `tmp/`,
+  `/tmp`), never in the repository.
+- The working tree is clean after every task. If it is not, the task is not finished.
+
+### 8.5 Before you deliver
+
+- Run `npm run gates` **and** `npm run test:unit` after the last edit. A run from before the edit
+  does not count.
+- Look at the result the user will see: 360 px and desktop, keyboard-only pass, empty and error
+  states, zero off-origin requests, reduced motion.
+- Review your own diff for loopholes: malformed input, double-submit, long text, missing tokens,
+  dead CSS, stale docs. Fix them or record them as follow-ups with a reason.
+- Report exactly what was checked and what was not. "Should work" is not a result, and a passing
+  unit test does not prove the UI.
+
+### 8.6 Work in slices
+
+- One task at a time: plan → implement → verify → commit → next. Never bundle two features in one
+  pass.
+- If a task touches more than ~5 files or cannot be verified in one step, stop: write the tasks
+  down (`todo`), land the first verifiable slice, then continue.
+- Every commit builds and passes gates on its own. Never commit a half-migrated state.
+- Do not rewrite a working module "while you are there". Finish, commit, then refactor with tests.
+
+### 8.7 Documentation stays true
+
+- Same commit: `docs/09-ui-ux-design-system.md` for visual or token changes,
+  `docs/02-tool-catalog.md` for tools, `docs/04-licensing.md` for dependencies, `README.md` for
+  structure, `docs/07-setup-and-tooling.md` for tooling.
+- When a document disagrees with the code, fix one of them in that commit. Never leave both.
