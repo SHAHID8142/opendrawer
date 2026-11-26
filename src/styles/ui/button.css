@@ -1,0 +1,81 @@
+/*
+ * Buttons — one visual language for every action. Minimum target 44px.
+ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-5);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover {
+  color: var(--color-text);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.btn--secondary {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover {
+  background: var(--color-surface-subtle);
+}
+
+.btn--ghost {
+  color: var(--color-accent);
+}
+
+.btn--ghost:hover {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+}
+
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--color-text-inverse);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn svg {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex: none;
+}

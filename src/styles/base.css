@@ -1,0 +1,148 @@
+/*
+ * Base — reset, document typography, links and focus. Element selectors only;
+ * no component classes and no raw values (UI-G1). Tokens come from tokens.css.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-snug);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-hero);
+  letter-spacing: var(--tracking-tight);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+}
+
+h3 {
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+}
+
+h4 {
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  padding-left: var(--space-5);
+}
+
+li + li {
+  margin-top: var(--space-2);
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration-thickness: var(--border-width);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-accent-strong);
+}
+
+strong {
+  font-weight: var(--weight-semibold);
+}
+
+small {
+  font-size: var(--text-sm);
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-xs);
+}
+
+::selection {
+  background: var(--color-accent-subtle);
+  color: var(--color-text);
+}
+
+hr {
+  border: 0;
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--duration-instant) !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: var(--duration-instant) !important;
+    scroll-behavior: auto !important;
+  }
+}

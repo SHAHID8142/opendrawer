@@ -62,7 +62,8 @@ src/
   tools/
     <tool-id>/    meta.ts, Tool.tsx (the island), logic.ts, limits.ts, __fixtures__/
   lib/            units, coordinates, file-type sniffing, zip, download, formatting, tool list
-  styles/         tokens.css (the only place literals live), global.css
+  styles/         tokens.css (the only place literals live), base.css, layout.css,
+                  patterns.css, ui/ (button, field, card, feedback, dropzone, dialog, preview)
   engines/        thin, shared wrappers only: pdfLib.ts, pdfJs.ts, qpdf.ts, gs.ts, ocr.ts
   i18n/           catalogues
   wasm/           vendored binaries + build notes (see licensing doc)

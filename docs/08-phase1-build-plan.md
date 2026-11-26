@@ -40,7 +40,7 @@ Deliverables:
 | `src/layouts/Base.astro` | head, per-page meta, canonical, OG, skip link, theme |
 | `src/pages/index.astro`, `src/pages/tools/<id>.astro` | static pages, one per route |
 | `src/styles/tokens.css` | design tokens: type scale, spacing, colours, focus ring (rules in `09`) |
-| `src/styles/global.css` | element and layout rules, tokens only |
+| `src/styles/base.css`, `layout.css`, `patterns.css` | element rules, shell and page patterns, tokens only |
 | `src/lib/tools.ts` | the single tool list (id, group, name, blurb, status) |
 | `src/components/FileDrop.tsx` | drop zone + "choose files" button (keyboard path) |
 | `src/components/FileList.tsx` | names, sizes, remove |

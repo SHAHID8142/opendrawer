@@ -86,33 +86,36 @@ decision was wrong. If nothing could, it is taste, and it goes in the review not
 
 ## 4. Design tokens
 
-One source of truth, `src/app/tokens.css`, emitted as CSS custom properties. Components may **only**
-use tokens; a raw hex, px font-size or ms duration in a component fails the lint gate.
+One source of truth, `src/styles/tokens.css`. Components may **only** use tokens; a raw hex, px
+font-size, ms duration or inline style anywhere else fails UI-G1. The product is **light-only** by
+decision: one identity, contrast-tested once (UI-G2). A second theme needs a new gate before it
+can exist.
 
-**Spacing** — 4 px base: `0, 4, 8, 12, 16, 24, 32, 48, 64` (`--space-1…--space-9`).
+**Spacing** — 4 px base, `--space-1…--space-12` (4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96).
 
-**Type** — system font stack (no web fonts: they cost bandwidth and leak requests):
+**Type** — system UI stack (no web fonts: they cost bandwidth and make requests):
 
-| Token | Size / line-height | Use |
+| Token | Size | Use |
 | --- | --- | --- |
-| `--text-xs` | 12 / 16 | metadata, file size |
-| `--text-sm` | 14 / 20 | labels, secondary |
-| `--text-base` | 16 / 24 | body — **never smaller on mobile**, prevents iOS zoom-on-focus |
-| `--text-lg` | 18 / 28 | lead paragraph |
-| `--text-xl` | 22 / 30 | section heading |
-| `--text-2xl` | 28 / 36 | page title |
-| `--text-3xl` | 36 / 44 | home hero only |
+| `--text-xs` | 12 | metadata, file size, labels |
+| `--text-sm` | 13 | secondary text, hints |
+| `--text-base` / `--text-md` | 15 / 16 | body copy (16 px input text prevents iOS zoom) |
+| `--text-lg` | 18 | lead paragraph, card title |
+| `--text-xl` / `--text-2xl` | 21 / 26 | section heading |
+| `--text-3xl` / `--text-4xl` | 32 / 40 | page title |
+| `--text-hero` | clamp 34–56 | home hero only |
 
-**Colour** — three layers: neutral surfaces, one accent, semantic states. All pairs verified:
+**Colour** — neutral surfaces, one cobalt accent, semantic states:
 
-- Body text on background ≥ **7:1** (AAA, cheap to do on a document tool).
-- Secondary text ≥ **4.5:1**; large text ≥ **3:1**; UI borders and focus rings ≥ **3:1**.
-- Accent is used for the primary action and focus only; it is never the only signal of state.
-- Semantic: success, warning, danger — each with an icon and a word, never colour alone.
-- Dark mode is a token swap, not a second stylesheet, and both themes are contrast-tested.
+- Body text on background ≥ **7:1**; secondary text ≥ **4.5:1**; large text ≥ **3:1**; borders and
+  focus rings ≥ **3:1**.
+- Accent marks the primary action and focus only; it is never the only signal of a state.
+- Semantic: success, warning, danger — each with an icon or a word, never colour alone.
+- Tinted surfaces (`*-subtle`) carry feedback; the neutral chrome stays quiet.
 
-**Radius** `4 / 8 / 12 / full`; **elevation** two levels maximum (flat by default — shadows cost
-render time on low-end phones); **borders** 1 px, `--border-subtle`.
+**Shape** — radii `4 / 6 / 10 / 14 / 20 / full`; **borders** carry edges (1 px subtle), shadows
+appear only on interaction or elevation, never as decoration. Motion uses `--duration-fast/base`
+with `--ease-out`; all of it collapses under `prefers-reduced-motion`.
 
 ---
 
@@ -188,7 +191,7 @@ Automated tools catch roughly a third of issues; the report must not imply other
 | Gate | Check | Fails on |
 | --- | --- | --- |
 | UI-G1 | token lint over `src/**` | a raw hex/px/ms outside `tokens.css` |
-| UI-G2 | contrast computation from tokens, both themes | any pair below its threshold |
+| UI-G2 | contrast computation from tokens, light theme | any pair below its threshold, or a stray dark-theme block |
 | UI-G3 | axe on every route | serious or critical violations |
 | UI-G4 | viewport matrix 320 / 360 / 768 / 1280 | horizontal scroll or clipped action |
 | UI-G5 | target-size measurement | any interactive box under 44 px |
@@ -196,6 +199,7 @@ Automated tools catch roughly a third of issues; the report must not imply other
 | UI-G7 | reduced-motion pass | a transition surviving `reduce` |
 | UI-G8 | "no upload" assertion in Playwright | any request leaving the origin during a tool run |
 | UI-G9 | content-in-HTML: built page fetched with JavaScript disabled | missing heading, description or limits text — the page only exists after hydration |
+| UI-G10 | file size over `src/` and `scripts/` | a file over 300 lines (target < 220) |
 
 Each gate needs a deliberately bad fixture proving it can fail — otherwise it is a wish, exactly
 as the SUS gate registry argues.

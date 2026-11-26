@@ -1,0 +1,95 @@
+/*
+ * Form controls — label, hint, field, error. Native elements, no custom widgets.
+ */
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.field__hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.field__error {
+  font-size: var(--text-sm);
+  color: var(--color-danger);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.textarea {
+  min-height: var(--space-10);
+  resize: vertical;
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--color-text-muted);
+}
+
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus);
+}
+
+.input[aria-invalid='true'],
+.select[aria-invalid='true'],
+.textarea[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.checkbox,
+.radio {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--tap-target);
+  padding-block: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.checkbox input,
+.radio input {
+  width: var(--space-4);
+  height: var(--space-4);
+  margin-top: var(--space-1);
+  accent-color: var(--color-accent);
+  flex: none;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.field-row > * {
+  flex: 1 1 12rem;
+}

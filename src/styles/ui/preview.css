@@ -1,0 +1,110 @@
+/*
+ * Product preview — a clean, markup-only picture of a report. No images, no fake data.
+ */
+
+.preview {
+  width: 100%;
+  max-width: 27rem;
+  justify-self: center;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.preview__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.preview__file {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+.preview__file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview__body {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.preview__page {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.preview__line {
+  height: var(--space-2);
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-full);
+}
+
+.preview__line--short {
+  width: 62%;
+}
+
+.preview__line--title {
+  width: 44%;
+  height: var(--space-3);
+  background: var(--color-surface-sunken);
+}
+
+.preview__facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+.preview__fact {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.preview__fact b {
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-snug);
+}
+
+.preview__fact span {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.preview__verdict svg {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex: none;
+}
+
+.preview__verdict {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+

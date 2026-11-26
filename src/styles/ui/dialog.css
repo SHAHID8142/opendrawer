@@ -1,0 +1,37 @@
+/*
+ * Dialog — native <dialog>, so focus trapping, Escape and the backdrop come from
+ * the browser. Use for destructive confirmations and multi-step settings only.
+ */
+
+.dialog {
+  width: min(var(--container-sm), calc(100% - (var(--gutter) * 2)));
+  max-height: calc(100dvh - (var(--gutter) * 2));
+  padding: 0;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
+  overflow: auto;
+}
+
+.dialog::backdrop {
+  background: var(--color-scrim);
+}
+
+.dialog__head {
+  padding: var(--space-5) var(--space-6) 0;
+}
+
+.dialog__body {
+  padding: var(--space-4) var(--space-6);
+  color: var(--color-text-muted);
+}
+
+.dialog__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: 0 var(--space-6) var(--space-6);
+}
