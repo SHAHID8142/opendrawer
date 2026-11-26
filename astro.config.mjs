@@ -15,6 +15,8 @@ export default defineConfig({
     build: {
       // Keep worker and WASM handling straightforward for the engine chunks.
       target: 'es2022',
+      // Never inline module scripts into HTML so strict script-src 'self' CSP holds on static hosts.
+      assetsInlineLimit: 0,
     },
   },
 });

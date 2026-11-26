@@ -73,9 +73,13 @@
 }
 
 @media (max-width: 40rem) {
+  .info-tip {
+    position: static;
+  }
+
   .info-tip__bubble {
-    left: auto;
-    right: 0;
-    transform: none;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 }
