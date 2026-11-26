@@ -1,6 +1,6 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Structured orbital micro-dot constellation inside the hero backdrop with spring pointer physics.
+// Kinetic orbital particle stream for the hero backdrop with layered parallax and pointer physics.
 ---
 
 <canvas class="ambient-canvas" id="ambient-canvas" aria-hidden="true"></canvas>
@@ -12,174 +12,191 @@
   if (canvas && ctx) {
     const styles = getComputedStyle(document.documentElement);
     const palette = [
-      styles.getPropertyValue('--color-inspect').trim(),
-      styles.getPropertyValue('--color-convert').trim(),
-      styles.getPropertyValue('--color-everyday').trim(),
-      styles.getPropertyValue('--color-documents').trim(),
-      styles.getPropertyValue('--color-audio').trim(),
-      styles.getPropertyValue('--color-textdata').trim(),
-    ].filter(Boolean);
+      '--color-inspect', '--color-convert', '--color-textdata',
+      '--color-documents', '--color-audio', '--color-everyday',
+    ].map((v) => styles.getPropertyValue(v).trim()).filter(Boolean);
+    const fallback = styles.getPropertyValue('--color-accent').trim();
 
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let width = 0;
-    let height = 0;
-    let rafId = 0;
-    let time = 0;
-    let inView = true;
-    const pointer = { x: -9999, y: -9999, active: false };
+    let width = 0, height = 0, rafId = 0, time = 0, inView = true;
+    const pointer = { x: -9999, y: -9999, active: false, speed: 0 };
+    const halo = { cx: 0, cy: 0, rx: 280, ry: 110 };
+    const ripples: { x: number; y: number; born: number }[] = [];
 
-    interface Node {
-      homeX: number;
-      homeY: number;
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      phase: number;
-      alpha: number;
-      color: string;
+    interface Particle {
+      angle: number; speed: number; rx: number; ry: number; depth: number;
+      seed: number; dx: number; dy: number; vx: number; vy: number;
+      len: number; thick: number; alpha: number; color: string;
+      x: number; y: number; aura: number;
+    }
+    let particles: Particle[] = [];
+
+    const smoothstep = (a: number, b: number, x: number) => {
+      const t = Math.max(0, Math.min(1, (x - a) / Math.max(0.0001, b - a)));
+      return t * t * (3 - 2 * t);
+    };
+
+    function measureHalo(rect: DOMRect) {
+      const head = canvas?.parentElement?.querySelector('.page-head');
+      if (!head) {
+        halo.cx = width * 0.5; halo.cy = height * 0.5;
+        halo.rx = Math.min(width * 0.36, 300); halo.ry = height * 0.38;
+        return;
+      }
+      const r = head.getBoundingClientRect();
+      halo.cx = r.left - rect.left + r.width * 0.5;
+      halo.cy = r.top - rect.top + r.height * 0.5;
+      halo.rx = width < 640 ? width * 0.38 : r.width * 0.5 + 24;
+      halo.ry = width < 640 ? r.height * 0.52 + 12 : r.height * 0.56 + 18;
     }
 
-    let nodes: Node[] = [];
-
-    function buildOrbitalField() {
-      nodes = [];
-      const cx = width * 0.5;
-      const cy = height * 0.46;
-      const rings = width < 640 ? [150, 210] : [230, 320, 420];
-      const counts = width < 640 ? [18, 24] : [28, 38, 46];
-
-      rings.forEach((rxBase, ringIdx) => {
-        const count = counts[ringIdx];
-        const ryBase = rxBase * 0.52;
-        for (let i = 0; i < count; i += 1) {
-          const theta = (i / count) * Math.PI * 2 + ringIdx * 0.35;
-          const jitter = ((i % 3) - 1) * 10;
-          const homeX = cx + Math.cos(theta) * (rxBase * (width < 640 ? 1 : 1.25) + jitter);
-          const homeY = cy + Math.sin(theta) * (ryBase + jitter * 0.5);
-          nodes.push({
-            homeX,
-            homeY,
-            x: homeX,
-            y: homeY,
-            vx: 0,
-            vy: 0,
-            radius: ringIdx === 0 ? 1.8 : 2.2,
-            phase: theta * 2 + ringIdx,
-            alpha: 0.28 + (ringIdx === 1 ? 0.14 : 0),
-            color: palette[(i + ringIdx * 2) % palette.length] || styles.getPropertyValue('--color-accent').trim(),
-          });
-        }
-      });
+    function buildField() {
+      particles = [];
+      const compact = width < 640;
+      const total = compact ? 112 : 340;
+      const golden = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < total; i += 1) {
+        const radial = Math.sqrt((i + 0.5) / total);
+        const seed = ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1;
+        const depth = ((Math.cos(i * 78.233) * 19341.123) % 1 + 1) % 1;
+        const rxFrac = (compact ? 0.25 : 0.20) + radial * (compact ? 0.24 : 0.30);
+        const ryFrac = (compact ? 0.30 : 0.26) + radial * (compact ? 0.19 : 0.24);
+        const angle = (i * golden) % (Math.PI * 2);
+        const sector = Math.floor((angle / (Math.PI * 2)) * palette.length);
+        particles.push({
+          angle, speed: (i % 3 === 0 ? -1 : 1) * (0.00045 + depth * 0.00055),
+          rx: width * rxFrac, ry: height * ryFrac, depth, seed,
+          dx: 0, dy: 0, vx: 0, vy: 0,
+          len: depth > 0.65 ? 4.4 + seed * 2.6 : 1.8 + depth * 2.4,
+          thick: 1.25 + depth * 0.9, alpha: 0.24 + depth * 0.36,
+          color: palette[(sector + (seed > 0.6 ? 1 : 0)) % palette.length] || fallback,
+          x: 0, y: 0, aura: 0,
+        });
+      }
     }
 
     function resize() {
       const rect = canvas!.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = rect.width;
-      height = rect.height;
+      width = rect.width; height = rect.height;
       canvas!.width = Math.max(1, Math.floor(width * dpr));
       canvas!.height = Math.max(1, Math.floor(height * dpr));
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      buildOrbitalField();
+      measureHalo(rect); buildField();
     }
 
     function drawFrame() {
       ctx!.clearRect(0, 0, width, height);
       const rect = canvas!.getBoundingClientRect();
-      const localPx = pointer.x - rect.left;
-      const localPy = pointer.y - rect.top;
-      const radius = 140;
+      measureHalo(rect);
+      const px = pointer.x - rect.left, py = pointer.y - rect.top;
+      const pRad = width < 640 ? 125 : 210, reduced = motionQuery.matches;
+      if (!reduced) {
+        time += 0.016; pointer.speed *= 0.9;
+        while (ripples.length > 0 && time - ripples[0].born > 1.3) ripples.shift();
+      }
+      const cx = width * 0.5, cy = height * 0.5;
+      const activeNodes: Particle[] = [];
 
-      if (!motionQuery.matches) time += 0.014;
+      for (const p of particles) {
+        if (!reduced) p.angle += p.speed;
+        const mod = reduced ? 1 : 1 + Math.sin(p.angle * 2 - time * 1.15 + p.seed * 6) * 0.055 + Math.cos(p.angle * 3 + time * 0.8 + p.depth * 4) * 0.03;
+        const hx = cx + Math.cos(p.angle) * p.rx * mod, hy = cy + Math.sin(p.angle) * p.ry * mod;
+        let aura = 0, adx = 0, ady = 0;
 
-      for (const n of nodes) {
-        const targetX = n.homeX + (motionQuery.matches ? 0 : Math.cos(time + n.phase) * 7);
-        const targetY = n.homeY + (motionQuery.matches ? 0 : Math.sin(time * 0.9 + n.phase) * 5);
-
-        if (!motionQuery.matches) {
+        if (!reduced) {
           if (pointer.active) {
-            const dx = n.x - localPx;
-            const dy = n.y - localPy;
-            const d2 = dx * dx + dy * dy;
-            if (d2 > 1 && d2 < radius * radius) {
-              const d = Math.sqrt(d2);
-              const push = (1 - d / radius) * 3.2;
-              n.vx += (dx / d) * push;
-              n.vy += (dy / d) * push;
+            const dx = hx + p.dx - px, dy = hy + p.dy - py, d2 = dx * dx + dy * dy;
+            if (d2 > 1 && d2 < pRad * pRad) {
+              const d = Math.sqrt(d2), s = 1 - d / pRad;
+              aura = s * s;
+              const push = aura * (2.0 + Math.min(pointer.speed * 0.045, 2.0));
+              adx = dx / d; ady = dy / d;
+              p.vx += (adx - ady * 0.35) * push; p.vy += (ady + adx * 0.35) * push;
             }
           }
-          n.vx += (targetX - n.x) * 0.045;
-          n.vy += (targetY - n.y) * 0.045;
-          n.vx *= 0.84;
-          n.vy *= 0.84;
-          n.x += n.vx;
-          n.y += n.vy;
+          for (const rip of ripples) {
+            const rx = hx - rip.x, ry = hy - rip.y, d = Math.hypot(rx, ry);
+            const band = Math.abs(d - (time - rip.born) * 250);
+            if (d > 1 && band < 34) {
+              const kick = (1 - band / 34) * 1.6;
+              p.vx += (rx / d) * kick; p.vy += (ry / d) * kick;
+              aura = Math.max(aura, (1 - band / 34) * 0.8);
+            }
+          }
+          p.vx = (p.vx - p.dx * 0.065) * 0.84; p.vy = (p.vy - p.dy * 0.065) * 0.84;
+          p.dx += p.vx; p.dy += p.vy;
         }
 
-        ctx!.globalAlpha = n.alpha;
-        ctx!.fillStyle = n.color;
-        ctx!.beginPath();
-        ctx!.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-        ctx!.fill();
+        const x = hx + p.dx, y = hy + p.dy;
+        p.x = x; p.y = y; p.aura = aura;
+        const normDist = Math.hypot((x - halo.cx) / halo.rx, (y - halo.cy) / halo.ry);
+        const textMask = smoothstep(0.84, 1.32, normDist);
+        const sideMask = smoothstep(0, 26, x) * smoothstep(0, 26, width - x);
+        const crest = reduced ? 0.5 : 0.5 + 0.5 * Math.cos(p.angle * 2 - time * 1.6 - p.depth * 3);
+        const alpha = Math.min(0.88, p.alpha * (0.7 + crest * 0.5) + aura * 0.44) * textMask * sideMask;
+        if (alpha < 0.025) continue;
+        if (aura > 0.15 && activeNodes.length < 48) activeNodes.push(p);
+
+        let tx = -p.rx * Math.sin(p.angle), ty = p.ry * Math.cos(p.angle);
+        const tl = Math.hypot(tx, ty) || 1;
+        tx /= tl; ty /= tl;
+        if (aura > 0.02) {
+          tx = tx * (1 - aura * 0.78) + -ady * (aura * 0.78);
+          ty = ty * (1 - aura * 0.78) + adx * (aura * 0.78);
+        }
+
+        ctx!.globalAlpha = alpha;
+        if (p.len < 2.3 && aura < 0.08) {
+          ctx!.fillStyle = p.color;
+          ctx!.beginPath(); ctx!.arc(x, y, p.thick * 0.75, 0, Math.PI * 2); ctx!.fill();
+        } else {
+          const half = (p.len * (0.8 + crest * 0.45) + aura * 5.5) * 0.5;
+          ctx!.strokeStyle = p.color; ctx!.lineWidth = p.thick + aura * 0.9; ctx!.lineCap = 'round';
+          ctx!.beginPath(); ctx!.moveTo(x - tx * half, y - ty * half); ctx!.lineTo(x + tx * half, y + ty * half); ctx!.stroke();
+        }
+      }
+
+      if (activeNodes.length > 1) {
+        ctx!.lineWidth = 0.85;
+        for (let i = 0; i < activeNodes.length; i += 1) {
+          const a = activeNodes[i];
+          for (let j = i + 1; j < activeNodes.length; j += 1) {
+            const b = activeNodes[j], dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist < 68) {
+              ctx!.globalAlpha = (1 - dist / 68) * Math.min(a.aura, b.aura) * 0.22;
+              ctx!.strokeStyle = a.color;
+              ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.stroke();
+            }
+          }
+        }
       }
       ctx!.globalAlpha = 1;
     }
 
-    function tick() {
-      drawFrame();
-      if (!motionQuery.matches && !document.hidden && inView) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        rafId = 0;
-      }
-    }
-
+    function tick() { drawFrame(); rafId = !motionQuery.matches && !document.hidden && inView ? requestAnimationFrame(tick) : 0; }
     function start() {
       cancelAnimationFrame(rafId);
-      if (motionQuery.matches) {
-        drawFrame();
-        return;
-      }
-      if (!document.hidden && inView) {
-        rafId = requestAnimationFrame(tick);
-      }
+      if (motionQuery.matches) { drawFrame(); return; }
+      if (!document.hidden && inView) rafId = requestAnimationFrame(tick);
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      inView = entries[0]?.isIntersecting ?? true;
-      if (inView) start();
-      else {
-        cancelAnimationFrame(rafId);
-        rafId = 0;
-      }
-    });
-    observer.observe(canvas);
-
-    window.addEventListener('resize', () => {
-      resize();
-      if (motionQuery.matches) drawFrame();
-    });
+    new IntersectionObserver((e) => { inView = e[0]?.isIntersecting ?? true; if (inView) start(); else { cancelAnimationFrame(rafId); rafId = 0; } }).observe(canvas);
+    window.addEventListener('resize', () => { resize(); if (motionQuery.matches) drawFrame(); });
     window.addEventListener('pointermove', (e) => {
-      pointer.x = e.clientX;
-      pointer.y = e.clientY;
-      pointer.active = true;
+      if (pointer.active) pointer.speed = Math.hypot(e.clientX - pointer.x, e.clientY - pointer.y);
+      pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
     }, { passive: true });
-    window.addEventListener('pointerleave', () => {
-      pointer.active = false;
-    });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        cancelAnimationFrame(rafId);
-        rafId = 0;
-      } else {
-        start();
+    window.addEventListener('pointerdown', (e) => {
+      const r = canvas.getBoundingClientRect(), lx = e.clientX - r.left, ly = e.clientY - r.top;
+      if (lx >= 0 && lx <= r.width && ly >= 0 && ly <= r.height) {
+        ripples.push({ x: lx, y: ly, born: time });
+        if (ripples.length > 3) ripples.shift();
       }
-    });
+    }, { passive: true });
+    window.addEventListener('pointerleave', () => { pointer.active = false; });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(rafId); rafId = 0; } else start(); });
     motionQuery.addEventListener('change', start);
-
-    resize();
-    start();
+    resize(); start();
   }
 </script>
