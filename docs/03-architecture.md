@@ -23,11 +23,11 @@ There is no server, no API, no database, no queue. The "backend" is the visitor'
 | Framework | **Astro 7** (content + routing) with **React 19 islands** for tool UI, TypeScript strict | Pages are HTML; React runs only inside the tool that needs it |
 | Build | Vite (via Astro) | Same fast build, static HTML per route |
 | Routing | File-based routes, one **statically generated page** per tool (`/tools/<id>`) | No SPA fallback, no soft 404s |
-| Styling | Plain CSS + design tokens (`src/styles/tokens.css`, rules in `09-ui-ux-design-system.md`) | No CSS-in-JS runtime, no UI kit bloat |
+| Styling | Plain CSS + tokens (`src/styles/tokens.css`, `base.css`, `layout.css`, `patterns.css`, `ui/*`, rules in `09-ui-ux-design-system.md`) | No CSS-in-JS runtime, no UI kit bloat |
 | State | Local component state + URL params | No global store |
 | i18n | `i18next` with JSON catalogues, lazy-loaded | Added in phase 3; keep strings out of components from day one |
 | PWA | `vite-plugin-pwa` via the Astro integration (phase 2) | Precache the shell; engines cached on first use |
-| Tests | Vitest (unit, engine fixtures) + Playwright with `@axe-core/playwright` (UI gates, network assertions) | Optional E2E, mandatory unit |
+| Tests | `node:test` for pure engine/fixture tests; Playwright with `@axe-core/playwright` for the UI gates and network assertions | Unit tests run without a DOM; UI gates run against the built site |
 | Hosting | Cloudflare Workers static assets (or Pages, Netlify, GitHub Pages) | Pure static; any host works |
 
 ## Rendering model and SEO
@@ -63,7 +63,8 @@ src/
     <tool-id>/    meta.ts, Tool.tsx (the island), logic.ts, limits.ts, __fixtures__/
   lib/            units, coordinates, file-type sniffing, zip, download, formatting, tool list
   styles/         tokens.css (the only place literals live), base.css, layout.css,
-                  patterns.css, ui/ (button, field, card, feedback, dropzone, dialog, preview)
+                  patterns.css, tool-page.css, ui/ (button, field, card, feedback,
+                  dropzone, dialog, table, progress, list, tool-list, catalog)
   engines/        thin, shared wrappers only: pdfLib.ts, pdfJs.ts, qpdf.ts, gs.ts, ocr.ts
   i18n/           catalogues
   wasm/           vendored binaries + build notes (see licensing doc)

@@ -93,7 +93,8 @@ can exist.
 
 **Spacing** — 4 px base, `--space-1…--space-12` (4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96).
 
-**Type** — system UI stack (no web fonts: they cost bandwidth and make requests):
+**Type** — local families only (no web fonts: they cost bandwidth and make requests). A system
+serif for display headings, a system sans for interface text, mono for numerals and metadata:
 
 | Token | Size | Use |
 | --- | --- | --- |
@@ -105,13 +106,14 @@ can exist.
 | `--text-3xl` / `--text-4xl` | 32 / 40 | page title |
 | `--text-hero` | clamp 34–56 | home hero only |
 
-**Colour** — neutral surfaces, one cobalt accent, semantic states:
+**Colour** — a print-room palette: warm paper surfaces, near-black ink, one proofing-red accent,
+and a separate ink per category. Semantic states:
 
 - Body text on background ≥ **7:1**; secondary text ≥ **4.5:1**; large text ≥ **3:1**; borders and
   focus rings ≥ **3:1**.
 - Accent marks the primary action and focus only; it is never the only signal of a state.
 - Semantic: success, warning, danger — each with an icon or a word, never colour alone.
-- Tinted surfaces (`*-subtle`) carry feedback; the neutral chrome stays quiet.
+- Tinted surfaces (`*-subtle`) carry feedback; the chrome stays paper and ink.
 
 **Shape** — radii `4 / 6 / 10 / 14 / 20 / full`; **borders** carry edges (1 px subtle), shadows
 appear only on interaction or elevation, never as decoration. Motion uses `--duration-fast/base`
@@ -152,6 +154,8 @@ incomplete. Add a primitive only when a second screen needs it.
 | File list | `.file-list` | one or many files |
 | Dialog | `.dialog` (native `<dialog>`) | open, backdrop, Escape close; no consumer yet |
 | Breadcrumb | `Breadcrumb.astro` | current page, mobile wrap |
+| Index rail | `.catalog`, `.cat`, `.cat__leader` | active category, counts, in-progress note |
+| Colophon | `.colophon` | page-closing rule and metadata |
 
 Not yet built: toast, result panel with before/after size, side-by-side compare. Build them with
 the same token contract, not as one-off markup.
@@ -205,6 +209,9 @@ Automated tools catch roughly a third of issues; the report must not imply other
 | UI-G8 | "no upload" assertion in Playwright | any request leaving the origin during a tool run |
 | UI-G9 | content-in-HTML: built page fetched with JavaScript disabled | missing heading, description or limits text — the page only exists after hydration |
 | UI-G10 | file size over `src/` and `scripts/` | a file over 300 lines (target < 220) |
+
+Copy, typography and colour follow section 4: paper, ink, one red, serif display. The directory is
+the primary surface; marketing sections are not part of the shell.
 
 Each gate needs a deliberately bad fixture proving it can fail — otherwise it is a wish, exactly
 as the SUS gate registry argues.

@@ -2,9 +2,10 @@
 
 ## One sentence
 
-A free, ad-free, account-free website where anyone can do the document jobs of daily life —
-compress, merge, split, convert, edit, sign, scan, redact — with the file never leaving their
-own device.
+A free, ad-free, account-free website for the small file and data jobs of daily life — documents
+first (compress, merge, convert, inspect, sign, scan, redact), then images, audio, text and
+everyday utilities — with the file never leaving the user's own device. Categories and the rules
+for adding one are in `10-scope-and-taxonomy.md`.
 
 ## Who it is for
 

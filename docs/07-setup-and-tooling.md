@@ -1,72 +1,70 @@
 # 07 — Setup, tooling, MCP and skills
 
-Everything needed to take this from documentation to a running site. Nothing here has been
-installed yet — this is the checklist.
+Everything needed to run, verify and extend the site. It is installed and working; this is the
+reference, not a wish list.
 
 ## 1. Prerequisites
 
 | Tool | Version | Why |
 | --- | --- | --- |
-| Node.js | 22 LTS or newer | Vite and the PDF libraries require modern ESM |
-| pnpm | 9+ | Fast, strict installs; commit `pnpm-lock.yaml` |
+| Node.js | 20+ (22 LTS recommended) | Astro and the PDF libraries use modern ESM |
+| npm | 10+ | Ships with Node; this repository uses `package.json` scripts only |
 | Git | any recent | Version control |
-| A browser | Chrome/Edge + Firefox | PDF.js differs subtly between them; test both |
-| Optional: `emsdk` | latest | Only if you rebuild a WASM binary yourself |
-
-Install on a normal machine:
+| A browser | Chrome/Edge + Firefox | PDF.js rendering differs subtly between them |
+| Playwright browsers | matching `@playwright/test` | Only for the UI gates: `npx playwright install chromium` |
 
 ```bash
-# macOS
-brew install node@22 pnpm git
-# Ubuntu/Debian
-sudo apt install nodejs npm git && sudo npm i -g pnpm
-# Windows (PowerShell)
-winget install OpenJS.NodeJS.LTS && winget install pnpm.pnpm && winget install Git.Git
+node -v   # 20 or newer
+npm -v
+git --version
 ```
 
-Verify: `node -v` (≥22), `pnpm -v` (≥9), `git --version`.
+No global CLI is required, and there is no npm/Vitest setup in this repository.
 
-## 2. The repository (already created)
-
-The canonical repository is <https://github.com/SHAHID8142/opendrawer>, branch `main`, and it
-already contains the documentation set, `LICENSE`, `.gitignore` and `THIRD-PARTY-NOTICES.md`.
-
-To work on it locally:
+## 2. Run it locally
 
 ```bash
 git clone https://github.com/SHAHID8142/opendrawer.git
 cd opendrawer
-git config user.name "your name"
-git config user.email "you@example.com"
+npm install
+npm run dev          # http://127.0.0.1:4321
 ```
 
-Use `git commit -s` for every commit: the DCO sign-off is part of the contribution policy.
-Never commit `.env` files, tokens, or local MCP configuration that contains a secret — the
-`.gitignore` already excludes them, so do not override it with `git add -f`.
-
-**Before publishing:** confirm the GitHub organisation/user name and the domain are free, and
-run a trademark search for "OpenDrawer" in your jurisdiction. `AnyKit` is already a registered
-US trademark, which is why it was rejected.
-
-## 3. Scaffold the app (wave 0)
-
-Planned commands, once you are ready to write code:
+To verify the built site instead of the dev server:
 
 ```bash
-pnpm create vite opendrawer --template react-ts
-cd opendrawer
-pnpm add pdf-lib pdfjs-dist qpdf-run jsPDF
-pnpm add -D vitest @vitest/coverage-v8 playwright @playwright/test eslint prettier
-pnpm exec playwright install chromium firefox
-pnpm dev
+npm run build
+npm run preview -- --port 4323
 ```
 
-Then add, in this order: router, design tokens, `src/tools/registry.ts`, the shared file-flow
-components, `inspect-pdf` (the simplest real tool), and the CSP `_headers` file. Do not add the
-Ghostscript or Tesseract engines until their wave.
+Branches are short-lived. Commit messages are imperative (`feat:`, `fix:`, `docs:`, `design:`),
+and every commit builds and passes the gates on its own.
 
-Scripts to define in `package.json`: `dev`, `build`, `preview`, `lint`, `typecheck`, `test`,
-`test:e2e`, `fixtures`.
+## 3. Commands and current state
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Astro dev server with HMR |
+| `npm run build` | Static build to `dist/` |
+| `npm run preview` | Serve the build |
+| `npm run check` | `astro check` — TypeScript and template diagnostics |
+| `npm run test:unit` | `node:test` suite (spellcheck engine), no DOM |
+| `npm run gate:tokens` | UI-G1: no raw colour, px font-size, ms duration or inline style |
+| `npm run gate:contrast` | UI-G2: token contrast pairs (light theme) |
+| `npm run gate:copy` | UI-G6: hype and placeholder copy |
+| `npm run gate:size` | UI-G10: source files under 300 lines |
+| `npm run gates` | Token, contrast, copy, size, build, then the Playwright UI gates |
+
+Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`. Two tools are live;
+`docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
+`src/tools/<id>/` contract for the next one.
+
+Three rules that matter more than speed:
+
+1. **No network during processing.** The only allowed requests are the app's own static assets.
+2. **Limits before the tool runs.** They are part of the page, not a FAQ.
+3. **A tool is done when the gates pass and a fresh output opens in Chrome and Firefox** — not
+   when it compiles.
 
 ## 4. MCP servers (for AI-assisted development)
 
@@ -121,8 +119,8 @@ file. Keep `AGENTS.md` at the repository root regardless — most agents read it
 
 ## 6. Local verification checklist (run before every release)
 
-1. `pnpm lint && pnpm typecheck && pnpm test` — all green, real exit codes.
-2. `pnpm build && pnpm preview`, then open each tool with a fixture.
+1. `npm run gates && npm run test:unit && npm run check` — all green, real exit codes.
+2. `npm run build && npm run preview`, then open each tool with a fixture.
 3. Open DevTools → Network → **Clear**, run a tool: no request may leave the origin.
 4. Set DevTools network to "Offline" after load, run the tool again: it must still work.
 5. Emulate a mid-range phone (360×740, 4× CPU throttle) and repeat the three heaviest tools.
@@ -136,7 +134,7 @@ file. Keep `AGENTS.md` at the repository root regardless — most agents read it
 
 Any static host works. For Cloudflare:
 
-- Build command `pnpm build`, output `dist/`, no environment variables.
+- Build command `npm run build`, output `dist/`, no environment variables.
 - Add `_headers` with CSP, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`,
   `Permissions-Policy: camera=(), microphone=(), geolocation=()`.
 - SPA fallback to `index.html` for `/tools/*`.

@@ -11,10 +11,9 @@ Every tool runs **inside the visitor's browser**. Files are never uploaded, ther
 no advertising, no payment, no file-size limit and no daily cap. Turn off the internet after the
 page loads and it keeps working.
 
-> Status: **documentation and tooling only.** No application code has been written yet.
-> This repository currently contains the product plan, the full tool catalogue, the architecture,
-> the licensing decision, the honest limitations page copy, the roadmap, and the developer /
-> AI-agent setup pack (MCP config, project skill, AGENTS.md).
+> Status: **two tools live** — Inspect PDF and PDF to image — on a light-only, token-driven
+> design system. The next categories (images, audio, text, everyday) are planned in
+> `docs/10-scope-and-taxonomy.md`; each tool ships finished, tested and documented.
 
 ---
 
@@ -103,11 +102,11 @@ covers the small non-document jobs too.
 
 ## Technology, in one paragraph
 
-React + TypeScript + Vite, built to static files, deployed on a CDN with no server component.
-pdf-lib handles document structure, PDF.js handles rendering and text extraction, qpdf compiled
-to WebAssembly handles encryption, repair and lossless optimisation, Tesseract.js handles OCR,
-and Ghostscript (WebAssembly) handles strong compression. Heavy work runs in Web Workers. Each
-engine is downloaded only when its tool is first opened.
+Astro 7 renders every route to static HTML; React 19 islands run only inside a tool.
+TypeScript strict; plain CSS with tokens (no UI kit, no CSS-in-JS). pdf-lib reads document
+structure, PDF.js renders pages, and both are loaded on demand. Planned engines (qpdf,
+Tesseract.js, Ghostscript) are added with their tool, never before it. Heavy work belongs in a
+Web Worker, and every engine is downloaded only when its tool is first opened.
 
 ---
 

@@ -4,6 +4,10 @@ The actionable version of `06-roadmap.md`: what to create, in what order, and ho
 proved done. Written so a developer — or an AI agent with `AGENTS.md` loaded — can start without
 asking questions.
 
+**Current state (November 2026):** steps 0–2 are done — the Astro shell, the design system and
+`inspect-pdf` are live, and `pdf-to-image` followed as the first Wave 1 tool. The remaining wave-1
+tools are the open work. This document stays the ordering; update it when a step lands.
+
 **Guardrails for the whole phase:** `AGENTS.md` rules; AGPL headers; no network requests during
 processing; every tool declares its limits in the UI.
 

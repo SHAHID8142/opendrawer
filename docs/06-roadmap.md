@@ -7,8 +7,8 @@ or it is not in the release.
 ## Before wave 1 (scaffolding)
 
 - Repository, licence files, `THIRD-PARTY-NOTICES.md`, README, CONTRIBUTING, AGENTS.
-- Vite + React + TypeScript app shell, routing, design tokens, i18n plumbing (strings
-  externalised even if only English exists).
+- Astro + React-island shell, static routes, design tokens, i18n plumbing (strings externalised
+  even if only English exists).
 - Shared UI: drop zone, file list, progress, result panel with before/after size, warning
   component, "what this cannot do" disclosure.
 - Tool registry and the `src/tools/<id>/` contract.
