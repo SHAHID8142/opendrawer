@@ -71,9 +71,10 @@
   border-radius: var(--radius-xs);
 }
 
+.brand__mark img,
 .brand__mark svg {
-  width: var(--space-4);
-  height: var(--space-4);
+  width: var(--space-5);
+  height: var(--space-5);
 }
 
 .site-nav {

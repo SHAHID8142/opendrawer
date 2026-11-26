@@ -71,6 +71,7 @@ docs/07-setup-and-tooling.md    developer setup, MCP + skills installation, veri
 docs/08-phase1-build-plan.md    ordered build tasks for phase 1, with proof of done
 docs/09-ui-ux-design-system.md  principles, laws (corrected), tokens, components, a11y gates
 docs/10-scope-and-taxonomy.md   categories, deliberate exclusions, how to add a tool
+docs/11-brand-assets.md         logo files, colour rules, clear space, social and app icons
 ```
 
 Read in this order: `01-product-plan` → `02-tool-catalog` → `03-architecture` →
