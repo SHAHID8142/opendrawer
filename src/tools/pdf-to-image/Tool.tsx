@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
+import { parseExplicitPages, togglePageInRange } from '../../lib/page-range';
 import { zipStore } from '../../lib/zip';
 import { FORMATS, detectFormats, type ImageFormat } from './formats';
 import { RenderSettings } from './RenderSettings';
@@ -154,6 +155,8 @@ export default function Tool() {
         working={busy}
         pasteEnabled
         selectedFile={file ? { name: file.name, size: file.size } : null}
+        selectedPages={parseExplicitPages(range, 999)}
+        onTogglePage={(pageNo) => setRange((curr) => togglePageInRange(curr, pageNo, 999))}
         onClear={clear}
         onFiles={(files) => files[0] && void run(files[0])}
       />

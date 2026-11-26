@@ -114,10 +114,14 @@
 .preview-stage {
   position: relative;
   overflow: auto;
-  max-height: 32rem;
+  max-height: 21rem;
   padding: var(--space-4);
   border-radius: var(--radius-md);
   border: var(--border-width) solid var(--color-border-subtle);
+}
+
+.preview-stage[data-view='single'] {
+  max-height: 32rem;
 }
 
 .preview-stage[data-mat='subtle'] { background: var(--color-surface-subtle); }
@@ -149,6 +153,23 @@
 
 .preview-thumb__btn:hover,
 .preview-thumb__btn:focus-visible { border-color: var(--color-accent); }
+
+.preview-thumb__btn[aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-subtle);
+}
+
+.preview-caption--selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-strong);
+  font-weight: var(--weight-semibold);
+}
+
+.preview-pick-hint {
+  font-size: var(--text-xs);
+  margin: 0;
+}
 
 .preview-sheet {
   position: relative;

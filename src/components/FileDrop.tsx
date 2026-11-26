@@ -22,6 +22,8 @@ export interface FileDropProps {
   pasteEnabled?: boolean;
   selectedFile?: SelectedFileInfo | null;
   previewFiles?: File[];
+  selectedPages?: number[];
+  onTogglePage?: (pageNumber: number) => void;
   onClear?: () => void;
   onFiles: (files: File[]) => void;
 }
@@ -38,6 +40,8 @@ export function FileDrop({
   pasteEnabled = false,
   selectedFile = null,
   previewFiles,
+  selectedPages,
+  onTogglePage,
   onClear,
   onFiles,
 }: FileDropProps) {
@@ -160,7 +164,9 @@ export function FileDrop({
           </div>
           {fileInput}
         </div>
-        {activePreviewFiles.length > 0 && <UploadedPreview files={activePreviewFiles} />}
+        {activePreviewFiles.length > 0 && (
+          <UploadedPreview files={activePreviewFiles} selectedPages={selectedPages} onTogglePage={onTogglePage} />
+        )}
       </div>
     );
   }
@@ -212,7 +218,9 @@ export function FileDrop({
         </p>
         {fileInput}
       </div>
-      {activePreviewFiles.length > 0 && <UploadedPreview files={activePreviewFiles} />}
+      {activePreviewFiles.length > 0 && (
+        <UploadedPreview files={activePreviewFiles} selectedPages={selectedPages} onTogglePage={onTogglePage} />
+      )}
     </div>
   );
 }

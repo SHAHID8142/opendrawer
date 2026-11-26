@@ -5,7 +5,7 @@ import { FileDrop } from '../../components/FileDrop';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
-import { parsePageGroups, validatePageRangeSyntax } from '../../lib/page-range';
+import { parseExplicitPages, parsePageGroups, togglePageInRange, validatePageRangeSyntax } from '../../lib/page-range';
 import { zipStore } from '../../lib/zip';
 import { countPdfPages, splitPdf, type SplitFile } from './engine';
 
@@ -103,6 +103,16 @@ export default function Tool() {
         buttonLabel="Choose a PDF"
         disabled={!usable}
         selectedFile={file ? { name: file.name, size: file.size, detail: pageCount === null ? undefined : `${pageCount} pages` } : null}
+        selectedPages={pageCount && mode === 'ranges' ? parseExplicitPages(range, pageCount) : []}
+        onTogglePage={
+          pageCount && mode === 'ranges'
+            ? (pageNo) => {
+                setRange((curr) => togglePageInRange(curr, pageNo, pageCount));
+                setFiles(null);
+                setPhase('idle');
+              }
+            : undefined
+        }
         onClear={() => {
           setFile(null);
           setPageCount(null);

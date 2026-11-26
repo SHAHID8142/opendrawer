@@ -2,9 +2,10 @@
 // UI for delete-pages: choose pages to remove, keep the rest, download once.
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { ResultPreviewButton } from '../../components/ResultPreviewButton';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
-import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+import { parseExplicitPages, parsePageSelection, togglePageInRange, validatePageRangeSyntax } from '../../lib/page-range';
 import { countPdfPages } from '../../lib/pdf';
 import { deletePdfPages } from './engine';
 
@@ -110,6 +111,16 @@ export default function Tool() {
               }
             : null
         }
+        selectedPages={pageCount ? parseExplicitPages(range, pageCount) : []}
+        onTogglePage={
+          pageCount
+            ? (pageNo) => {
+                setRange((curr) => togglePageInRange(curr, pageNo, pageCount));
+                setOut(null);
+                setPhase('idle');
+              }
+            : undefined
+        }
         onClear={() => {
           setFile(null);
           setPageCount(null);
@@ -212,6 +223,7 @@ export default function Tool() {
               Download the PDF
             </button>
           </p>
+          <ResultPreviewButton bytes={out.bytes} filename={`${file?.name.replace(/\.pdf$/i, '') ?? 'document'}-pages-removed.pdf`} />
           <p className="muted">Written in this tab. Nothing is stored after you close it.</p>
         </section>
       )}

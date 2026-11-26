@@ -1,0 +1,32 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Quiet sibling-tools strip rendered below each tool workbench for natural next steps.
+import ToolCard from './ToolCard.astro';
+import { categories, liveTools } from '../lib/tools';
+
+interface Props {
+  currentId: string;
+}
+
+const { currentId } = Astro.props;
+const current = liveTools.find((t) => t.id === currentId);
+const sameGroup = liveTools.filter((t) => t.id !== currentId && current && t.group === current.group);
+const others = liveTools.filter((t) => t.id !== currentId && (!current || t.group !== current.group));
+const picks = [...sameGroup, ...others].slice(0, 4);
+const toneByCategory = new Map(categories.map((c) => [c.id, c.tone]));
+---
+
+{
+  picks.length > 0 && (
+    <section class="related-band stack" aria-labelledby="related-heading">
+      <h2 id="related-heading" class="related-band__title">
+        More tools
+      </h2>
+      <ul class="tool-grid" role="list">
+        {picks.map((tool) => (
+          <ToolCard tool={tool} fallbackIcon={toneByCategory.get(tool.category) ?? 'documents'} />
+        ))}
+      </ul>
+    </section>
+  )
+}

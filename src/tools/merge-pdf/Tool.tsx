@@ -2,6 +2,7 @@
 // UI for merge-pdf: ordered file list, page copy in that order, one download.
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { ResultPreviewButton } from '../../components/ResultPreviewButton';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
@@ -162,16 +163,18 @@ export default function Tool() {
         </section>
       )}
 
-      <p>
-        <button
-          type="button"
-          className="btn btn--primary"
-          disabled={!usable || files.length < 2}
-          onClick={() => void merge()}
-        >
-          {busy ? 'Merging…' : 'Merge the PDFs'}
-        </button>
-      </p>
+      {files.length >= 2 && (
+        <p>
+          <button
+            type="button"
+            className="btn btn--primary"
+            disabled={!usable}
+            onClick={() => void merge()}
+          >
+            {busy ? 'Merging…' : 'Merge the PDFs'}
+          </button>
+        </p>
+      )}
 
       <p className="status" role="status" aria-live="polite">
         {phase === 'idle' && files.length < 2 && 'Choose at least two PDFs.'}
@@ -202,6 +205,7 @@ export default function Tool() {
               Download the merged PDF
             </button>
           </p>
+          <ResultPreviewButton bytes={result.bytes} filename={`${files[0]?.file.name.replace(/\.pdf$/i, '') ?? 'document'}-merged.pdf`} />
           <p className="muted">Built in this tab. Nothing is stored after you close it.</p>
         </section>
       )}

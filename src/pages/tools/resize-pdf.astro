@@ -1,6 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/resize-pdf/Tool';
 
@@ -38,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Resize PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Resize PDF pages</h1>
-      <p>
-        Put every page on the same paper size. Pages keep their proportions and are centred, so a
-        mixed-size document prints without surprises.
-      </p>
-    </header>
+    <ToolHeader
+      id="resize-pdf"
+      breadcrumbLabel="Resize PDF"
+      heading="Resize PDF pages"
+      lead="Put every page on the same paper size. Pages keep their proportions and are centred, so a mixed-size document prints without surprises."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -77,5 +76,6 @@ const faq = [
         </section>
       </aside>
     </div>
+    <RelatedTools currentId="resize-pdf" />
   </div>
 </Base>

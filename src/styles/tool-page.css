@@ -211,3 +211,18 @@
   line-height: var(--leading-normal);
   margin: 0;
 }
+
+.related-band {
+  width: 100%;
+  max-width: var(--container-lg);
+  margin-inline: auto;
+  padding-top: var(--space-7);
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+.related-band__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}

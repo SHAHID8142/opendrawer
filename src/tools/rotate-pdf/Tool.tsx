@@ -2,9 +2,10 @@
 // UI for rotate-pdf: pick an angle and a page selection, rotate, download.
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { ResultPreviewButton } from '../../components/ResultPreviewButton';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
-import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+import { parseExplicitPages, parsePageSelection, togglePageInRange, validatePageRangeSyntax } from '../../lib/page-range';
 import { countPdfPages } from '../../lib/pdf';
 import { rotatePdf, type RotationAngle } from './engine';
 
@@ -103,6 +104,16 @@ export default function Tool() {
                 detail: pageCount === null ? undefined : `${pageCount} pages`,
               }
             : null
+        }
+        selectedPages={pageCount ? parseExplicitPages(range, pageCount) : []}
+        onTogglePage={
+          pageCount
+            ? (pageNo) => {
+                setRange((curr) => togglePageInRange(curr, pageNo, pageCount));
+                setRotatedCount(null);
+                setPhase('idle');
+              }
+            : undefined
         }
         onClear={() => {
           setFile(null);
@@ -218,6 +229,7 @@ export default function Tool() {
               Download the PDF
             </button>
           </p>
+          <ResultPreviewButton bytes={bytes} filename={`${file?.name.replace(/\.pdf$/i, '') ?? 'document'}-rotated.pdf`} />
           <p className="muted">Written in this tab. Nothing is stored after you close it.</p>
         </section>
       )}

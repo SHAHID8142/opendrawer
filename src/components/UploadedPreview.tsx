@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Universal uploaded-file preview & status studio with incremental multi-page loading (supports all pages).
-import { useEffect, useRef, useState } from 'react';
+// Universal uploaded-file preview & verification studio with click-to-select pages and all-page loading.
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatBytes } from '../lib/format';
 import { renderPdfPages, renderUploadedPreview, revokePreviewResources, type RenderedPreview } from '../lib/preview';
 import { DEFAULT_PREVIEW_SETTINGS, loadPreviewPrefs, savePreviewPrefs, type PreviewSettings } from '../lib/preview-prefs';
@@ -8,7 +8,13 @@ import { PreviewToolbar } from './PreviewToolbar';
 
 const INITIAL_BATCH = 12;
 
-export function UploadedPreview({ files }: { files: File[] }) {
+interface UploadedPreviewProps {
+  files: File[];
+  selectedPages?: number[];
+  onTogglePage?: (pageNumber: number) => void;
+}
+
+export function UploadedPreview({ files, selectedPages, onTogglePage }: UploadedPreviewProps) {
   const [settings, setSettings] = useState<PreviewSettings>(DEFAULT_PREVIEW_SETTINGS);
   const [prefsLoaded, setPrefsLoaded] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
@@ -42,9 +48,7 @@ export function UploadedPreview({ files }: { files: File[] }) {
 
     const controller = new AbortController();
     setLoading(true);
-    const initialLimit = settings.autoLoadAll ? 500 : INITIAL_BATCH;
-
-    renderUploadedPreview(activeTargets, initialLimit, settings.mode === 'single', controller.signal)
+    renderUploadedPreview(activeTargets, settings.autoLoadAll ? 500 : INITIAL_BATCH, settings.mode === 'single', controller.signal)
       .then((out) => {
         if (controller.signal.aborted) { revokePreviewResources(out); return; }
         if (resRef.current) revokePreviewResources(resRef.current);
@@ -62,6 +66,7 @@ export function UploadedPreview({ files }: { files: File[] }) {
     if (resRef.current) revokePreviewResources(resRef.current);
   }, []);
 
+  const selectedSet = useMemo(() => new Set(selectedPages ?? []), [selectedPages]);
   if (files.length === 0) return null;
 
   const patchSettings = (patch: Partial<PreviewSettings>) => setSettings((c) => ({ ...c, ...patch }));
@@ -73,8 +78,7 @@ export function UploadedPreview({ files }: { files: File[] }) {
   async function loadRange(untilPage: number, nextPageIndex?: number) {
     const target = activeTargets[0];
     if (!target || !rendered || rendered.kind !== 'pdf' || loadingMore) return;
-    const fromPage = frames.length + 1;
-    if (fromPage > untilPage || frames.length >= totalPages) {
+    if (frames.length + 1 > untilPage || frames.length >= totalPages) {
       if (nextPageIndex !== undefined) setPageIndex(nextPageIndex);
       return;
     }
@@ -83,10 +87,9 @@ export function UploadedPreview({ files }: { files: File[] }) {
     moreAbortRef.current = controller;
     setLoadingMore(true);
     try {
-      const more = await renderPdfPages(target, fromPage, untilPage, settings.mode === 'single', controller.signal);
+      const more = await renderPdfPages(target, frames.length + 1, untilPage, settings.mode === 'single', controller.signal);
       if (controller.signal.aborted) { revokePreviewResources({ frames: more.frames }); return; }
-      const merged = [...(resRef.current?.frames ?? []), ...more.frames];
-      const next = { ...rendered, frames: merged };
+      const next = { ...rendered, frames: [...(resRef.current?.frames ?? []), ...more.frames] };
       resRef.current = next;
       setRendered(next);
       if (nextPageIndex !== undefined) setPageIndex(nextPageIndex);
@@ -97,12 +100,10 @@ export function UploadedPreview({ files }: { files: File[] }) {
 
   const summary =
     settings.mode === 'hidden' ? 'Hidden'
-      : loading ? 'Checking file…'
+      : loading ? 'Checking…'
         : kind === 'pdf' || kind === 'image'
-          ? totalPages > frames.length
-            ? `${frames.length} of ${totalPages} pages loaded`
-            : `${totalPages} ${totalPages === 1 ? (kind === 'image' ? 'image' : 'page') : kind === 'image' ? 'images' : 'pages'}`
-          : info?.detectedFormat ?? 'Checked locally';
+          ? (totalPages > frames.length ? `${frames.length} of ${totalPages}` : `${totalPages} ${totalPages === 1 ? (kind === 'image' ? 'image' : 'page') : kind === 'image' ? 'images' : 'pages'}`)
+          : info?.detectedFormat ?? 'Checked';
 
   const currentFrame = frames[Math.min(pageIndex, Math.max(frames.length - 1, 0))];
 
@@ -118,13 +119,15 @@ export function UploadedPreview({ files }: { files: File[] }) {
         onReset={() => setSettings(DEFAULT_PREVIEW_SETTINGS)}
       />
 
-      {info && (
+      {info && (info.statusTone === 'warn' || kind === 'summary' || kind === 'text' || kind === 'media') && (
         <div className="preview-status" data-tone={info.statusTone}>
           <span className="preview-status__badge">{info.statusLabel}</span>
-          <span className="preview-status__meta">
-            {info.detectedFormat} · {formatBytes(info.fileSize)} · {info.modifiedLabel}
-          </span>
+          <span className="preview-status__meta">{info.detectedFormat} · {formatBytes(info.fileSize)}</span>
         </div>
+      )}
+
+      {onTogglePage && settings.mode === 'grid' && kind === 'pdf' && frames.length > 0 && (
+        <p className="muted preview-pick-hint">Click any page thumbnail to include or exclude it.</p>
       )}
 
       {files.length > 1 && !multiImageGallery && (
@@ -138,21 +141,35 @@ export function UploadedPreview({ files }: { files: File[] }) {
       )}
 
       {settings.mode !== 'hidden' && rendered && (
-        <div className="preview-stage" data-mat={settings.mat}>
+        <div className="preview-stage" data-mat={settings.mat} data-view={settings.mode}>
           {(kind === 'pdf' || kind === 'image') && frames.length > 0 && (
             settings.mode === 'grid' ? (
               <ul className="preview-grid" data-size={settings.thumbSize} role="list">
-                {frames.map((frame, idx) => (
-                  <li key={frame.key} className="preview-thumb">
-                    <button type="button" className="preview-thumb__btn" aria-label={`Inspect ${frame.label}`} onClick={() => { setPageIndex(idx); patchSettings({ mode: 'single' }); }}>
-                      <span className={`preview-sheet${settings.showShadow ? ' preview-sheet--shadow' : ''}`} data-rot={settings.rotation} data-crop={settings.squareCrop ? 'true' : 'false'}>
-                        <img src={frame.url} alt={`${frame.label} preview`} loading="lazy" />
-                        {settings.guide !== 'none' && <span className={`preview-guide preview-guide--${settings.guide}`} aria-hidden="true" />}
-                      </span>
-                    </button>
-                    {settings.showLabels && <span className="preview-caption">{frame.label} · {frame.dimensions}</span>}
-                  </li>
-                ))}
+                {frames.map((frame, idx) => {
+                  const picked = selectedSet.has(frame.pageNumber);
+                  return (
+                    <li key={frame.key} className="preview-thumb">
+                      <button
+                        type="button"
+                        className="preview-thumb__btn"
+                        aria-pressed={onTogglePage ? picked : undefined}
+                        aria-label={onTogglePage ? `Toggle ${frame.label}` : `Inspect ${frame.label}`}
+                        title={`${frame.label} (${frame.dimensions})`}
+                        onClick={() => (onTogglePage ? onTogglePage(frame.pageNumber) : (setPageIndex(idx), patchSettings({ mode: 'single' })))}
+                      >
+                        <span className={`preview-sheet${settings.showShadow ? ' preview-sheet--shadow' : ''}`} data-rot={settings.rotation} data-crop={settings.squareCrop ? 'true' : 'false'}>
+                          <img src={frame.url} alt={`${frame.label} preview`} loading="lazy" />
+                          {settings.guide !== 'none' && <span className={`preview-guide preview-guide--${settings.guide}`} aria-hidden="true" />}
+                        </span>
+                      </button>
+                      {settings.showLabels && (
+                        <span className={`preview-caption${picked ? ' preview-caption--selected' : ''}`}>
+                          {frame.label}{picked ? ' ✓' : ''}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               currentFrame && (
@@ -206,20 +223,9 @@ export function UploadedPreview({ files }: { files: File[] }) {
 
       {(kind === 'pdf' || kind === 'image') && settings.mode === 'single' && totalPages > 1 && (
         <div className="preview-pager">
-          <button type="button" className="btn btn--ghost" disabled={pageIndex <= 0} onClick={() => setPageIndex((i) => Math.max(0, i - 1))}>
-            Previous
-          </button>
+          <button type="button" className="btn btn--ghost" disabled={pageIndex <= 0} onClick={() => setPageIndex((i) => Math.max(0, i - 1))}>Previous</button>
           <span className="muted">{pageIndex + 1} of {totalPages}</span>
-          <button
-            type="button"
-            className="btn btn--ghost"
-            disabled={loadingMore || pageIndex >= totalPages - 1}
-            onClick={() => {
-              const targetIdx = Math.min(totalPages - 1, pageIndex + 1);
-              if (targetIdx >= frames.length) void loadRange(Math.min(totalPages, targetIdx + 6), targetIdx);
-              else setPageIndex(targetIdx);
-            }}
-          >
+          <button type="button" className="btn btn--ghost" disabled={loadingMore || pageIndex >= totalPages - 1} onClick={() => { const nextIdx = Math.min(totalPages - 1, pageIndex + 1); if (nextIdx >= frames.length) void loadRange(Math.min(totalPages, nextIdx + 6), nextIdx); else setPageIndex(nextIdx); }}>
             {loadingMore ? 'Loading…' : 'Next'}
           </button>
         </div>

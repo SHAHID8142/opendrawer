@@ -2,10 +2,11 @@
 // UI for crop-pdf: one margin, optional page selection, explicit "this hides, not deletes".
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { ResultPreviewButton } from '../../components/ResultPreviewButton';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
-import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+import { parseExplicitPages, parsePageSelection, togglePageInRange, validatePageRangeSyntax } from '../../lib/page-range';
 import { countPdfPages } from '../../lib/pdf';
 import { MAX_MARGIN_MM, MIN_MARGIN_MM, cropPdf } from './engine';
 
@@ -109,6 +110,16 @@ export default function Tool() {
                 detail: pageCount === null ? undefined : `${pageCount} pages`,
               }
             : null
+        }
+        selectedPages={pageCount ? parseExplicitPages(range, pageCount) : []}
+        onTogglePage={
+          pageCount
+            ? (pageNo) => {
+                setRange((curr) => togglePageInRange(curr, pageNo, pageCount));
+                setOut(null);
+                setPhase('idle');
+              }
+            : undefined
         }
         onClear={() => {
           setFile(null);
@@ -245,6 +256,7 @@ export default function Tool() {
               Download the PDF
             </button>
           </p>
+          <ResultPreviewButton bytes={out.bytes} filename={`${file?.name.replace(/\.pdf$/i, '') ?? 'document'}-cropped.pdf`} />
           <p className="muted">Written in this tab. Nothing is stored after you close it.</p>
         </section>
       )}

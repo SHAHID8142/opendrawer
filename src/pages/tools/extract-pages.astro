@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ToolHeader from '../../components/ToolHeader.astro';
 import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/extract-pages/Tool';
 
@@ -67,5 +68,6 @@ const faq = [
         <ToolFaq items={faq} />
       </aside>
     </div>
+    <RelatedTools currentId="extract-pages" />
   </div>
 </Base>

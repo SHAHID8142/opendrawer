@@ -106,3 +106,38 @@ export function parsePageSelection(spec: string, pageCount: number): number[] {
   }
   return pages;
 }
+
+/** Explicit page numbers when typed; empty when spec is blank. */
+export function parseExplicitPages(spec: string, pageCount: number): number[] {
+  if (spec.trim() === '') return [];
+  try {
+    return parsePageSelection(spec, pageCount);
+  } catch {
+    return [];
+  }
+}
+
+/** Toggles a page number inside a comma-separated range string and compacts runs cleanly. */
+export function togglePageInRange(spec: string, pageNumber: number, pageCount: number): string {
+  const current = new Set(parseExplicitPages(spec, pageCount));
+  if (current.has(pageNumber)) current.delete(pageNumber);
+  else current.add(pageNumber);
+
+  const sorted = Array.from(current).sort((a, b) => a - b);
+  if (sorted.length === 0) return '';
+
+  const parts: string[] = [];
+  let start = sorted[0];
+  let end = sorted[0];
+  for (let i = 1; i < sorted.length; i += 1) {
+    const n = sorted[i];
+    if (n === end + 1) end = n;
+    else {
+      parts.push(start === end ? `${start}` : `${start}-${end}`);
+      start = n;
+      end = n;
+    }
+  }
+  parts.push(start === end ? `${start}` : `${start}-${end}`);
+  return parts.join(', ');
+}

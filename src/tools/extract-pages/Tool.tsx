@@ -2,10 +2,11 @@
 // UI for extract-pages: select the pages to keep, copy them into a new PDF.
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { ResultPreviewButton } from '../../components/ResultPreviewButton';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
-import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+import { parseExplicitPages, parsePageSelection, togglePageInRange, validatePageRangeSyntax } from '../../lib/page-range';
 import { countPdfPages } from '../../lib/pdf';
 import { extractPdfPages } from './engine';
 
@@ -108,6 +109,16 @@ export default function Tool() {
               }
             : null
         }
+        selectedPages={pageCount ? parseExplicitPages(range, pageCount) : []}
+        onTogglePage={
+          pageCount
+            ? (pageNo) => {
+                setRange((curr) => togglePageInRange(curr, pageNo, pageCount));
+                setOut(null);
+                setPhase('idle');
+              }
+            : undefined
+        }
         onClear={() => {
           setFile(null);
           setPageCount(null);
@@ -206,6 +217,7 @@ export default function Tool() {
               Download the PDF
             </button>
           </p>
+          <ResultPreviewButton bytes={out.bytes} filename={`${file?.name.replace(/\.pdf$/i, '') ?? 'document'}-pages.pdf`} />
           <p className="muted">Written in this tab. Nothing is stored after you close it.</p>
         </section>
       )}

@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ToolHeader from '../../components/ToolHeader.astro';
 import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/watermark-pdf/Tool';
 
@@ -66,5 +67,6 @@ const faq = [
         <ToolFaq items={faq} />
       </aside>
     </div>
+    <RelatedTools currentId="watermark-pdf" />
   </div>
 </Base>
