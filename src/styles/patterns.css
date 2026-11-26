@@ -3,6 +3,10 @@
  * Zero ::before pseudo-elements or one-sided accent bars.
  */
 
+.section-heading {
+  text-align: center;
+}
+
 .steps {
   display: grid;
   gap: var(--space-5);
