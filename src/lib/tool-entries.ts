@@ -268,4 +268,15 @@ export const tools: ToolEntry[] = [
       'Put 2, 4, 6 or 9 pages on each A4 sheet, scaled and centred for printing handouts.',
     status: 'live',
   },
+  {
+    id: 'edit-metadata',
+    name: 'Edit details',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    short: 'Change title and author.',
+    blurb:
+      'Read and rewrite the title, author, subject and keywords viewers show in Document properties.',
+    status: 'live',
+  },
 ];

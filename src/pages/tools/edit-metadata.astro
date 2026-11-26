@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/edit-metadata/Tool';
+
+const title = 'Edit PDF details: title, author, subject, keywords';
+const description =
+  'Change the document information shown in a PDF viewer’s properties panel. Runs in your browser; no account, no upload, and the pages are untouched.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Edit PDF details',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does editing the details remove hidden metadata?',
+    answer:
+      'No. It changes the information dictionary: title, author, subject and keywords. Producer strings, XMP blocks and data inside attachments or bookmarks may still exist; this is not a metadata scrubber.',
+  },
+  {
+    question: 'Are the pages changed?',
+    answer:
+      'No. The page content is not redrawn. The file is re-saved with a new information dictionary, so signatures stop being valid.',
+  },
+  {
+    question: 'Why do two viewers show different titles?',
+    answer:
+      'Some PDFs carry both classic document information and XMP metadata. This tool updates the classic fields; a viewer that prefers XMP may still show the old title.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="edit-metadata"
+      breadcrumbLabel="Edit details"
+      heading="Edit PDF details"
+      lead="Set the title, author, subject and keywords that viewers show in Document properties. The pages themselves are left alone."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not scrub XMP metadata, attachments, bookmarks or embedded files.',
+            'Producer and creator strings written by the original app are not editable here.',
+            'A viewer that reads XMP first may still show another title.',
+            'Digital signatures stop being valid because the file is re-saved.',
+            'Password-protected PDFs must be unlocked first.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools current="edit-metadata" />
+      </aside>
+    </div>
+  </div>
+</Base>
