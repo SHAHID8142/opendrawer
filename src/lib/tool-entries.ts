@@ -246,4 +246,15 @@ export const tools: ToolEntry[] = [
       'Fill AcroForm text fields, checkboxes and option lists, then flatten them so they cannot be changed.',
     status: 'live',
   },
+  {
+    id: 'extract-images',
+    name: 'Extract images',
+    category: 'Documents',
+    group: 'Convert',
+    accent: 'convert',
+    short: 'Pull pictures out of a PDF.',
+    blurb:
+      'Pull the raster pictures out of every page as PNG files, with a size filter and a ZIP download.',
+    status: 'live',
+  },
 ];

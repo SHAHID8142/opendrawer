@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/extract-images/Tool';
+
+const title = 'Extract images from a PDF';
+const description =
+  'Pull the pictures out of a PDF as PNG files, with a size filter and a ZIP download. Everything runs in your browser; the file is never uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Extract images',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Are these the original image files?',
+    answer:
+      'No. PDF.js decodes each picture and this tool rebuilds it as a PNG at its drawn pixel size. A JPEG inside the PDF is therefore re-encoded, and the original compressed bytes are not recovered.',
+  },
+  {
+    question: 'Why are some pictures missing?',
+    answer:
+      'Vector drawings, text, gradients and one-bit stencil masks are not raster images, so they do not produce a file. Images below the size filter are skipped on purpose to remove icons.',
+  },
+  {
+    question: 'Can I choose pages?',
+    answer: 'Not in this build. Every page is scanned; use the size filter to cut noise.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="extract-images"
+      breadcrumbLabel="Extract images"
+      heading="Extract images from a PDF"
+      lead="Take the photographs and artwork out of a PDF as PNG files. Decorative icons are filtered by size, and everything is rebuilt in this tab."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not recover the original JPEG/JPEG2000 bytes; each image is re-encoded as PNG.',
+            'Vector graphics, gradients, charts and one-bit masks are not pictures and are skipped.',
+            'The same image used on several pages can appear more than once.',
+            'It stops at 100 images and skips any single image above 40 megapixels.',
+            'Password-protected PDFs are refused; the PDF itself is not changed.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools current="extract-images" />
+      </aside>
+    </div>
+  </div>
+</Base>

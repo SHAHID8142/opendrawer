@@ -2,8 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
+import { deflateSync } from 'node:zlib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images'];
 
 async function createPdf(
   pageCount: number,
@@ -19,6 +20,41 @@ async function createPdf(
     page.drawText(`${prefix} ${index}`, { x: 72, y: 700, size: 18, font });
   }
   return Buffer.from(await pdf.save());
+}
+
+function crc32(buffer: Buffer): number {
+  let crc = 0xffffffff;
+  for (const byte of buffer) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type: string, data: Buffer): Buffer {
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const kind = Buffer.from(type, 'latin1');
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(Buffer.concat([kind, data])));
+  return Buffer.concat([length, kind, data, crc]);
+}
+
+/** A real 200×200 solid-colour PNG, for the image-extraction flow. */
+function makePng(size: number): Buffer {
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(size, 0);
+  header.writeUInt32BE(size, 4);
+  header[8] = 8;
+  header[9] = 2;
+  const row = Buffer.concat([Buffer.from([0]), Buffer.alloc(size * 3, 0xc0)]);
+  const raw = Buffer.concat(Array.from({ length: size }, () => row));
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    pngChunk('IHDR', header),
+    pngChunk('IDAT', deflateSync(raw)),
+    pngChunk('IEND', Buffer.alloc(0)),
+  ]);
 }
 
 async function assertNoHorizontalOverflow(page: Page, context: string): Promise<void> {
@@ -615,6 +651,30 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('extracts a raster image and downloads a real PNG', async ({ page }) => {
+    const pdf = await PDFDocument.create();
+    const imagePage = pdf.addPage([400, 500]);
+    const embedded = await pdf.embedPng(makePng(200));
+    imagePage.drawImage(embedded, { x: 60, y: 120, width: 200, height: 200 });
+
+    await page.goto('/tools/extract-images');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#extract-images-input').setInputFiles({
+      name: 'brochure.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from(await pdf.save()),
+    });
+    await page.getByRole('button', { name: 'Extract the images' }).click();
+    await expect(page.getByRole('status')).toContainText('Found 1 image', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PNG' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('brochure-image-001.png');
+    const bytes = readFileSync((await saved.path())!);
+    expect(bytes.subarray(0, 8).toString('latin1')).toBe('\x89PNG\r\n\x1a\n');
   });
 
   test('fills a text field and flattens the form', async ({ page }) => {
