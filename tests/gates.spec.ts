@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text'];
 
 async function createPdf(
   pageCount: number,
@@ -537,6 +537,27 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('form-flattened.pdf');
+  });
+
+  test('extracts text from every page and downloads a .txt file', async ({ page }) => {
+    await page.goto('/tools/extract-text');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#extract-input').setInputFiles({
+      name: 'notes.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(2),
+    });
+    await page.getByRole('button', { name: 'Extract the text' }).click();
+    await expect(page.getByRole('status')).toContainText('Read 2 pages', { timeout: 30_000 });
+
+    const preview = page.locator('#extracted-text');
+    await expect(preview).toHaveValue(/--- Page 1 ---/);
+    await expect(preview).toHaveValue(/Page 2/);
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the text file' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('notes.txt');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

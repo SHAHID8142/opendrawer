@@ -6,7 +6,7 @@ asking questions.
 
 **Current state (November 2026):** steps 0–2 are done — the Astro shell, the design system and
 `inspect-pdf` are live, `pdf-to-image` followed as the first Wave 1 tool, and `images-to-pdf`
-now covers the pdf-lib creation path, and `merge-pdf` starts the Organise group, followed by `split-pdf`, `rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf` and `flatten-pdf`. The remaining wave-1
+now covers the pdf-lib creation path, and `merge-pdf` starts the Organise group, followed by `split-pdf`, `rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf` and `extract-text`. The remaining wave-1
 tools are the open work. This document stays the ordering; update it when a step lands.
 
 **Guardrails for the whole phase:** `AGENTS.md` rules; AGPL headers; no network requests during

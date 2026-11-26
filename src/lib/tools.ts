@@ -223,6 +223,17 @@ export const tools: ToolEntry[] = [
       'Turn form fields into fixed page content so a filled form can no longer be edited or refilled.',
     status: 'live',
   },
+  {
+    id: 'extract-text',
+    name: 'Extract text',
+    category: 'Documents',
+    group: 'Convert',
+    accent: 'convert',
+    short: 'Copy words out as .txt.',
+    blurb:
+      'Read selectable PDF text and download it as plain UTF-8 text, with optional page labels.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

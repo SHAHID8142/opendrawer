@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/extract-text/Tool';
+
+const title = 'Extract text from PDF: copy the words into a .txt file';
+const description =
+  'Read the selectable text of a PDF and download it as plain UTF-8 text, optionally labelled by page. Runs in your browser; nothing is uploaded and no OCR is involved.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Extract text from PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Why is the text empty or wrong?',
+    answer:
+      'If the pages are scans or photographs there is no selectable text to read, and this tool does not perform OCR. In multi-column layouts the reading order can also differ from what you see.',
+  },
+  {
+    question: 'Are tables and columns kept?',
+    answer:
+      'No. The output is plain text in the order the PDF stores it. Formatting, tables and images are not carried over.',
+  },
+  {
+    question: 'Is the text uploaded anywhere?',
+    answer:
+      'No. The PDF is read in this tab and the .txt file is built on your device. There is no account and no server.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Extract text" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Extract text from PDF</h1>
+      <p>
+        Get the words out of a PDF without retyping them. The text is shown here first, then
+        downloaded as a plain .txt file you can open anywhere.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'No OCR: scanned pages and photos of text contain no selectable text, so they come out empty.',
+            'No formatting: tables, columns, headings and images are not preserved.',
+            'The reading order is the PDF’s internal order, which can be wrong for complex layouts.',
+            'Some embedded fonts or encodings may decode incorrectly or not at all.',
+            'Password-protected PDFs are refused; digital signatures are not affected because the file is not changed.',
+            'It stops at 500 pages at once.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>
