@@ -1,5 +1,31 @@
 import { PDFArray, PDFDict, PDFName, PDFPage, PDFRawStream } from 'pdf-lib';
 
+export type FlagSeverity = 'info' | 'warning';
+
+export interface PrivacyFlag {
+  severity: FlagSeverity;
+  text: string;
+}
+
+export interface FlagFacts {
+  incrementalSaves: number;
+  javascript: boolean;
+  attachments: number;
+  xfa: boolean;
+  signatures: number;
+  encrypted: boolean;
+}
+
+export interface MetadataSummary {
+  title?: string;
+  author?: string;
+  subject?: string;
+  creator?: string;
+  producer?: string;
+  created?: string;
+  modified?: string;
+}
+
 export interface PageFeatures {
   fonts: number;
   images: number;
@@ -92,4 +118,53 @@ export function pageFeatures(page: PDFPage): PageFeatures {
   }
 
   return features;
+}
+
+/** Build privacy and sharing flags from parsed PDF metadata and structural facts. */
+export function buildPrivacyFlags(metadata: MetadataSummary, facts: FlagFacts): PrivacyFlag[] {
+  const flags: PrivacyFlag[] = [];
+  if (metadata.author) {
+    flags.push({ severity: 'warning', text: `Includes an author name: ${metadata.author}` });
+  }
+  const software = [metadata.creator, metadata.producer].filter(Boolean).join(' / ');
+  if (software) {
+    flags.push({ severity: 'info', text: `Records the software that made it: ${software}` });
+  }
+  if (metadata.created) {
+    flags.push({ severity: 'info', text: `Records a creation date: ${metadata.created}` });
+  }
+  if (facts.incrementalSaves > 1) {
+    flags.push({
+      severity: 'warning',
+      text: `Saved ${facts.incrementalSaves} times. Earlier revisions can still hold text that was replaced later, so a "removed" name or number may still be readable.`,
+    });
+  }
+  if (facts.javascript) {
+    flags.push({
+      severity: 'warning',
+      text: 'Contains JavaScript that runs when the file is opened. OpenDrawer never runs it; most viewers will.',
+    });
+  }
+  if (facts.attachments > 0) {
+    flags.push({
+      severity: 'warning',
+      text: `Carries ${facts.attachments} embedded file${facts.attachments === 1 ? '' : 's'} inside it, which travel with the PDF.`,
+    });
+  }
+  if (facts.xfa) {
+    flags.push({ severity: 'info', text: 'Uses an XFA form, which many viewers cannot display.' });
+  }
+  if (facts.signatures > 0) {
+    flags.push({
+      severity: 'info',
+      text: `Has ${facts.signatures} digital signature${facts.signatures === 1 ? '' : 's'}. Changing the file will invalidate the signature.`,
+    });
+  }
+  if (flags.length === 0 && !facts.encrypted) {
+    flags.push({
+      severity: 'info',
+      text: 'No author name, scripts, attachments or signatures were found.',
+    });
+  }
+  return flags;
 }

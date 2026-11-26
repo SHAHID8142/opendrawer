@@ -1,6 +1,9 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Pure structural PDF inspector: checks metadata, scripts, embedded files, forms, and page sizes.
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { formatBytes } from '../../lib/format';
 import {
+  buildPrivacyFlags,
   countEmbeddedFiles,
   countEndOfFileMarkers,
   decodeHeader,
@@ -8,14 +11,12 @@ import {
   hasJavaScript,
   isoDate,
   pageFeatures,
+  type FlagSeverity,
+  type MetadataSummary,
+  type PrivacyFlag,
 } from './pdf-features';
 
-export type FlagSeverity = 'info' | 'warning';
-
-export interface PrivacyFlag {
-  severity: FlagSeverity;
-  text: string;
-}
+export type { FlagSeverity, PrivacyFlag };
 
 export interface PageSize {
   width: number;
@@ -41,15 +42,7 @@ export interface InspectResult {
   xfa: boolean;
   javascript: boolean;
   attachments: number;
-  metadata: {
-    title?: string;
-    author?: string;
-    subject?: string;
-    creator?: string;
-    producer?: string;
-    created?: string;
-    modified?: string;
-  };
+  metadata: MetadataSummary;
   flags: PrivacyFlag[];
   warnings: string[];
 }
@@ -86,9 +79,7 @@ export async function inspectPdf(file: File): Promise<InspectResult> {
       );
       doc = await PDFDocument.load(bytes, { updateMetadata: false, ignoreEncryption: true });
     } else {
-      throw new Error(
-        `This file could not be read as a PDF (${message}). It may be truncated or damaged.`,
-      );
+      throw new Error('This file could not be read as a PDF. It may be truncated or damaged.');
     }
   }
 
@@ -121,7 +112,7 @@ export async function inspectPdf(file: File): Promise<InspectResult> {
   const attachments = countEmbeddedFiles(names);
   const incrementalSaves = countEndOfFileMarkers(bytes);
 
-  const metadata = {
+  const metadata: MetadataSummary = {
     title: doc.getTitle(),
     author: doc.getAuthor(),
     subject: doc.getSubject(),
@@ -132,6 +123,14 @@ export async function inspectPdf(file: File): Promise<InspectResult> {
   };
 
   const uniqueSizes = new Set(pageSizes.map((size) => `${size.width}x${size.height}`));
+  const flags = buildPrivacyFlags(metadata, {
+    incrementalSaves,
+    javascript,
+    attachments,
+    xfa,
+    signatures,
+    encrypted,
+  });
 
   return {
     fileName: file.name,
@@ -152,64 +151,7 @@ export async function inspectPdf(file: File): Promise<InspectResult> {
     javascript,
     attachments,
     metadata,
-    flags: buildFlags(metadata, {
-      incrementalSaves,
-      javascript,
-      attachments,
-      xfa,
-      signatures,
-    }),
+    flags,
     warnings,
   };
-}
-
-function buildFlags(
-  metadata: InspectResult['metadata'],
-  facts: { incrementalSaves: number; javascript: boolean; attachments: number; xfa: boolean; signatures: number },
-): PrivacyFlag[] {
-  const flags: PrivacyFlag[] = [];
-  if (metadata.author) {
-    flags.push({ severity: 'warning', text: `Includes an author name: ${metadata.author}` });
-  }
-  const software = [metadata.creator, metadata.producer].filter(Boolean).join(' / ');
-  if (software) {
-    flags.push({ severity: 'info', text: `Records the software that made it: ${software}` });
-  }
-  if (metadata.created) {
-    flags.push({ severity: 'info', text: `Records a creation date: ${metadata.created}` });
-  }
-  if (facts.incrementalSaves > 1) {
-    flags.push({
-      severity: 'warning',
-      text: `Saved ${facts.incrementalSaves} times. Earlier revisions can still hold text that was replaced later, so a "removed" name or number may still be readable.`,
-    });
-  }
-  if (facts.javascript) {
-    flags.push({
-      severity: 'warning',
-      text: 'Contains JavaScript that runs when the file is opened. OpenDrawer never runs it; most viewers will.',
-    });
-  }
-  if (facts.attachments > 0) {
-    flags.push({
-      severity: 'warning',
-      text: `Carries ${facts.attachments} embedded file${facts.attachments === 1 ? '' : 's'} inside it, which travel with the PDF.`,
-    });
-  }
-  if (facts.xfa) {
-    flags.push({ severity: 'info', text: 'Uses an XFA form, which many viewers cannot display.' });
-  }
-  if (facts.signatures > 0) {
-    flags.push({
-      severity: 'info',
-      text: `Has ${facts.signatures} digital signature${facts.signatures === 1 ? '' : 's'}. Changing the file will invalidate the signature.`,
-    });
-  }
-  if (flags.length === 0) {
-    flags.push({
-      severity: 'info',
-      text: 'No author name, scripts, attachments or signatures were found.',
-    });
-  }
-  return flags;
 }
