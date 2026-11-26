@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/watermark-pdf/Tool';
+
+const title = 'Watermark PDF: add a text watermark to every page';
+const description =
+  'Stamp text such as DRAFT or CONFIDENTIAL across every page, with a chosen angle, opacity and size. Runs in your browser; nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Watermark PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is the watermark really part of the PDF?',
+    answer:
+      'Yes. The text is written into each page as content, so it prints and stays visible in any viewer.',
+  },
+  {
+    question: 'Can someone remove it?',
+    answer:
+      'Yes. A determined editor can remove added text. A watermark marks a document; it does not protect it.',
+  },
+  {
+    question: 'Can I watermark only some pages?',
+    answer: 'Not in this build. The watermark is applied to every page of the document.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Watermark PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Watermark PDF</h1>
+      <p>
+        Mark a document as a draft or confidential copy. Choose the words, the angle and how
+        strongly they show, then download the stamped file.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It applies to every page; there is no per-page selection yet.',
+            'It writes text only. There are no image or logo watermarks.',
+            'It is not protection. Anyone with an editor can remove added text.',
+            'It cannot watermark a password-protected PDF; remove the password first.',
+            'The watermark is placed at the centre and does not avoid existing content.',
+            'Digital signatures stop being valid once the file changes.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

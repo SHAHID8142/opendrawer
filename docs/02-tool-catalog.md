@@ -4,7 +4,7 @@ Every planned phase-1 tool, with its engine, its real limits, and its licence po
 IDs are permanent: they become URLs and must never be renamed.
 
 **Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`,
-`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`. The rest are planned.
+`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`. The rest are planned.
 
 Legend for **Reliability**: ●●● exact and predictable · ●● good, with disclosed caveats ·
 ● best-effort, always warn the user.

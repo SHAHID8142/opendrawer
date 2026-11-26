@@ -6,3 +6,6 @@ import { rgb } from 'pdf-lib';
 
 export const PDF_INK = rgb(0.09, 0.08, 0.06);
 export const PDF_FONT_SIZE = 11;
+
+/** Softer ink for watermarks; the opacity option is applied on top. */
+export const PDF_WATERMARK_INK = rgb(0.36, 0.33, 0.28);

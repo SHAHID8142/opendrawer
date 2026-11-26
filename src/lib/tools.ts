@@ -189,6 +189,16 @@ export const tools: ToolEntry[] = [
       'Stamp page numbers at the top or bottom, as a plain number or "Page 1 of 10", with an optional cover page.',
     status: 'live',
   },
+  {
+    id: 'watermark-pdf',
+    name: 'Watermark PDF',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    blurb:
+      'Stamp draft or confidential text across every page, with a chosen angle, opacity and size.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');
