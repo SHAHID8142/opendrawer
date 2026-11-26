@@ -24,6 +24,12 @@
   box-shadow: var(--shadow-clay-sm);
 }
 
+@media (max-width: 30rem) {
+  .note {
+    padding: var(--space-4);
+  }
+}
+
 .note h2,
 .note h3 {
   font-size: var(--text-md);

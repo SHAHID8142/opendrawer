@@ -16,7 +16,9 @@ import '../styles/ui/list.css';
 import '../styles/ui/tool-list.css';
 import '../styles/ui/catalog.css';
 import '../styles/ui/glyph.css';
+import '../styles/ui/infotip.css';
 import { THEME_COLOR } from '../lib/theme-colors';
+import QuickSwitcher from '../components/QuickSwitcher.astro';
 
 interface Props {
   title: string;
@@ -28,7 +30,7 @@ const { title, description, jsonLd } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const siteName = 'OpenDrawer';
 const pathname = Astro.url.pathname;
-const isHome = pathname === '/';
+const isToolsArea = pathname === '/' || pathname.startsWith('/tools/');
 const isPrivacy = pathname === '/privacy' || pathname.startsWith('/privacy/');
 ---
 
@@ -67,14 +69,24 @@ const isPrivacy = pathname === '/privacy' || pathname.startsWith('/privacy/');
           OpenDrawer
         </a>
         <nav class="site-nav" aria-label="Main">
-          <a href="/#tools" aria-current={isHome ? 'page' : undefined}>Tools</a>
+          <a href="/#tools" aria-current={isToolsArea ? 'page' : undefined}>Tools</a>
           <a href="/privacy" aria-current={isPrivacy ? 'page' : undefined}>Privacy</a>
           <a class="site-nav__source" href="https://github.com/SHAHID8142/opendrawer" rel="noopener">
             Source
           </a>
         </nav>
+        <div class="site-header__actions">
+          <button type="button" class="nav-search" id="nav-quick-open" title="Jump to any tool (⌘K)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+            </svg>
+            <span class="nav-search__label">Find tool</span>
+            <kbd class="nav-search__kbd" aria-hidden="true">⌘K</kbd>
+          </button>
+        </div>
       </div>
     </header>
+    <QuickSwitcher />
     <main id="main" class="wrap">
       <slot />
     </main>
@@ -90,5 +102,27 @@ const isPrivacy = pathname === '/privacy' || pathname.startsWith('/privacy/');
         </p>
       </div>
     </footer>
+    <script>
+      const infoTips = Array.from(document.querySelectorAll<HTMLElement>('[data-info-tip]'));
+      for (const tip of infoTips) {
+        const trigger = tip.querySelector<HTMLButtonElement>('.info-tip__trigger');
+        trigger?.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const next = tip.dataset.open !== 'true';
+          for (const other of infoTips) {
+            other.dataset.open = 'false';
+            other.querySelector('.info-tip__trigger')?.setAttribute('aria-expanded', 'false');
+          }
+          tip.dataset.open = next ? 'true' : 'false';
+          trigger.setAttribute('aria-expanded', next ? 'true' : 'false');
+        });
+      }
+      document.addEventListener('click', () => {
+        for (const tip of infoTips) {
+          tip.dataset.open = 'false';
+          tip.querySelector('.info-tip__trigger')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+    </script>
   </body>
 </html>

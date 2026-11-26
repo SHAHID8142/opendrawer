@@ -1,6 +1,5 @@
 /*
- * Layout — sculpted porcelain-clay masthead, freestanding mark, footer, and rhythm.
- * Component styling lives in src/styles/ui/.
+ * Layout — frosted translucent masthead, freestanding mark, quick-jump trigger, and footer.
  */
 
 .wrap {
@@ -25,23 +24,23 @@
 
 .skip-link:focus-visible { transform: none; }
 
-/* Masthead ---------------------------------------------------------------- */
+/* Frosted sticky masthead ------------------------------------------------- */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: var(--color-surface);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(var(--space-3));
+  backdrop-filter: blur(var(--space-3));
   border-bottom: var(--border-width) solid var(--color-border-subtle);
-  box-shadow: var(--shadow-clay-sm);
 }
 
 .site-header__inner {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-4);
   min-height: var(--header-height);
   padding-block: var(--space-2);
 }
@@ -72,7 +71,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: center;
+  gap: var(--space-1);
 }
 
 .site-nav a {
@@ -89,8 +89,7 @@
   text-decoration: none;
   transition:
     background-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-out);
 }
 
 .site-nav a:hover {
@@ -100,25 +99,52 @@
 
 .site-nav a[aria-current='page'] {
   background: var(--color-surface-subtle);
-  border-color: var(--color-border-subtle);
-  box-shadow: var(--shadow-clay-inset);
   color: var(--color-accent-strong);
 }
 
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nav-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  background: var(--color-surface-subtle);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.nav-search:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.nav-search svg {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex: none;
+}
+
+.nav-search__kbd { font-size: var(--text-xs); padding: 0 var(--space-2); box-shadow: none; }
+
 /* Page body --------------------------------------------------------------- */
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-block: var(--space-8) var(--space-10);
-}
-
-.page-fill {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
+main { flex: 1; display: flex; flex-direction: column; padding-block: var(--space-7) var(--space-9); }
+.page-fill { display: flex; flex-direction: column; flex: 1; }
 
 .site-footer {
   border-top: var(--border-width) solid var(--color-border-subtle);
@@ -143,70 +169,51 @@ main {
   gap: var(--space-2) var(--space-5);
 }
 
-.site-footer__links a {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--tap-target);
-}
+.site-footer__links a { display: inline-flex; align-items: center; min-height: var(--tap-target); }
 
 /* Rhythm ------------------------------------------------------------------ */
 
 .stack > * + * { margin-top: var(--space-4); }
-.stack-lg > * + * { margin-top: var(--space-7); }
+.stack-lg > * + * { margin-top: var(--space-8); }
 .stack-sm > * + * { margin-top: var(--space-2); }
-
-.cluster {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}
-
+.cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 .prose { max-width: var(--measure); }
-
-.prose p,
-.prose ul,
-.prose ol { color: var(--color-text-muted); }
-
+.prose p, .prose ul, .prose ol { color: var(--color-text-muted); }
 .prose > * + * { margin-top: var(--space-4); }
-
 .muted { color: var(--color-text-muted); }
 
-@media (max-width: 40rem) {
-  :root {
-    --gutter: var(--space-4);
-  }
+@media (max-width: 44rem) {
+  :root { --gutter: var(--space-4); }
+  .site-header { position: static; }
 
-  .site-header {
-    position: static;
-  }
-
-  main {
-    padding-block: var(--space-6) var(--space-8);
-  }
-
-  .brand {
-    gap: var(--space-2);
-    font-size: var(--text-lg);
-  }
-
-  .brand__mark {
-    width: var(--space-7);
-    height: var(--space-7);
+  .site-header__inner {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2) var(--space-3);
   }
 
   .site-nav {
+    grid-column: 1 / -1;
+    order: 3;
     justify-content: center;
-    gap: var(--space-1);
+    padding-top: var(--space-1);
+    border-top: var(--border-width) solid var(--color-border-subtle);
   }
 
-  .site-nav a {
-    padding-inline: var(--space-3);
-  }
+  .nav-search__kbd { display: none; }
+  main { padding-block: var(--space-6) var(--space-8); }
+
+  .brand { gap: var(--space-2); font-size: var(--text-lg); }
+  .brand__mark { width: var(--space-7); height: var(--space-7); }
+  .site-nav a { padding-inline: var(--space-3); }
 }
 
-@media (max-width: 32rem) {
-  .site-header__inner {
-    justify-content: center;
+@media (max-width: 26rem) {
+  .nav-search__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

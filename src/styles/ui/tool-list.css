@@ -1,6 +1,6 @@
 /*
- * Tool directory — centered search bar and colorful, airy service cards.
- * Zero nested cards or icon containers; left-aligned editorial hierarchy inside each card.
+ * Tool directory — responsive search bar and terse service-tinted cards with stretched link.
+ * Zero nested cards or icon containers; "i" InfoTip carries longer details cleanly.
  */
 
 .tool-search {
@@ -27,8 +27,8 @@
 }
 
 .tool-search__input {
-  padding-left: var(--space-9);
-  padding-right: var(--space-9);
+  padding-left: var(--space-8);
+  padding-right: var(--space-8);
   border-radius: var(--radius-full);
 }
 
@@ -55,10 +55,10 @@
   text-align: center;
 }
 
-/* Card grid — up to 4 columns on wide desktop, balanced auto-fill with zero sibling margin drift. */
+/* Responsive grid: 1 col (<560px), 2 cols (560–860px), 3 cols (860–1160px), 4 cols (1160px+). */
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
   gap: var(--space-5);
   margin: 0;
   padding: 0;
@@ -67,23 +67,25 @@
 
 .tool-grid > li {
   margin: 0;
+  min-width: 0;
 }
 
-/* Tool card — soft service-tinted porcelain surface, bare icon, clean left-aligned copy. */
+/* Tool card — soft service wash, stretched link covers card while InfoTip sits at z-index 2. */
 .tool-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-3);
+  gap: var(--space-4);
   height: 100%;
-  padding: var(--space-5);
-  background: linear-gradient(155deg, var(--card-tint, var(--color-surface)) 0%, var(--color-surface) 60%);
+  min-width: 0;
+  padding: var(--space-6);
+  background: linear-gradient(155deg, var(--card-tint, var(--color-surface)) 0%, var(--color-surface) 58%);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-clay-sm);
   color: var(--color-text);
   text-align: left;
-  text-decoration: none;
   transition:
     border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out),
@@ -104,10 +106,9 @@
 .tool-card[data-accent='images']    { --card-ink: var(--color-images); --card-tint: var(--color-images-subtle); }
 
 .tool-card:hover,
-.tool-card:focus-visible {
+.tool-card:has(.tool-card__link:focus-visible) {
   border-color: var(--card-ink, var(--color-border));
   box-shadow: var(--shadow-clay-lift);
-  color: var(--color-text);
   transform: translateY(calc(var(--space-1) * -0.5));
 }
 
@@ -119,6 +120,12 @@
   width: 100%;
 }
 
+.tool-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .tool-card__group {
   color: var(--card-ink, var(--color-accent-strong));
   font-size: var(--text-xs);
@@ -126,19 +133,46 @@
   letter-spacing: var(--tracking-wide);
 }
 
+.tool-card__body {
+  display: grid;
+  gap: var(--space-1);
+  width: 100%;
+}
+
 .tool-card__title {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-snug);
   line-height: var(--leading-snug);
+  margin: 0;
+}
+
+.tool-card__link {
   color: var(--color-text);
+  text-decoration: none;
+}
+
+.tool-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+
+.tool-card__link:focus-visible {
+  outline: none;
+}
+
+.tool-card:has(.tool-card__link:focus-visible) {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
 }
 
 .tool-card__blurb {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
-  flex: 1;
+  margin: 0;
 }
 
 .tool-card__action {
@@ -146,7 +180,6 @@
   align-items: center;
   gap: var(--space-1);
   margin-top: auto;
-  padding-top: var(--space-1);
   color: var(--card-ink, var(--color-accent-strong));
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
@@ -158,8 +191,7 @@
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-card:hover .tool-card__action svg,
-.tool-card:focus-visible .tool-card__action svg {
+.tool-card:hover .tool-card__action svg {
   transform: translateX(var(--space-1));
 }
 
@@ -167,6 +199,10 @@
   .tool-grid {
     grid-template-columns: 1fr;
     gap: var(--space-4);
+  }
+
+  .tool-card {
+    padding: var(--space-5);
   }
 
   .tool-search__kbd {
@@ -180,7 +216,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tool-card:hover,
-  .tool-card:focus-visible {
+  .tool-card:has(.tool-card__link:focus-visible) {
     transform: none;
   }
 }

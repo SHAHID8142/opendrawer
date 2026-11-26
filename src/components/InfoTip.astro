@@ -1,0 +1,23 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Accessible 44x44 "i" info trigger showing full instructions on hover, focus, or tap.
+
+interface Props {
+  label: string;
+  text: string;
+  align?: 'center' | 'end';
+}
+
+const { label, text, align = 'center' } = Astro.props;
+---
+
+<span class={`info-tip info-tip--${align}`} data-info-tip>
+  <button type="button" class="info-tip__trigger" aria-label={label} aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </svg>
+  </button>
+  <span class="info-tip__bubble" role="tooltip">{text}</span>
+</span>

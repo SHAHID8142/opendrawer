@@ -1,0 +1,92 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Keyboard-accessible native <dialog> tool quick-switcher triggered from the navbar on any page.
+import ToolGlyph from './ToolGlyph.astro';
+import { categories, liveTools } from '../lib/tools';
+
+const catToneMap = new Map(categories.map((c) => [c.id, c.tone]));
+---
+
+<dialog class="dialog quick-dialog" id="quick-switcher" aria-labelledby="quick-switcher-title">
+  <div class="quick-dialog__head">
+    <h2 id="quick-switcher-title" class="sr-only">Jump to any tool</h2>
+    <div class="quick-dialog__search">
+      <svg class="tool-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+      </svg>
+      <input
+        id="quick-switcher-input"
+        class="input tool-search__input"
+        type="search"
+        placeholder="Jump to a tool, e.g. merge, split, PNG"
+        autocomplete="off"
+      />
+    </div>
+    <button type="button" class="btn btn--secondary quick-dialog__close" id="quick-switcher-close" aria-label="Close tool switcher">
+      Close
+    </button>
+  </div>
+
+  <ul class="quick-list" role="list" id="quick-switcher-list">
+    {
+      liveTools.map((tool) => (
+        <li data-quick-item data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}>
+          <a class="quick-item" href={`/tools/${tool.id}`} data-accent={tool.accent}>
+            <ToolGlyph kind={tool.id} fallback={catToneMap.get(tool.category) ?? 'documents'} tone={tool.accent} size="md" />
+            <span class="quick-item__text">
+              <span class="quick-item__name">{tool.name}</span>
+              <span class="quick-item__meta">{tool.category} · {tool.group}</span>
+            </span>
+            <span class="quick-item__go" aria-hidden="true">Open</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="quick-dialog__empty" id="quick-switcher-empty" hidden>No matching tools found.</p>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('quick-switcher') as HTMLDialogElement | null;
+  const openBtn = document.getElementById('nav-quick-open');
+  const closeBtn = document.getElementById('quick-switcher-close');
+  const queryInput = document.getElementById('quick-switcher-input') as HTMLInputElement | null;
+  const emptyNote = document.getElementById('quick-switcher-empty');
+  const entries = Array.from(document.querySelectorAll<HTMLElement>('[data-quick-item]'));
+
+  function filterQuick() {
+    if (!queryInput || !emptyNote) return;
+    const q = queryInput.value.trim().toLowerCase();
+    let shown = 0;
+    for (const entry of entries) {
+      const match = q === '' || (entry.dataset.search ?? '').includes(q);
+      entry.hidden = !match;
+      if (match) shown += 1;
+    }
+    emptyNote.hidden = shown > 0;
+  }
+
+  function openSwitcher() {
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+    if (queryInput) {
+      queryInput.value = '';
+      filterQuick();
+      queryInput.focus();
+    }
+  }
+
+  openBtn?.addEventListener('click', openSwitcher);
+  closeBtn?.addEventListener('click', () => dialog?.close());
+  queryInput?.addEventListener('input', filterQuick);
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  window.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      if (dialog?.open) dialog.close();
+      else openSwitcher();
+    }
+  });
+</script>

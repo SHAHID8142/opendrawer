@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import ToolCard from '../components/ToolCard.astro';
 import ToolGlyph from '../components/ToolGlyph.astro';
+import InfoTip from '../components/InfoTip.astro';
 import { categories, liveTools } from '../lib/tools';
 
 const grouped = categories.map((cat) => ({
@@ -18,15 +19,17 @@ const grouped = categories.map((cat) => ({
     <header class="page-head">
       <h1>Everyday file tools, kept on your device</h1>
       <p class="page-head__lead">
-        Built for public goodwill as free open-source software under the AGPL-3.0. Every tool runs
-        inside your browser and keeps working offline after the first load, with zero accounts, zero
-        tracking and zero uploads.
+        Private, offline file tools that run inside your browser.
+        <InfoTip
+          label="How OpenDrawer stays private and free"
+          text="Free AGPL-3.0 open-source software. Every tool runs locally in your browser memory and keeps working offline after the first load, with zero accounts, tracking or uploads."
+        />
       </p>
-      <ul class="trust-strip" aria-label="Core guarantees">
-        <li class="trust-chip--mint">0 uploads</li>
-        <li class="trust-chip--sky">No account</li>
-        <li class="trust-chip--amber">Offline ready</li>
-        <li class="trust-chip--coral">AGPL-3.0</li>
+      <ul class="trust-line" aria-label="Core guarantees">
+        <li>Zero uploads</li>
+        <li>No account</li>
+        <li>Works offline</li>
+        <li>AGPL-3.0</li>
       </ul>
     </header>
 
@@ -68,7 +71,7 @@ const grouped = categories.map((cat) => ({
               id="tool-filter"
               class="input tool-search__input"
               type="search"
-              placeholder="Search tools, e.g. PDF, merge, PNG"
+              placeholder="Search tools (PDF, merge, PNG)"
               autocomplete="off"
               aria-describedby="tool-filter-count"
             />
@@ -89,9 +92,9 @@ const grouped = categories.map((cat) => ({
                     <span class="cat-section__title">
                       <ToolGlyph kind={cat.tone} tone={cat.tone} size="md" />
                       <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
-                      <span class="badge">{cat.items.length} {cat.items.length === 1 ? 'tool' : 'tools'}</span>
+                      <span class="cat-section__count">{cat.items.length}</span>
+                      <InfoTip label={`About ${cat.id} tools`} text={cat.summary} />
                     </span>
-                    <p class="cat-section__summary">{cat.summary}</p>
                   </header>
 
                   <ul class="tool-grid" role="list">
@@ -111,41 +114,40 @@ const grouped = categories.map((cat) => ({
         </div>
 
         <p class="catalog__foot">
-          Every tool is finished, tested and documented before the next one begins.
+          <a href="/privacy">Verify zero uploads in the Network tab</a>.
         </p>
       </section>
-
-      <p class="rail-note">
-        Files stay inside this browser tab. <a href="/privacy">Verify it in the Network tab</a>.
-      </p>
     </div>
 
-    <section class="stack" aria-labelledby="charter-heading">
+    <section class="stack principles-band" aria-labelledby="charter-heading">
       <h2 id="charter-heading" class="muted section-heading">How OpenDrawer works</h2>
       <ul class="value-cards" role="list">
-        <li class="value-card value-card--inspect">
+        <li class="value-card">
           <ToolGlyph kind="device" tone="inspect" size="lg" />
           <h3>Runs on your device</h3>
-          <p>Your browser decodes and converts every file in local memory, even on slow mobile data.</p>
+          <p>
+            Processed in browser memory.
+            <InfoTip label="Local processing details" text="Your browser decodes and converts every file in local memory, even on slow mobile data." />
+          </p>
         </li>
-        <li class="value-card value-card--convert">
+        <li class="value-card">
           <ToolGlyph kind="shield" tone="convert" size="lg" />
-          <h3>Verifiably zero uploads</h3>
-          <p>No upload server exists, and the Content-Security-Policy blocks off-origin requests.</p>
+          <h3>Zero uploads</h3>
+          <p>
+            No server receives files.
+            <InfoTip label="CSP enforcement details" text="No upload server exists, and the Content-Security-Policy blocks all off-origin requests." />
+          </p>
         </li>
-        <li class="value-card value-card--documents">
+        <li class="value-card">
           <ToolGlyph kind="heart" tone="documents" size="lg" />
-          <h3>Built for public goodwill</h3>
-          <p>Free AGPL-3.0 software with no quotas, no watermarks, no accounts and no advertising.</p>
+          <h3>Public goodwill</h3>
+          <p>
+            Free AGPL-3.0 software.
+            <InfoTip label="Open-source commitment" text="No quotas, no watermarks, no accounts, and no advertising anywhere in the app." />
+          </p>
         </li>
       </ul>
     </section>
-
-    <p class="colophon">
-      <span>OpenDrawer</span>
-      <span>AGPL-3.0 open source</span>
-      <span>Static files, zero backend</span>
-    </p>
   </div>
 
   <script>
@@ -226,6 +228,8 @@ const grouped = categories.map((cat) => ({
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
       const tag = (event.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const switcher = document.getElementById('quick-switcher') as HTMLDialogElement | null;
+      if (switcher?.open) return;
       if (!input) return;
       event.preventDefault();
       input.focus();

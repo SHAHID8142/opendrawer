@@ -48,7 +48,13 @@
 }
 
 .tool-head h1 {
-  font-size: var(--text-4xl);
+  font-size: var(--text-3xl);
+}
+
+@media (min-width: 40rem) {
+  .tool-head h1 {
+    font-size: var(--text-4xl);
+  }
 }
 
 .tool-head p {

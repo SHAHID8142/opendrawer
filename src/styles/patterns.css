@@ -1,16 +1,20 @@
 /*
- * Page patterns — value proposition cards and promise lists.
- * Rules: no serial numbers, no cards inside cards, bare icons inside cards.
+ * Page patterns — quiet architectural strip for guarantees / verification steps, and promise lists.
  */
 
 .section-heading {
   text-align: center;
 }
 
-/* Value-proposition cards — icon, heading, text; no nesting, no numbering. */
+.principles-band {
+  padding-top: var(--space-8);
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+/* Borderless 3-column architectural strip — no heavy card chrome competing with interactive cards. */
 .value-cards {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-6);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -22,40 +26,31 @@
 
 .value-card {
   display: grid;
-  gap: var(--space-3);
-  padding: var(--space-6) var(--space-5);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-clay-sm);
+  justify-items: center;
+  align-content: start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   text-align: center;
 }
 
 .value-card .glyph {
-  justify-self: center;
+  margin-bottom: var(--space-1);
 }
 
 .value-card h3 {
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
   margin: 0;
 }
 
 .value-card p {
+  max-width: 34ch;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-  line-height: var(--leading-relaxed);
+  line-height: var(--leading-normal);
   margin: 0;
 }
-
-/* Accent tint on the top border — full perimeter, not one-sided. */
-.value-card--inspect { border-color: var(--color-inspect-subtle); }
-.value-card--inspect:hover { border-color: var(--color-inspect); }
-.value-card--convert { border-color: var(--color-convert-subtle); }
-.value-card--convert:hover { border-color: var(--color-convert); }
-.value-card--documents { border-color: var(--color-documents-subtle); }
-.value-card--documents:hover { border-color: var(--color-accent-strong); }
-.value-card--audio { border-color: var(--color-audio-subtle); }
-.value-card--audio:hover { border-color: var(--color-audio); }
 
 .never-list {
   display: grid;
@@ -82,9 +77,9 @@
   }
 }
 
-@media (min-width: 62rem) {
+@media (min-width: 56rem) {
   .value-cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-6);
+    gap: var(--space-7);
   }
 }

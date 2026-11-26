@@ -68,7 +68,9 @@ export interface ToolEntry {
   category: ToolCategory;
   group: 'Inspect' | 'Create' | 'Organise' | 'Edit' | 'Convert' | 'Optimise & secure';
   accent: ToolAccent;
-  /** One sentence, plain language. Used as the card blurb and the meta description fallback. */
+  /** Ultra-brief 3-5 word line shown on the card surface; full blurb lives in the "i" tip. */
+  short: string;
+  /** Full one-sentence explanation shown on "i" hover/tap and used in metadata. */
   blurb: string;
   status: ToolStatus;
 }
@@ -84,6 +86,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Inspect',
     accent: 'inspect',
+    short: 'Pages, metadata and scripts.',
     blurb:
       'See what a PDF really contains before you send it: page sizes, metadata, embedded files, scripts and signatures.',
     status: 'live',
@@ -94,6 +97,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Convert',
     accent: 'convert',
+    short: 'Export pages to PNG or JPEG.',
     blurb:
       'Turn pages into PNG or JPEG images at 72, 150 or 300 DPI, one page or a whole ZIP of them.',
     status: 'live',
@@ -104,6 +108,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Create',
     accent: 'create',
+    short: 'Turn photos into one PDF.',
     blurb:
       'Put PNG and JPEG photos or scans into one PDF, one page per image, with the page size you choose.',
     status: 'live',
@@ -114,6 +119,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Organise',
     accent: 'merge',
+    short: 'Combine PDFs in your order.',
     blurb:
       'Combine several PDFs into one file, in the order you set, without re-rendering a single page.',
     status: 'live',
@@ -124,6 +130,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Organise',
     accent: 'split',
+    short: 'Extract ranges or single pages.',
     blurb:
       'Split a PDF by page ranges or into one file per page, with pages copied rather than re-rendered.',
     status: 'live',
@@ -134,6 +141,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Organise',
     accent: 'rotate',
+    short: 'Turn pages 90°, 180° or 270°.',
     blurb:
       'Turn selected pages or the whole document by 90, 180 or 270 degrees without re-rendering anything.',
     status: 'live',
@@ -144,6 +152,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Organise',
     accent: 'delete',
+    short: 'Remove chosen pages locally.',
     blurb:
       'Remove the pages you do not need and keep the rest exactly as they were, without re-rendering.',
     status: 'live',
