@@ -51,6 +51,10 @@ const faq = [
     </header>
 
     <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
       <aside class="tool-aside stack">
         <LimitsNote
           title="What this tool cannot do"
@@ -73,10 +77,6 @@ const faq = [
           </div>
         </section>
       </aside>
-
-      <div class="tool-main stack-lg">
-        <Tool client:visible />
-      </div>
     </div>
   </div>
 </Base>

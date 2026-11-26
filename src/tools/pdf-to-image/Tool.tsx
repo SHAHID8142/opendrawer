@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Interactive shell for PDF to image: drop/paste, settings, cancellation, progress, and output.
+import { useEffect, useRef, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
-import { formatBytes } from '../../lib/format';
 import { zipStore } from '../../lib/zip';
+import { RenderSettings } from './RenderSettings';
+import { ResultView } from './ResultView';
 import {
-  DPI_CHOICES,
   renderPdfToImages,
+  validatePageRangeSyntax,
   type ImageFormat,
+  type RenderOptions,
   type RenderSummary,
 } from './render';
 
@@ -19,45 +23,118 @@ export default function Tool() {
   const [dpi, setDpi] = useState(150);
   const [range, setRange] = useState('');
   const [phase, setPhase] = useState<Phase>('idle');
+  const [cancelled, setCancelled] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [liveStatus, setLiveStatus] = useState('');
   const [result, setResult] = useState<RenderSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => setReady(true), []);
+  const abortRef = useRef<AbortController | null>(null);
+  const lastMilestoneRef = useRef(-1);
+  const optionsRef = useRef<RenderOptions>({ format, dpi, range });
+  optionsRef.current = { format, dpi, range };
+
+  useEffect(() => {
+    setReady(true);
+    return () => abortRef.current?.abort();
+  }, []);
 
   const busy = phase === 'working';
   const usable = ready && !busy;
+  const rangeError = validatePageRangeSyntax(range);
 
-  async function run(chosen: File) {
+  async function run(chosen: File, opts: RenderOptions = optionsRef.current) {
+    const syntaxError = validatePageRangeSyntax(opts.range);
     setFile(chosen);
+    setCancelled(false);
+    if (syntaxError) {
+      setResult(null);
+      setError(syntaxError);
+      setPhase('error');
+      return;
+    }
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    lastMilestoneRef.current = -1;
+
     setPhase('working');
     setError(null);
     setResult(null);
     setProgress({ done: 0, total: 0 });
+    setLiveStatus('Opening the document…');
+
     try {
-      const rendered = await renderPdfToImages(chosen, { format, dpi, range }, (done, total) =>
-        setProgress({ done, total }),
+      const rendered = await renderPdfToImages(
+        chosen,
+        opts,
+        (done, total) => {
+          setProgress({ done, total });
+          if (total <= 0) return;
+          if (done === 0) {
+            setLiveStatus(`Rendering ${total} page${total === 1 ? '' : 's'}…`);
+            lastMilestoneRef.current = 0;
+            return;
+          }
+          const milestone = Math.floor((done / total) * 4);
+          if (milestone > lastMilestoneRef.current && done < total) {
+            lastMilestoneRef.current = milestone;
+            setLiveStatus(`Rendered ${done} of ${total} pages.`);
+          }
+        },
+        controller.signal,
       );
       setResult(rendered);
       setPhase('done');
     } catch (cause) {
+      if (controller.signal.aborted || (cause instanceof DOMException && cause.name === 'AbortError')) {
+        setPhase('idle');
+        setCancelled(true);
+        return;
+      }
       setError(cause instanceof Error ? cause.message : 'The pages could not be rendered.');
       setPhase('error');
+    } finally {
+      if (abortRef.current === controller) abortRef.current = null;
     }
+  }
+
+  useEffect(() => {
+    function onPaste(event: ClipboardEvent) {
+      if (abortRef.current) return;
+      const files = Array.from(event.clipboardData?.files ?? []);
+      if (files[0]) void run(files[0]);
+    }
+    window.addEventListener('paste', onPaste);
+    return () => window.removeEventListener('paste', onPaste);
+  }, []);
+
+  function clear() {
+    abortRef.current?.abort();
+    setFile(null);
+    setResult(null);
+    setError(null);
+    setCancelled(false);
+    setProgress({ done: 0, total: 0 });
+    setLiveStatus('');
+    setPhase('idle');
   }
 
   function save() {
     if (!result) return;
-    const base = (file?.name ?? 'document').replace(/\.pdf$/i, '');
     if (result.files.length === 1 && result.files[0]) {
       const only = result.files[0];
-      downloadBlob(bytesToBlob(only.bytes, 'application/octet-stream'), only.name);
+      const mime = result.format === 'png' ? 'image/png' : 'image/jpeg';
+      downloadBlob(bytesToBlob(only.bytes, mime), only.name);
       return;
     }
-    const archive = zipStore(result.files);
-    downloadBlob(archive, `${base}-images.zip`);
+    downloadBlob(zipStore(result.files), `${result.baseName}-images.zip`);
   }
+
+  const percent = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  const idleText = ready ? (cancelled ? 'Rendering cancelled.' : 'No file yet. Choose a PDF to begin.') : 'Preparing the tool…';
 
   return (
     <div className="stack" data-ready={ready ? 'true' : 'false'}>
@@ -68,120 +145,61 @@ export default function Tool() {
         hint="It stays on this device. The pages are drawn here, not on a server."
         buttonLabel="Choose a PDF"
         disabled={!usable}
-        onFiles={(files) => {
-          const chosen = files[0];
-          if (chosen) void run(chosen);
-        }}
+        working={busy}
+        pasteEnabled
+        selectedFile={file ? { name: file.name, size: file.size } : null}
+        onClear={clear}
+        onFiles={(files) => files[0] && void run(files[0])}
       />
 
-      <div className="card">
-        <fieldset className="fieldset" disabled={!usable}>
-          <legend>Output settings</legend>
-
-          <div className="form__row">
-            <div className="field">
-              <label className="field__label" htmlFor="render-format">
-                Image format
-              </label>
-              <select
-                id="render-format"
-                className="input"
-                value={format}
-                onChange={(event) => setFormat(event.target.value === 'jpeg' ? 'jpeg' : 'png')}
-              >
-                <option value="png">PNG (lossless, larger)</option>
-                <option value="jpeg">JPEG (smaller, slight loss)</option>
-              </select>
-            </div>
-
-            <div className="field">
-              <label className="field__label" htmlFor="render-dpi">
-                Resolution
-              </label>
-              <select
-                id="render-dpi"
-                className="input"
-                value={dpi}
-                onChange={(event) => setDpi(Number(event.target.value))}
-              >
-                {DPI_CHOICES.map((choice) => (
-                  <option key={choice} value={choice}>
-                    {choice} DPI
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="field field--grow">
-              <label className="field__label" htmlFor="render-range">
-                Pages (leave empty for all)
-              </label>
-              <input
-                id="render-range"
-                className="input"
-                type="text"
-                inputMode="numeric"
-                placeholder="for example 1-3, 7"
-                value={range}
-                onChange={(event) => setRange(event.target.value)}
-              />
-            </div>
-          </div>
-
-          <p className="muted">
-            Settings apply to the next file you choose. PNG at 150 DPI suits most screens; 300 DPI
-            is for printing.
-          </p>
-        </fieldset>
-      </div>
+      <RenderSettings
+        format={format}
+        dpi={dpi}
+        range={range}
+        rangeError={rangeError}
+        disabled={!usable}
+        hasFile={Boolean(file)}
+        busy={busy}
+        onFormatChange={setFormat}
+        onDpiChange={setDpi}
+        onRangeChange={setRange}
+        onRerender={() => file && void run(file)}
+        onClear={clear}
+      />
 
       <p className="status" role="status" aria-live="polite">
-        {phase === 'idle' && (ready ? 'No file yet. Choose a PDF to begin.' : 'Preparing the tool…')}
-        {phase === 'working' &&
-          (progress.total > 0
-            ? `Rendering page ${progress.done} of ${progress.total}…`
-            : 'Opening the document…')}
+        {phase === 'idle' && idleText}
+        {phase === 'working' && liveStatus}
         {phase === 'error' && 'The pages could not be rendered. The reason is below.'}
         {phase === 'done' && result && `${result.pageCount} page${result.pageCount === 1 ? '' : 's'} rendered.`}
       </p>
 
       {busy && (
-        <div className="card">
+        <div className="card stack">
           <label className="field__label" htmlFor="render-progress">
-            Progress
+            {progress.total > 0 ? `Page ${progress.done} of ${progress.total} · ${percent}%` : 'Opening the document…'}
           </label>
-          <progress id="render-progress" className="progress" value={progress.done} max={progress.total || 1} />
+          {progress.total === 0 ? (
+            <progress id="render-progress" className="progress" />
+          ) : (
+            <progress id="render-progress" className="progress" value={progress.done} max={progress.total} />
+          )}
+          <div>
+            <button type="button" className="btn btn--secondary" onClick={() => abortRef.current?.abort()}>
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
       {phase === 'error' && error && (
-        <div className="note note--danger">
-          <h2>What happened</h2>
+        <div className="note note--danger" role="alert">
+          <h2 className="note__title">What happened</h2>
           <p>{error}</p>
         </div>
       )}
 
-      {result && (
-        <section className="card" aria-labelledby="rendered-heading">
-          <h2 id="rendered-heading">Your images</h2>
-          <ul className="file-list">
-            {result.files.map((rendered) => (
-              <li key={rendered.name}>
-                <span>{rendered.name}</span>{' '}
-                <span className="muted">{formatBytes(rendered.bytes.length)}</span>
-              </li>
-            ))}
-          </ul>
-          <p>
-            <button type="button" className="btn btn--primary" onClick={save}>
-              {result.files.length === 1 ? 'Download the image' : 'Download the ZIP'}
-            </button>
-          </p>
-          <p className="muted">
-            The download is created in this tab. Nothing is stored after you close it.
-          </p>
-        </section>
-      )}
+      {result && <ResultView result={result} onDownload={save} />}
     </div>
   );
 }
