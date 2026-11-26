@@ -6,6 +6,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
   margin: 0;
   padding: 0;
@@ -39,8 +40,11 @@
 
 .tool-head {
   display: grid;
+  justify-items: center;
   gap: var(--space-3);
   max-width: var(--measure);
+  margin-inline: auto;
+  text-align: center;
 }
 
 .tool-head h1 {
@@ -57,6 +61,15 @@
   display: grid;
   gap: var(--space-6);
   align-items: start;
+  width: 100%;
+  max-width: var(--container-lg);
+  margin-inline: auto;
+}
+
+.privacy-flow {
+  width: 100%;
+  max-width: var(--container-md);
+  margin-inline: auto;
 }
 
 .tool-main,
