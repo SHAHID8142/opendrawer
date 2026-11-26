@@ -212,6 +212,17 @@ export const tools: ToolEntry[] = [
       'Trim a uniform margin from chosen pages, with a plain warning that cropping hides rather than deletes.',
     status: 'live',
   },
+  {
+    id: 'flatten-pdf',
+    name: 'Flatten PDF',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    short: 'Lock filled forms.',
+    blurb:
+      'Turn form fields into fixed page content so a filled form can no longer be edited or refilled.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -509,6 +509,34 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('wide-cropped.pdf');
+  });
+
+  test('flattens a form and downloads a PDF without fields', async ({ page }) => {
+    const pdf = await PDFDocument.create();
+    const formPage = pdf.addPage([595.28, 841.89]);
+    const field = pdf.getForm().createTextField('full_name');
+    field.setText('Ada Lovelace');
+    field.addToPage(formPage, { x: 72, y: 700, width: 240, height: 24 });
+    const formBytes = Buffer.from(await pdf.save());
+
+    await page.goto('/tools/flatten-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#flatten-input').setInputFiles({
+      name: 'form.pdf',
+      mimeType: 'application/pdf',
+      buffer: formBytes,
+    });
+    await expect(page.getByRole('status')).toContainText('1 pages ready');
+
+    await page.getByRole('button', { name: 'Flatten the form' }).click();
+    await expect(page.getByRole('status')).toContainText('Flattened 1 form field', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('form-flattened.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

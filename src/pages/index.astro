@@ -10,6 +10,8 @@ const grouped = categories.map((cat) => ({
   ...cat,
   items: liveTools.filter((tool) => tool.category === cat.id),
 }));
+const liveGroups = grouped.filter((cat) => cat.items.length > 0);
+const singleGroup = liveGroups.length === 1 ? liveGroups[0] : null;
 ---
 
 <Base
@@ -65,54 +67,66 @@ const grouped = categories.map((cat) => ({
           }
         </ul>
 
-        <div class="tool-search">
-          <label class="sr-only" for="tool-filter">Search all tools</label>
-          <div class="tool-search__box">
-            <svg class="tool-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
-            </svg>
-            <input
-              id="tool-filter"
-              class="input tool-search__input"
-              type="search"
-              placeholder="Search tools (PDF, merge, PNG)"
-              autocomplete="off"
-              aria-describedby="tool-filter-count"
-            />
-            <kbd class="tool-search__kbd" aria-hidden="true">/</kbd>
+        <div class="catalog__bar">
+          <div class="catalog__head">
+            <h2 id="catalog-heading" data-default-title={singleGroup ? singleGroup.id : 'All tools'}>
+              {singleGroup ? singleGroup.id : 'All tools'}
+            </h2>
+            <span id="catalog-count" class="cat-section__count">
+              {liveTools.length} {liveTools.length === 1 ? 'tool' : 'tools'}
+            </span>
           </div>
-          <p id="tool-filter-count" class="tool-search__count sr-only" role="status" aria-live="polite">
-            Showing {liveTools.length} of {liveTools.length} tools
-          </p>
+
+          <div class="tool-search">
+            <label class="sr-only" for="tool-filter">Search all tools</label>
+            <div class="tool-search__box">
+              <svg class="tool-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                id="tool-filter"
+                class="input tool-search__input"
+                type="search"
+                placeholder="Search tools (PDF, merge, PNG)"
+                autocomplete="off"
+                aria-describedby="tool-filter-count"
+              />
+              <kbd class="tool-search__kbd" aria-hidden="true">/</kbd>
+            </div>
+            <p id="tool-filter-count" class="sr-only" role="status" aria-live="polite">
+              Showing {liveTools.length} of {liveTools.length} tools
+            </p>
+          </div>
         </div>
 
         <div class="cat-sections" id="cat-sections">
           {
-            grouped
-              .filter((cat) => cat.items.length > 0)
-              .map((cat) => (
-                <section class="cat-section" data-cat-section={cat.id} aria-labelledby={`cat-${cat.slug}`}>
+            liveGroups.map((cat) => (
+              <section
+                class="cat-section"
+                data-cat-section={cat.id}
+                aria-labelledby={singleGroup ? 'catalog-heading' : `cat-${cat.slug}`}
+              >
+                {!singleGroup && (
                   <header class="cat-section__head">
                     <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
                     <span class="cat-section__count">
                       {cat.items.length} {cat.items.length === 1 ? 'tool' : 'tools'}
                     </span>
                   </header>
-
-                  <ul class="tool-grid" role="list">
-                    {cat.items.map((tool) => <ToolCard tool={tool} fallbackIcon={cat.tone} />)}
-                  </ul>
-                </section>
-              ))
+                )}
+                <ul class="tool-grid" role="list">
+                  {cat.items.map((tool) => <ToolCard tool={tool} fallbackIcon={cat.tone} />)}
+                </ul>
+              </section>
+            ))
           }
         </div>
 
         <div id="tool-filter-empty" class="empty-panel" hidden>
           <h2 id="tool-empty-title">No tools match that filter</h2>
           <p id="tool-empty-body">Try a different keyword or view every tool currently live.</p>
-          <button type="button" class="btn btn--secondary" id="tool-filter-reset">
-            Show all tools
-          </button>
+          <button type="button" class="btn btn--secondary" id="tool-filter-reset">Show all tools</button>
         </div>
       </section>
     </div>
@@ -142,7 +156,9 @@ const grouped = categories.map((cat) => ({
 
   <script>
     const input = document.getElementById('tool-filter') as HTMLInputElement | null;
-    const count = document.getElementById('tool-filter-count');
+    const status = document.getElementById('tool-filter-count');
+    const heading = document.getElementById('catalog-heading');
+    const pillCount = document.getElementById('catalog-count');
     const empty = document.getElementById('tool-filter-empty');
     const emptyTitle = document.getElementById('tool-empty-title');
     const emptyBody = document.getElementById('tool-empty-body');
@@ -153,34 +169,32 @@ const grouped = categories.map((cat) => ({
     let activeCategory = 'All';
 
     function applyFilter() {
-      if (!input || !count || !empty) return;
+      if (!input || !status || !empty) return;
       const query = input.value.trim().toLowerCase();
       let visible = 0;
 
       for (const item of items) {
-        const catMatch = activeCategory === 'All' || item.dataset.category === activeCategory;
-        const queryMatch = query === '' || (item.dataset.search ?? '').includes(query);
-        const match = catMatch && queryMatch;
+        const match =
+          (activeCategory === 'All' || item.dataset.category === activeCategory) &&
+          (query === '' || (item.dataset.search ?? '').includes(query));
         item.hidden = !match;
         if (match) visible += 1;
       }
-
       for (const section of sections) {
-        const sectionItems = Array.from(section.querySelectorAll<HTMLElement>('[data-tool-item]'));
-        section.hidden = sectionItems.every((item) => item.hidden);
+        section.hidden = Array.from(section.querySelectorAll<HTMLElement>('[data-tool-item]')).every((i) => i.hidden);
       }
 
-      const unfiltered = query === '' && activeCategory === 'All';
-      count.classList.toggle('sr-only', unfiltered);
       const word = visible === 1 ? 'tool' : 'tools';
-      count.textContent = unfiltered
-        ? `Showing ${visible} of ${items.length} tools`
-        : `Showing ${visible} matching ${word} of ${items.length}`;
+      status.textContent =
+        query === '' && activeCategory === 'All'
+          ? `Showing ${visible} of ${items.length} tools`
+          : `Showing ${visible} matching ${word} of ${items.length}`;
+      if (heading) heading.textContent = activeCategory === 'All' ? (heading.dataset.defaultTitle ?? 'All tools') : activeCategory;
+      if (pillCount) pillCount.textContent = `${visible} ${word}`;
 
       empty.hidden = visible > 0;
       if (visible === 0 && emptyTitle && emptyBody) {
-        const activeTab = tabs.find((t) => t.dataset.catFilter === activeCategory);
-        const summary = activeTab?.dataset.catSummary ?? '';
+        const summary = tabs.find((t) => t.dataset.catFilter === activeCategory)?.dataset.catSummary ?? '';
         if (query === '' && activeCategory !== 'All' && summary) {
           emptyTitle.textContent = `${activeCategory} tools are queued next`;
           emptyBody.textContent = summary;
@@ -193,38 +207,28 @@ const grouped = categories.map((cat) => ({
 
     function setCategory(next: string) {
       activeCategory = next;
-      for (const tab of tabs) {
-        tab.setAttribute('aria-pressed', tab.dataset.catFilter === next ? 'true' : 'false');
-      }
+      for (const tab of tabs) tab.setAttribute('aria-pressed', tab.dataset.catFilter === next ? 'true' : 'false');
       applyFilter();
     }
 
-    for (const tab of tabs) {
-      tab.addEventListener('click', () => setCategory(tab.dataset.catFilter ?? 'All'));
-    }
+    for (const tab of tabs) tab.addEventListener('click', () => setCategory(tab.dataset.catFilter ?? 'All'));
     input?.addEventListener('input', applyFilter);
-    input?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && input.value !== '') {
-        event.preventDefault();
-        input.value = '';
-        applyFilter();
-      }
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && input.value !== '') { e.preventDefault(); input.value = ''; applyFilter(); }
     });
     reset?.addEventListener('click', () => {
       if (input) input.value = '';
       setCategory('All');
       input?.focus();
     });
-    window.addEventListener('keydown', (event) => {
-      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
-      const tag = (event.target as HTMLElement | null)?.tagName;
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      const switcher = document.getElementById('quick-switcher') as HTMLDialogElement | null;
-      if (switcher?.open) return;
-      if (!input) return;
-      event.preventDefault();
-      input.focus();
-      input.select();
+      if ((document.getElementById('quick-switcher') as HTMLDialogElement | null)?.open) return;
+      e.preventDefault();
+      input?.focus();
+      input?.select();
     });
   </script>
 </Base>

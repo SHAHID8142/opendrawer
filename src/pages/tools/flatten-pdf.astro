@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/flatten-pdf/Tool';
+
+const title = 'Flatten PDF: lock filled form fields into the page';
+const description =
+  'Turn AcroForm text fields, checkboxes and signature fields into fixed page content so a filled form can no longer be edited. Runs in your browser.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Flatten PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does flattening lock the document?',
+    answer:
+      'It removes the form fields, so nobody can type into them again. The rest of the document is ordinary PDF content and can still be edited.',
+  },
+  {
+    question: 'Why did my values disappear?',
+    answer:
+      'Some PDFs never store a drawn appearance for their values and expect the viewer to draw them. Flattening such a form can leave blank fields. If that happens, print the filled form to PDF from a desktop reader and flatten that copy.',
+  },
+  {
+    question: 'What happens to a signature?',
+    answer:
+      'A drawn signature field becomes page content. A cryptographic signature becomes invalid as soon as the file changes, which flattening does.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Flatten PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Flatten PDF</h1>
+      <p>
+        Send a filled form back as a finished document. Field values are drawn into the page and
+        the inputs stop being editable.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'Standard AcroForm fields only. XFA forms are refused, and comments or highlights are left alone.',
+            'It does not add security or a password; the text can still be copied from the page.',
+            'A field whose value was never drawn by its creator can flatten to an empty box.',
+            'Digital signatures stop being valid because the file changes.',
+            'Password-protected PDFs must be unlocked first.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>
