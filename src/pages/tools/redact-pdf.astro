@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/redact-pdf/Tool';
+
+const title = 'Redact a PDF: remove the content, not just cover it';
+const description =
+  'Draw black boxes over sensitive areas and replace those pages with images, so the text underneath is destroyed rather than painted over. Runs entirely in your browser.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Redact PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is this real redaction?',
+    answer:
+      'Yes. Any page with a box is re-rendered as a picture with the boxes burned in, and the original page content is not copied. There is no text layer or hidden content left on those pages to select or extract.',
+  },
+  {
+    question: 'Why is all the text on the page gone?',
+    answer:
+      'Rasterising the page is what makes the removal trustworthy. The cost is that every word on that page, including text outside the boxes, stops being selectable. Other pages keep their text.',
+  },
+  {
+    question: 'Can the black box be removed?',
+    answer:
+      'Not with an editor: the page is now a single image and the pixels under the box were never written. Keep the original if you may need the content later.',
+  },
+  {
+    question: 'Does it find sensitive words automatically?',
+    answer:
+      'No. You draw the areas yourself. There is no pattern matching, no list of names and no automatic detection, so check the page carefully before sharing.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="redact-pdf"
+      breadcrumbLabel="Redact PDF"
+      heading="Redact a PDF"
+      lead="Draw a box over anything that must disappear. Pages with boxes are rebuilt as images with the areas burned in, so the words underneath are gone instead of hidden."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'A page with a redaction box loses all of its selectable text, including text outside the boxes.',
+            'It does not detect sensitive content automatically; you draw every area yourself.',
+            'It cannot remove the same information from other pages or from the original file on your device.',
+            'Rotated pages are flattened upright, and annotations or comments are dropped from redacted pages.',
+            'Digital signatures stop being valid; password-protected PDFs are refused.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="redact-pdf" />
+      </aside>
+    </div>
+  </div>
+</Base>

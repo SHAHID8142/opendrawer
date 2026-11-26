@@ -82,7 +82,7 @@ function readField(field: PDFField): FormField {
       kind: 'text',
       ...base,
       value: field.getText() ?? '',
-      maxLength: field.getMaxLength(),
+      maxLength: field.getMaxLength() ?? null,
     };
   }
   if (field instanceof PDFCheckBox) {
@@ -158,7 +158,7 @@ export async function fillForm(
       if (!(name in options.values)) continue;
       const value = options.values[name];
       if (field instanceof PDFTextField && typeof value === 'string') {
-        const max = field.getMaxLength();
+        const max = field.getMaxLength() ?? null;
         if (max !== null && value.length > max) {
           return failure(
             'TOO_LONG',

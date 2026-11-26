@@ -2,6 +2,7 @@
 // UI for extract-images: size filter, progress, cancellation and a PNG/ZIP download.
 import { useEffect, useRef, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { countPdfPages } from '../../lib/pdf';
 import { zipStore } from '../../lib/zip';
@@ -84,7 +85,7 @@ export default function Tool() {
     if (!out) return;
     if (out.files.length === 1 && out.files[0]) {
       const only = out.files[0];
-      downloadBlob(new Blob([only.bytes], { type: 'image/png' }), only.name);
+      downloadBlob(bytesToBlob(only.bytes, 'image/png'), only.name);
       return;
     }
     const base = file?.name.replace(/\.pdf$/i, '') ?? 'document';

@@ -3,8 +3,9 @@ import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, PDFName, PDFString, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -684,6 +685,47 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('redacts by destroying the text on the affected page', async ({ page }) => {
+    await page.goto('/tools/redact-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#redact-input').setInputFiles({
+      name: 'memo.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(2, { labelPrefix: 'Secret' }),
+    });
+    const canvas = page.locator('.redact-stage canvas');
+    await canvas.waitFor({ timeout: 30_000 });
+    await page.waitForFunction(() => {
+      const element = document.querySelector<HTMLCanvasElement>('.redact-stage canvas');
+      return Boolean(element && element.width > 300);
+    });
+    await canvas.scrollIntoViewIfNeeded();
+    const box = await canvas.boundingBox();
+    await page.mouse.move(box!.x + box!.width * 0.05, box!.y + box!.height * 0.05);
+    await page.mouse.down();
+    await page.mouse.move(box!.x + box!.width * 0.95, box!.y + box!.height * 0.3, { steps: 8 });
+    await page.mouse.up();
+    await expect(page.getByText('1 box on this page')).toBeVisible();
+    await page.getByRole('button', { name: /Redact 1 area/ }).click();
+    await expect(page.getByRole('status')).toContainText('Redacted 1 page', { timeout: 60_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    const bytes = readFileSync((await saved.path())!);
+    const pdfDocument = await getDocument({
+      data: new Uint8Array(bytes),
+      useWorkerFetch: false,
+      useSystemFonts: false,
+    }).promise;
+    const first = await (await pdfDocument.getPage(1)).getTextContent();
+    const second = await (await pdfDocument.getPage(2)).getTextContent();
+    expect(first.items.map((item) => ('str' in item ? item.str : '')).join('')).toBe('');
+    expect(second.items.map((item) => ('str' in item ? item.str : '')).join('')).toContain(
+      'Secret 2',
+    );
   });
 
   test('splits a PDF at its top-level bookmarks', async ({ page }) => {

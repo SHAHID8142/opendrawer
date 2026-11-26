@@ -2,6 +2,7 @@
 // UI for split-by-bookmarks: list the outline, then split at each top-level section.
 import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
 import { countPdfPages } from '../../lib/pdf';
@@ -79,7 +80,7 @@ export default function Tool() {
     if (!out) return;
     const base = file?.name.replace(/\.pdf$/i, '') ?? 'document';
     if (out.length === 1 && out[0]) {
-      downloadBlob(new Blob([out[0].bytes], { type: 'application/pdf' }), out[0].name);
+      downloadBlob(bytesToBlob(out[0].bytes, 'application/pdf'), out[0].name);
       return;
     }
     downloadBlob(zipStore(out), `${base}-bookmarks.zip`);

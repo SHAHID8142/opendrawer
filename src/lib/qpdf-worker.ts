@@ -42,7 +42,7 @@ function getModule(): Promise<QpdfInstance> {
       printErr: (text: string) => {
         lastError = text;
       },
-    });
+    } as unknown as { locateFile: () => string });
   }
   return modulePromise;
 }
@@ -53,16 +53,21 @@ self.onmessage = async (event: MessageEvent<Request>) => {
   let outputPath = '';
   try {
     const qpdf = await getModule();
+    const fs = qpdf.FS as unknown as {
+      writeFile: (path: string, data: Uint8Array) => void;
+      readFile: (path: string) => Uint8Array;
+      unlink?: (path: string) => void;
+    };
     const stamp = `${id}-${Date.now()}`;
     inputPath = `/in-${stamp}.pdf`;
     outputPath = `/out-${stamp}.pdf`;
-    qpdf.FS.writeFile(inputPath, new Uint8Array(input));
+    fs.writeFile(inputPath, new Uint8Array(input));
     lastError = '';
     const code = qpdf.callMain([inputPath, ...args, outputPath]);
     if (code !== 0) {
       throw new Error(cleanError(lastError) || `qpdf stopped with code ${code}.`);
     }
-    const bytes = qpdf.FS.readFile(outputPath);
+    const bytes = fs.readFile(outputPath);
     const copy = new Uint8Array(bytes.length);
     copy.set(bytes);
     (self as unknown as { postMessage: (reply: Reply, transfer: Transferable[]) => void }).postMessage(

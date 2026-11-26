@@ -24,6 +24,8 @@
   --color-text-inverse: #ffffff;
 
   --color-border: #7c879e;
+  /* Redaction boxes must be pure black, not softened ink. */
+  --color-redact: #000000;
   --color-border-subtle: #dbe2ef;
 
   /* Primary vermilion clay accent */

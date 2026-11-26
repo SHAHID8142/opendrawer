@@ -9,3 +9,7 @@ export const PDF_FONT_SIZE = 11;
 
 /** Softer ink for watermarks; the opacity option is applied on top. */
 export const PDF_WATERMARK_INK = rgb(0.36, 0.33, 0.28);
+
+/** True black for redaction, both the canvas fill and the PDF rectangle. Never soften it. */
+export const REDACT_FILL = 'rgb(0, 0, 0)';
+export const PDF_REDACT_INK = rgb(0, 0, 0);
