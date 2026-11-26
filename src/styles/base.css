@@ -1,6 +1,6 @@
 /*
- * Base — reset, document typography, links and focus. Element selectors only;
- * no component classes and no raw values (UI-G1). Tokens come from tokens.css.
+ * Base — reset, document typography, links and focus. Serif display type over a
+ * paper ground; sans for interface text. No raw values (UI-G1).
  */
 
 *,
@@ -20,6 +20,8 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   min-height: 100dvh;
   background: var(--color-bg);
   color: var(--color-text);
@@ -34,19 +36,19 @@ h1,
 h2,
 h3,
 h4 {
+  font-family: var(--font-display);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-snug);
+  letter-spacing: var(--tracking-tight);
   text-wrap: balance;
 }
 
 h1 {
-  font-size: var(--text-hero);
-  letter-spacing: var(--tracking-tight);
+  font-size: var(--text-display);
 }
 
 h2 {
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
 }
 
 h3 {
@@ -55,7 +57,9 @@ h3 {
 }
 
 h4 {
+  font-family: var(--font-sans);
   font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-snug);
 }
 
@@ -73,13 +77,14 @@ li + li {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-strong);
+  text-decoration: underline;
   text-decoration-thickness: var(--border-width);
-  text-underline-offset: 0.2em;
+  text-underline-offset: 0.18em;
 }
 
 a:hover {
-  color: var(--color-accent-strong);
+  color: var(--color-accent);
 }
 
 strong {
@@ -119,12 +124,11 @@ button {
 :focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);
-  border-radius: var(--radius-xs);
 }
 
 ::selection {
-  background: var(--color-accent-subtle);
-  color: var(--color-text);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
 }
 
 hr {

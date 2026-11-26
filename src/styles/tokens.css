@@ -1,53 +1,61 @@
 /*
  * Design tokens — the only file allowed to contain colour literals, pixel font sizes,
- * millisecond durations or raw shadows. UI-G1 fails the build on any literal found
- * elsewhere; UI-G2 checks every declared contrast pair. Light theme only, by product
- * decision: one identity, verified once, no theme drift to test.
+ * millisecond durations or raw shadows. UI-G1 fails on any literal elsewhere; UI-G2
+ * checks the declared contrast pairs. Direction: a print-room palette (paper, ink,
+ * one proofing red) with serif display type. Light only, by product decision.
  */
 
 :root {
   color-scheme: light;
 
-  /* Brand — a deep, calm cobalt. Professional, not decorative. */
-  --color-brand: #1439b8;
-  --color-brand-ink: #0f1720;
+  /* Paper and ink */
+  --color-bg: #f3efe6;
+  --color-surface: #fbf8f2;
+  --color-surface-subtle: #ebe5d8;
+  --color-surface-sunken: #e2dbcb;
 
-  /* Surfaces */
-  --color-bg: #f6f8fa;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #eef1f5;
-  --color-surface-sunken: #e7ebf0;
+  --color-text: #17150f;
+  --color-text-muted: #57523f;
+  --color-text-inverse: #fffdf8;
 
-  /* Text */
-  --color-text: #0f1720;
-  --color-text-muted: #55606e;
-  --color-text-inverse: #ffffff;
+  --color-border: #8a8371;
+  --color-border-subtle: #cfc7b5;
 
-  /* Borders */
-  --color-border: #7d8a99;
-  --color-border-subtle: #d5dce4;
-
-  /* Accent and interaction */
-  --color-accent: #1b4de4;
-  --color-accent-strong: #1439b8;
-  --color-accent-subtle: #e8edff;
+  /* Proofing red — the single interaction colour. */
+  --color-accent: #bf3a14;
+  --color-accent-strong: #8f2b0f;
+  --color-accent-subtle: #f8e6dd;
   --color-on-accent: #ffffff;
-  --color-focus: #1b4de4;
+  --color-focus: #bf3a14;
 
   /* Feedback */
-  --color-success: #0f7b4d;
-  --color-success-subtle: #e3f5ec;
-  --color-warning: #8a5300;
-  --color-warning-subtle: #fdf1dd;
-  --color-danger: #b42318;
-  --color-danger-subtle: #fdeceb;
+  --color-success: #2f5d3a;
+  --color-success-subtle: #e6eddf;
+  --color-warning: #7a4a06;
+  --color-warning-subtle: #f5e9d4;
+  --color-danger: #a02316;
+  --color-danger-subtle: #f6e2dc;
 
-  /* Typography — system UI stack: no third-party font, no bytes to download. */
+  /* Category inks */
+  --color-documents: #bf3a14;
+  --color-documents-subtle: #f8e6dd;
+  --color-images: #1f5c55;
+  --color-images-subtle: #e1ece8;
+  --color-audio: #7a4a06;
+  --color-audio-subtle: #f5e9d4;
+  --color-textdata: #2c4b8a;
+  --color-textdata-subtle: #e4e9f2;
+  --color-everyday: #4a5a1f;
+  --color-everyday-subtle: #eaeddd;
+
+  /* Typography — local fonts only. Serif for display, sans for interface. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman',
+    serif;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
-  --text-xs: 0.75rem;
+  --text-xs: 0.6875rem;
   --text-sm: 0.8125rem;
   --text-base: 0.9375rem;
   --text-md: 1rem;
@@ -56,11 +64,11 @@
   --text-2xl: 1.625rem;
   --text-3xl: 2rem;
   --text-4xl: 2.5rem;
-  --text-hero: clamp(2.125rem, 1.2rem + 3.4vw, 3.5rem);
+  --text-display: clamp(2.5rem, 1.2rem + 4vw, 4.25rem);
 
   --leading-none: 1;
-  --leading-tight: 1.18;
-  --leading-snug: 1.35;
+  --leading-tight: 1.12;
+  --leading-snug: 1.32;
   --leading-normal: 1.55;
   --leading-relaxed: 1.7;
 
@@ -69,12 +77,12 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  --tracking-tight: -0.02em;
+  --tracking-tight: -0.025em;
   --tracking-snug: -0.01em;
   --tracking-normal: 0;
   --tracking-wide: 0.02em;
 
-  /* Spacing — 4px base scale. */
+  /* Spacing — 4px base */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -89,50 +97,42 @@
   --space-12: 6rem;
 
   /* Layout */
-  --measure: 68ch;
-  --measure-tight: 54ch;
+  --measure: 66ch;
+  --measure-tight: 52ch;
   --container-sm: 42rem;
   --container-md: 56rem;
-  --container-lg: 72rem;
+  --container-lg: 76rem;
   --gutter: var(--space-5);
   --header-height: 4rem;
   --tap-target: 2.75rem;
 
-  /* Shape */
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.25rem;
+  /* Shape — near-square. Print, not a dashboard. */
+  --radius-xs: 0.0625rem;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.1875rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.375rem;
   --radius-full: 999px;
   --border-width: 1px;
   --border-width-strong: 2px;
 
-  /* Elevation — restrained; one visible level, not a shadow on every card. */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 32, 0.06);
-  --shadow-sm: 0 1px 2px rgba(15, 23, 32, 0.06), 0 2px 8px rgba(15, 23, 32, 0.05);
-  --shadow-md: 0 2px 4px rgba(15, 23, 32, 0.06), 0 12px 28px rgba(15, 23, 32, 0.08);
-  --shadow-focus: 0 0 0 3px rgba(27, 77, 228, 0.28);
+  /* Depth — almost none. */
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 1px 0 rgba(23, 21, 15, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(191, 58, 20, 0.25);
+  --color-scrim: rgba(23, 21, 15, 0.5);
 
-  /* Motion — short and functional. */
-  --duration-fast: 110ms;
-  --duration-base: 180ms;
-  --duration-slow: 260ms;
+  /* Motion */
+  --duration-fast: 100ms;
+  --duration-base: 160ms;
+  --duration-slow: 240ms;
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
   --ease-in: cubic-bezier(0.5, 0, 0.9, 0.4);
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-instant: 0.01ms;
 
   /* Focus */
   --focus-width: 0.1875rem;
   --focus-offset: 0.125rem;
-}
-
-:root {
-  /* Scrim for dialogs and overlays. */
-  --color-scrim: rgba(15, 23, 32, 0.45);
-}
-
-:root {
-  /* Effectively instant; the reduced-motion fallback needs a value, not 0. */
-  --duration-instant: 0.01ms;
 }

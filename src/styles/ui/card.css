@@ -1,20 +1,18 @@
 /*
- * Cards — content panels and the tool directory. A border carries the edge;
- * shadow appears only on interaction, never at rest.
+ * Panels — one ink rule, no shadow, no rounded bubble. Content panels and report
+ * sections share the same surface.
  */
 
 .card {
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   padding: var(--space-6);
 }
 
 .card > * + * {
   margin-top: var(--space-4);
 }
-
-/* Report panels: keep headings subordinate to the page title. */
 
 .card > h2 {
   font-size: var(--text-lg);

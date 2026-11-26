@@ -1,5 +1,5 @@
 /*
- * Buttons — one visual language for every action. Minimum target 44px.
+ * Buttons — print-room buttons: square corners, ink rules, one red fill.
  */
 
 .btn {
@@ -10,9 +10,10 @@
   min-height: var(--tap-target);
   padding: var(--space-2) var(--space-5);
   border: var(--border-width) solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
@@ -21,8 +22,7 @@
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-out);
 }
 
 .btn:hover {
@@ -38,7 +38,6 @@
 .btn--primary {
   background: var(--color-accent);
   color: var(--color-on-accent);
-  box-shadow: var(--shadow-xs);
 }
 
 .btn--primary:hover {
@@ -47,31 +46,31 @@
 }
 
 .btn--secondary {
-  background: var(--color-surface);
-  border-color: var(--color-border);
+  background: transparent;
+  border-color: var(--color-text);
   color: var(--color-text);
 }
 
 .btn--secondary:hover {
-  background: var(--color-surface-subtle);
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .btn--ghost {
-  color: var(--color-accent);
+  padding-inline: 0;
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .btn--ghost:hover {
-  background: var(--color-accent-subtle);
-  color: var(--color-accent-strong);
+  color: var(--color-accent);
+  background: transparent;
 }
 
 .btn--danger {
   background: var(--color-danger);
   color: var(--color-text-inverse);
-}
-
-.btn--block {
-  width: 100%;
 }
 
 .btn svg {

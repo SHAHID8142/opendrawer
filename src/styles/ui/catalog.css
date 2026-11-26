@@ -1,0 +1,182 @@
+/*
+ * Catalogue shell — an index rail and the tool directory. Dense, scannable,
+ * dot leaders instead of pills; this is a platform view, not a landing page.
+ */
+
+.page-head {
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--measure);
+}
+
+.page-head h1 {
+  font-size: var(--text-4xl);
+}
+
+.page-head p {
+  color: var(--color-text-muted);
+}
+
+.catalog {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.catalog__rail {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+.catalog__rail h2,
+.catalog__main h2 {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-normal);
+}
+
+.catalog__rail h2 {
+  color: var(--color-text-muted);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
+}
+
+.catalog__main {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.catalog__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.cat-list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cat-list > li {
+  margin: 0;
+}
+
+.cat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  border-left: var(--border-width-strong) solid transparent;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.cat--active {
+  padding-left: var(--space-3);
+  border-left-color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+.cat__leader {
+  flex: 1;
+  min-width: var(--space-4);
+  border-bottom: var(--border-width) dotted var(--color-border);
+  transform: translateY(-0.25em);
+}
+
+.cat__count {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.cat--active .cat__count {
+  color: var(--color-accent-strong);
+}
+
+.cat__soon {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.rail-note {
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.catalog__foot {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 63.99rem) {
+  .cat-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+  }
+
+  .cat,
+  .cat--active {
+    flex: none;
+    padding: var(--space-1) 0;
+    min-height: var(--tap-target);
+    border-left: 0;
+    border-bottom: var(--border-width-strong) solid transparent;
+  }
+
+  .cat--active {
+    border-bottom-color: var(--color-accent);
+  }
+
+  .cat__leader {
+    display: none;
+  }
+
+  .rail-note {
+    display: none;
+  }
+}
+
+@media (min-width: 64rem) {
+  .catalog {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: var(--space-9);
+  }
+}
+
+/* Colophon — closes the page with a rule instead of empty space. */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding-top: var(--space-4);
+  border-top: var(--border-width) solid var(--color-text);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.colophon span + span {
+  padding-left: var(--space-4);
+  border-left: var(--border-width) solid var(--color-border-subtle);
+}
+
+.colophon span + span,
+.colophon span:first-child {
+  margin-right: var(--space-4);
+}

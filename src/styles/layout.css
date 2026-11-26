@@ -1,5 +1,5 @@
 /*
- * Layout — container, page shell, section rhythm and stacking helpers.
+ * Layout — page shell, masthead, footer, container and stacking helpers.
  * Component styling lives in src/styles/ui/.
  */
 
@@ -17,8 +17,7 @@
   z-index: 10;
   padding: var(--space-2) var(--space-4);
   background: var(--color-surface);
-  border: var(--border-width-strong) solid var(--color-accent);
-  border-radius: var(--radius-sm);
+  border: var(--border-width-strong) solid var(--color-text);
   transform: translateY(-200%);
 }
 
@@ -26,14 +25,15 @@
   transform: none;
 }
 
-/* Header ------------------------------------------------------------------ */
+/* Masthead ---------------------------------------------------------------- */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: var(--color-surface);
-  border-bottom: var(--border-width) solid var(--color-border-subtle);
+  background: var(--color-bg);
+  border-top: var(--space-1) solid var(--color-accent);
+  border-bottom: var(--border-width) solid var(--color-text);
 }
 
 .site-header__inner {
@@ -49,9 +49,10 @@
   align-items: center;
   gap: var(--space-3);
   color: var(--color-text);
+  font-family: var(--font-display);
   font-weight: var(--weight-semibold);
-  font-size: var(--text-lg);
-  letter-spacing: var(--tracking-snug);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
   text-decoration: none;
 }
 
@@ -65,9 +66,9 @@
   width: var(--space-7);
   height: var(--space-7);
   flex: none;
-  background: var(--color-brand);
-  color: var(--color-text-inverse);
-  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-radius: var(--radius-xs);
 }
 
 .brand__mark svg {
@@ -78,7 +79,7 @@
 .site-nav {
   display: flex;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 .site-nav a {
@@ -89,27 +90,41 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   text-decoration: none;
+  border-bottom: var(--border-width) solid transparent;
 }
 
 .site-nav a:hover {
-  color: var(--color-accent-strong);
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
 }
 
 .site-nav a[aria-current='page'] {
   color: var(--color-text);
+  border-bottom-color: var(--color-accent);
 }
 
 /* Page body --------------------------------------------------------------- */
 
 main {
-  display: block;
-  padding-block: var(--space-10) var(--space-11);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-block: var(--space-9) var(--space-11);
+}
+
+.page-fill {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.page-fill > .colophon {
+  margin-top: auto;
 }
 
 .site-footer {
-  background: var(--color-surface);
   border-top: var(--border-width) solid var(--color-border-subtle);
-  padding-block: var(--space-8);
+  padding-block: var(--space-7);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
@@ -125,29 +140,11 @@ main {
 }
 
 .stack-lg > * + * {
-  margin-top: var(--space-9);
+  margin-top: var(--space-8);
 }
 
 .stack-sm > * + * {
   margin-top: var(--space-2);
-}
-
-.section {
-  padding-block: var(--space-10);
-}
-
-.section--flush {
-  padding-block: 0;
-}
-
-.section-head {
-  display: grid;
-  gap: var(--space-2);
-  max-width: var(--measure-tight);
-}
-
-.section-head p {
-  color: var(--color-text-muted);
 }
 
 .cluster {
@@ -181,7 +178,7 @@ main {
   }
 
   main {
-    padding-block: var(--space-8) var(--space-10);
+    padding-block: var(--space-7) var(--space-9);
   }
 
   .site-nav {

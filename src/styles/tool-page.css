@@ -40,10 +40,6 @@
   max-width: var(--measure);
 }
 
-.tool-head .tag {
-  justify-self: start;
-}
-
 .tool-head h1 {
   font-size: var(--text-4xl);
 }
