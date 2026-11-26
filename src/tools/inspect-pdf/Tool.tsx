@@ -9,6 +9,9 @@ export default function Tool() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [result, setResult] = useState<InspectResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => setReady(true), []);
 
   async function run(files: File[]) {
     const file = files[0];
@@ -35,14 +38,14 @@ export default function Tool() {
   }, []);
 
   return (
-    <div className="stack">
+    <div className="stack" data-ready={ready ? 'true' : 'false'}>
       <FileDrop
         id="inspect-file"
         accept="application/pdf,.pdf"
         label="Choose the PDF you want to inspect"
         hint="It stays on this device. Nothing is uploaded, and nothing is stored after you close the tab."
         buttonLabel="Choose a PDF"
-        disabled={phase === 'working'}
+        disabled={!ready || phase === 'working'}
         onFiles={run}
       />
 

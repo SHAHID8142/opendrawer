@@ -101,6 +101,8 @@ test.describe('UI-G8 and the file flow', () => {
     page.on('request', (request) => requests.push(request.url()));
 
     await page.goto('/tools/inspect-pdf');
+    // The island accepts files only after hydration; without this the change can race it.
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
 
     const pdf = await PDFDocument.create();
     pdf.setTitle('Gate fixture');
