@@ -1,6 +1,6 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Bare freestanding Google Material Symbols Rounded icons with category fallback.
+// Bare freestanding ChatGPT-style Lucide (ISC) SVG icons with category fallback.
 import { GLYPH_PATHS, type GlyphKind } from '../lib/glyph-paths';
 import type { ToolAccent } from '../lib/tools';
 
@@ -16,11 +16,17 @@ interface Props {
 }
 
 const { kind, fallback = 'documents', tone = 'inspect', size = 'md', contained = false } = Astro.props;
-const pathData = GLYPH_PATHS[kind as GlyphKind] ?? GLYPH_PATHS[fallback];
+const innerSvg = GLYPH_PATHS[kind as GlyphKind] ?? GLYPH_PATHS[fallback];
 ---
 
 <span class={`glyph glyph--${size} glyph--${tone}${contained ? ' glyph--contained' : ''}`} aria-hidden="true">
-  <svg viewBox="0 -960 960 960" fill="currentColor">
-    <path d={pathData} />
-  </svg>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.65"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    set:html={innerSvg}
+  />
 </span>

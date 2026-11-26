@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Validates src/lib/glyph-paths.ts against OpenDrawer Google Material Symbols Rounded standards.
+// Validates src/lib/glyph-paths.ts against OpenDrawer Custom Icon Pack standards.
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,8 +17,8 @@ if (/<text\b/i.test(glyphCode)) {
 if (/#[0-9a-fA-F]{3,8}\b/.test(glyphCode) || /\b(?:rgba?|hsla?)\(/.test(glyphCode)) {
   failures.push('Found raw colour literal in glyph-paths.ts; use currentColor via ToolGlyph.');
 }
-if (!glyphCode.includes('-')) {
-  failures.push('Expected Material Symbols 960x-960 coordinate path data.');
+if (!/<(?:path|circle|rect)\b/.test(glyphCode) && !glyphCode.includes('-')) {
+  failures.push('Expected valid vector SVG geometry in glyph-paths.ts.');
 }
 
 const categoriesSection = toolsRaw.split('export const categories')[1]?.split('export const tools')[0] ?? '';

@@ -27,7 +27,8 @@ needs-verification / rejected.
 | i18next | translations (phase 3) | MIT | approved | — |
 | `vite-plugin-pwa` / Workbox | offline shell | MIT | approved | — |
 | Playwright | smoke tests | Apache-2.0 | approved | Dev dependency only |
-| Material Symbols (`@material-symbols/svg-300`) | Google Material Symbols Rounded SVG path data in `src/lib/glyph-paths.ts` | Apache-2.0 | approved | Path strings vendored at author time; zero runtime dependency or CDN request |
+| Material Symbols (`@material-symbols/svg-300`) | Google Material Symbols Rounded SVG path data (git tag `backup/google-material-icons`) | Apache-2.0 | approved | Path strings vendored; zero runtime dependency or CDN request |
+| Lucide (`lucide-static` v1.81.0) | ChatGPT-style crisp monoline SVG icons in `src/lib/glyph-paths.ts` | ISC | approved | Path/shape markup vendored at author time; zero runtime dependency or CDN request |
 
 ## Explicitly rejected
 
