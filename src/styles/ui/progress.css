@@ -1,0 +1,9 @@
+/*
+ * Progress — determinate where possible; the text beside it carries the number.
+ */
+
+.progress {
+  width: 100%;
+  height: var(--space-2);
+  accent-color: var(--color-accent);
+}

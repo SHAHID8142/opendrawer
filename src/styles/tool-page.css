@@ -1,0 +1,102 @@
+/*
+ * Tool page frame — breadcrumb, intro, the tool/aside split and the FAQ rhythm.
+ */
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.breadcrumb li {
+  margin: 0;
+}
+
+.breadcrumb li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+  color: var(--color-border);
+}
+
+.breadcrumb a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+}
+
+.tool-head {
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--measure);
+}
+
+.tool-head .tag {
+  justify-self: start;
+}
+
+.tool-head h1 {
+  font-size: var(--text-4xl);
+}
+
+.tool-head p {
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.tool-layout {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.tool-aside {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.faq {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+  .tool-layout {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .tool-main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .tool-aside {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+/* Questions: quiet rules, not another stack of cards. */
+
+.faq .note {
+  padding: var(--space-4) 0;
+  background: transparent;
+  border: 0;
+  border-top: var(--border-width) solid var(--color-border-subtle);
+  border-radius: 0;
+}
+
+.faq .note:last-child {
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
+}

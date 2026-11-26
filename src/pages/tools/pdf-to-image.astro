@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/pdf-to-image/Tool';
 
@@ -38,55 +39,60 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <nav aria-label="Breadcrumb">
-      <p class="muted"><a href="/">Home</a> / PDF to image</p>
-    </nav>
+    <Breadcrumb current="PDF to image" />
 
-    <section class="stack" aria-labelledby="tool-heading">
+    <header class="tool-head">
+      <p class="tag">Runs in your browser</p>
       <h1 id="tool-heading">PDF to image</h1>
       <p>
         Turn the pages of a PDF into pictures: PNG if you want no quality loss, JPEG if you want
         smaller files. Pick the resolution and the pages, and the images are drawn here in your
         browser.
       </p>
-    </section>
+    </header>
 
-    <LimitsNote
-      title="What this tool cannot do"
-      items={[
-        'A rendered page is a picture. The text stops being selectable, searchable and copyable.',
-        'One page above 40 megapixels is refused, which is roughly 600 DPI on A4. Memory grows with resolution and page count, and a phone is not a print shop.',
-        'More than 200 pages in one run is refused. Split the document first.',
-        'Page ranges are 1-based and can be combined: 1-3, 7, 10-12.',
-        'Links, forms, annotations and hidden layers are not drawn as interactive elements; they appear only as whatever the page shows.',
-      ]}
-    />
+    <div class="tool-layout">
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'A rendered page is a picture. The text stops being selectable, searchable and copyable.',
+            'One page above 40 megapixels is refused, which is roughly 600 DPI on A4. Memory grows with resolution and page count, and a phone is not a print shop.',
+            'More than 200 pages in one run is refused. Split the document first.',
+            'Page ranges are 1-based and can be combined: 1-3, 7, 10-12.',
+            'Links, forms, annotations and hidden layers are not drawn as interactive elements; they appear only as whatever the page shows.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
 
-    <Tool client:visible />
-
-    <section class="stack" aria-labelledby="how-heading">
-      <h2 id="how-heading">Choosing a resolution</h2>
-      <p>
-        A PDF page is measured in points, 72 to the inch. Rendering at 72 DPI therefore gives one
-        pixel per point, which looks right on screen at 100 percent zoom. 150 DPI is comfortable
-        for reading on a tablet, and 300 DPI is the usual print figure: an A4 page becomes about
-        2480 by 3508 pixels.
-      </p>
-      <p>
-        The cost is memory. Each page is held as raw pixels while it is drawn, so three A4 pages at
-        300 DPI is roughly 26 megapixels of canvas work. That is why the tool reports progress per
-        page instead of freezing, and why the ceiling exists.
-      </p>
-    </section>
-
-    <section class="stack" aria-labelledby="faq-heading">
-      <h2 id="faq-heading">Questions</h2>
-      {faq.map((item) => (
-        <div class="note">
-          <h3>{item.question}</h3>
-          <p>{item.answer}</p>
-        </div>
-      ))}
-    </section>
+      <div class="tool-main stack-lg">
+        <Tool client:visible />
+        <section class="prose stack" aria-labelledby="how-heading">
+          <h2 id="how-heading">Choosing a resolution</h2>
+          <p>
+            A PDF page is measured in points, 72 to the inch. Rendering at 72 DPI therefore gives one
+            pixel per point, which looks right on screen at 100 percent zoom. 150 DPI is comfortable
+            for reading on a tablet, and 300 DPI is the usual print figure: an A4 page becomes about
+            2480 by 3508 pixels.
+          </p>
+          <p>
+            The cost is memory. Each page is held as raw pixels while it is drawn, so three A4 pages at
+            300 DPI is roughly 26 megapixels of canvas work. That is why the tool reports progress per
+            page instead of freezing, and why the ceiling exists.
+          </p>
+        </section>
+      </div>
+    </div>
   </div>
 </Base>

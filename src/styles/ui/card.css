@@ -101,3 +101,13 @@
 .tool-card:hover .tool-card__arrow {
   transform: translateX(var(--space-1));
 }
+
+/* Report panels: keep headings subordinate to the page title. */
+
+.card > h2 {
+  font-size: var(--text-lg);
+}
+
+.card h3 {
+  font-size: var(--text-md);
+}

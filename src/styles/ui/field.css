@@ -93,3 +93,30 @@
 .field-row > * {
   flex: 1 1 12rem;
 }
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fieldset > legend {
+  padding: 0;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--space-4);
+}
+
+.field--grow {
+  grid-column: 1 / -1;
+}
+
+.fieldset > * + * {
+  margin-top: var(--space-3);
+}

@@ -1,0 +1,33 @@
+/*
+ * File list — one row per produced file, name and size.
+ */
+
+.file-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.file-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.file-list li + li {
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+.file-list span:first-child {
+  overflow-wrap: anywhere;
+}
+
+.file-list .muted {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
