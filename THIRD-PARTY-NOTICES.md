@@ -32,6 +32,10 @@ Prettier (MIT).
 | Component | Licence | Upstream | Used for |
 | --- | --- | --- | --- |
 | Agent Skills (Addy Osmani) | MIT | https://github.com/addyosmani/agent-skills | Development workflow only; vendored in `.agents/skills/`, never shipped or imported by the app |
+| Impeccable | Apache-2.0 | https://github.com/pbakaus/impeccable | Design craft skill (dev only) |
+| Taste Skill (`design-taste-frontend`) | MIT | https://github.com/Leonxlnx/taste-skill | Anti-slop frontend skill (dev only) |
+| Hallmark | MIT | https://github.com/Nutlope/hallmark | Anti-slop design skill (dev only) |
+| Unslop | CC-BY-4.0 | https://github.com/heydamir/unslop | UI audit/repair skill (dev only); attribution kept in its `SKILL.md` |
 
 ## Licence texts to include with a release
 

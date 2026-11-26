@@ -182,3 +182,20 @@ cp /tmp/agent-skills/LICENSE .agents/skills/agent-skills-LICENSE.txt
 ```
 
 Commit the pack and this table together. Nothing in the app may import or load these files.
+
+### Design craft skills (UI/UX overhaul)
+
+Four design skills are vendored beside the workflow pack. Load them for any UI work; they are
+instructions, not runtime code.
+
+| Skill | Upstream | Version / commit | Licence |
+| --- | --- | --- | --- |
+| `impeccable` | https://github.com/pbakaus/impeccable | 4.11.1 | Apache-2.0 |
+| `design-taste-frontend` | https://github.com/Leonxlnx/taste-skill | 2.x | MIT |
+| `hallmark` | https://github.com/Nutlope/hallmark | 2.0.0 | MIT |
+| `unslop` | https://github.com/heydamir/unslop | current | CC-BY-4.0 (credit kept with the skill) |
+
+The photo/theme preview libraries (`assets/`, `references/themes/*.jpg`, `references/refs/`) are
+**not** vendored: they are tens of megabytes of images with their own licences, and AGENTS §7
+requires a human decision before adding binaries. The skills fetch photographs at build time when
+needed; offline runs simply skip them.

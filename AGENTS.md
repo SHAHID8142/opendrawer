@@ -28,6 +28,10 @@ Rules:
 - Keep the pack pinned. Update `.agents/skills/` and the provenance note in
   `docs/07-setup-and-tooling.md` in the same commit.
 - Load only the skills the current phase needs; use `/skill:<name>` when automatic routing misses.
+- **UI/UX work loads the design craft skills:** `impeccable`, `design-taste-frontend`,
+  `hallmark`, `unslop`, plus `frontend-ui-engineering` and `accessibility-engineering`. The
+  design system in `src/styles/tokens.css` and its documentation are the source of truth; a
+  skill's advice never overrides the tokens, the product constraints or the accessibility gates.
 
 ## 1. Non-negotiable product constraints
 
