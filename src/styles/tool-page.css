@@ -1,8 +1,8 @@
 /*
- * Tool page frame — breadcrumb, intro, the tool/aside split and the FAQ rhythm.
+ * Tool page frame — breadcrumb, intro, the tool/aside split and the FAQ clay cards.
  */
 
-.breadcrumb ol {
+.breadcrumb {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -18,20 +18,22 @@
   margin: 0;
 }
 
-.breadcrumb li + li::before {
-  content: '/';
-  margin-right: var(--space-2);
+.breadcrumb__sep {
   color: var(--color-border);
+  user-select: none;
 }
 
 .breadcrumb a {
-  color: var(--color-text-muted);
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  color: var(--color-accent-strong);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
 }
 
 .breadcrumb a:hover {
-  color: var(--color-accent-strong);
-  text-decoration: underline;
+  color: var(--color-accent);
 }
 
 .tool-head {
@@ -56,6 +58,11 @@
   align-items: start;
 }
 
+.tool-main,
+.tool-aside {
+  min-width: 0;
+}
+
 .tool-aside {
   display: grid;
   gap: var(--space-4);
@@ -63,7 +70,7 @@
 
 .faq {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 @media (min-width: 64rem) {
@@ -83,16 +90,10 @@
   }
 }
 
-/* Questions: quiet rules, not another stack of cards. */
-
 .faq .note {
-  padding: var(--space-4) 0;
-  background: transparent;
-  border: 0;
-  border-top: var(--border-width) solid var(--color-border-subtle);
-  border-radius: 0;
-}
-
-.faq .note:last-child {
-  border-bottom: var(--border-width) solid var(--color-border-subtle);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-sm);
 }

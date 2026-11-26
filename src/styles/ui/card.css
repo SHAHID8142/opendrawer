@@ -1,12 +1,12 @@
 /*
- * Panels — one ink rule, no shadow, no rounded bubble. Content panels and report
- * sections share the same surface.
+ * Panels — sculpted porcelain-clay tablets with subtle rim and warm elevation.
  */
 
 .card {
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-clay);
   padding: var(--space-6);
 }
 
@@ -20,4 +20,19 @@
 
 .card h3 {
   font-size: var(--text-md);
+}
+
+.card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+@media (max-width: 30rem) {
+  .card {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+  }
 }

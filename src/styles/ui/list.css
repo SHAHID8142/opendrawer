@@ -1,13 +1,16 @@
 /*
- * File list — one row per produced file, name and size.
+ * File list, result summaries, page preview frames and disclosures.
  */
 
 .file-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-sm);
+  overflow: hidden;
 }
 
 .file-list li {
@@ -30,4 +33,56 @@
 .file-list .muted {
   flex: none;
   font-variant-numeric: tabular-nums;
+}
+
+.result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-bg);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-inset);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-frame {
+  padding: var(--space-3);
+  background: var(--color-surface-subtle);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-inset);
+}
+
+.preview-frame img {
+  max-height: 18rem;
+  width: auto;
+  margin-inline: auto;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-clay-sm);
+}
+
+.file-disclosure {
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  padding: var(--space-2) var(--space-3);
+}
+
+.file-disclosure summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent-strong);
+}
+
+.file-disclosure[open] summary {
+  margin-bottom: var(--space-3);
 }

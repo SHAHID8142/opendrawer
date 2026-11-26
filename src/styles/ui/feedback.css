@@ -1,31 +1,46 @@
 /*
- * Feedback — rules and tints, not pills and glows.
+ * Feedback — sculpted clay notes, verdict flags, status lines and fact lists.
  */
 
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0 var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface-subtle);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-clay-sm);
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
-  letter-spacing: var(--tracking-normal);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
 }
 
 .note {
   padding: var(--space-5);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-left: var(--border-width-strong) solid var(--color-text);
-  border-radius: var(--radius-sm);
+  border-left: var(--space-1) solid var(--color-text);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-sm);
 }
 
 .note h2,
 .note h3 {
   font-size: var(--text-md);
   margin-bottom: var(--space-2);
+}
+
+.note__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.note__icon {
+  width: var(--space-4);
+  height: var(--space-4);
+  flex: none;
 }
 
 .note p,
@@ -39,7 +54,12 @@
 }
 
 .note--warning {
+  background: var(--color-warning-subtle);
   border-left-color: var(--color-warning);
+}
+
+.note--warning .note__icon {
+  color: var(--color-warning);
 }
 
 .note--danger {
@@ -47,8 +67,43 @@
   border-left-color: var(--color-danger);
 }
 
+.note--danger .note__icon {
+  color: var(--color-danger);
+}
+
 .note--success {
   background: var(--color-success-subtle);
+  border-left-color: var(--color-success);
+}
+
+.note--success .note__icon {
+  color: var(--color-success);
+}
+
+.flag-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flag {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-left: var(--space-1) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.flag--warning {
+  border-left-color: var(--color-warning);
+}
+
+.flag--info {
   border-left-color: var(--color-success);
 }
 
@@ -56,13 +111,20 @@
   min-height: var(--space-6);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
 }
 
 .facts {
   display: grid;
-  grid-template-columns: minmax(8rem, auto) minmax(0, 1fr);
-  gap: var(--space-2) var(--space-4);
+  grid-template-columns: minmax(9rem, auto) minmax(0, 1fr);
+  gap: 0 var(--space-4);
   font-size: var(--text-sm);
+}
+
+.facts dt,
+.facts dd {
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
 }
 
 .facts dt {
@@ -71,17 +133,28 @@
 
 .facts dd {
   margin: 0;
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
+}
+
+.facts dt:last-of-type,
+.facts dd:last-of-type {
+  border-bottom: 0;
 }
 
 @media (max-width: 30rem) {
   .facts {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1);
+  }
+
+  .facts dt {
+    padding-bottom: var(--space-1);
+    border-bottom: 0;
   }
 
   .facts dd {
-    margin-bottom: var(--space-2);
+    padding-top: 0;
   }
 }

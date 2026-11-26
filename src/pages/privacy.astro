@@ -4,7 +4,7 @@ import Breadcrumb from '../components/Breadcrumb.astro';
 
 const title = 'Privacy: files never leave your device';
 const description =
-  'How OpenDrawer keeps files on your device: no upload endpoint, no account, no analytics, and a Content-Security-Policy that only allows this origin. Verify it yourself in four steps.';
+  'How OpenDrawer keeps files on your device: no upload endpoint, no account, no analytics, and a Content-Security-Policy that only allows this origin. Verify it yourself in three steps.';
 ---
 
 <Base title={`${title} — OpenDrawer`} description={description}>
@@ -22,7 +22,10 @@ const description =
     <ol class="steps">
       <li>
         <h3>Open the Network tab</h3>
-        <p>Press F12, or Cmd+Option+I on a Mac, then choose Network and clear the list.</p>
+        <p>
+          Press <kbd>F12</kbd>, or <kbd>Cmd+Option+I</kbd> on a Mac, then choose Network and clear
+          the list.
+        </p>
       </li>
       <li>
         <h3>Use a tool</h3>
@@ -34,24 +37,73 @@ const description =
       </li>
     </ol>
 
-    <section class="prose stack" aria-labelledby="never-heading">
+    <section class="stack" aria-labelledby="compare-heading">
+      <h2 id="compare-heading">Cloud PDF sites vs OpenDrawer</h2>
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Comparison of cloud PDF sites and OpenDrawer"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Check</th>
+              <th scope="col">Typical cloud PDF site</th>
+              <th scope="col">OpenDrawer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Where files go</td>
+              <td>Uploaded to a remote server</td>
+              <td>Stay in browser memory on your device</td>
+            </tr>
+            <tr>
+              <td>Retention</td>
+              <td>Deleted after 1 to 2 hours, by policy</td>
+              <td>Never stored; cleared when the tab closes</td>
+            </tr>
+            <tr>
+              <td>Accounts and quotas</td>
+              <td>Task caps, watermarks or sign-in walls</td>
+              <td>No accounts, no quotas, no watermarks</td>
+            </tr>
+            <tr>
+              <td>Offline after load</td>
+              <td>Fails without an internet connection</td>
+              <td>Works with Wi-Fi switched off</td>
+            </tr>
+            <tr>
+              <td>Proof</td>
+              <td>Legal privacy statement</td>
+              <td>Open source plus browser CSP and Network tab</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="stack" aria-labelledby="never-heading">
       <h2 id="never-heading">What this product will never do</h2>
-      <ul>
+      <ul class="never-list">
         <li>Upload, copy or store a file you open.</li>
         <li>Ask for an account, an email address or a cookie.</li>
         <li>Run analytics, error reporting, ads or A/B tests.</li>
         <li>Add a watermark, a quota, a file limit or an upgrade prompt.</li>
         <li>Load a script, font or icon from another domain.</li>
+        <li>Transmit filenames or file contents to localStorage.</li>
       </ul>
     </section>
 
     <aside class="note" aria-labelledby="enforced-heading">
-      <h2 id="enforced-heading">Enforced, not promised</h2>
+      <h2 id="enforced-heading" class="note__title">Enforced, not promised</h2>
       <p>
-        The Content-Security-Policy allows requests to this origin only, so a future change that
-        tried to send a file elsewhere would be blocked by the browser. The repository is open
-        source; the policy is in <code>public/_headers</code> and the tests assert that no
-        off-origin request happens during a tool run.
+        The Content-Security-Policy in <code>public/_headers</code> sets{' '}
+        <code>default-src 'self'</code>, <code>connect-src 'self'</code>,{' '}
+        <code>form-action 'none'</code> and <code>frame-ancestors 'none'</code>. Even a future bug
+        cannot send a file to another domain because the browser blocks off-origin requests. The
+        automated test suite also fails if any request leaves the origin during a tool run.
       </p>
     </aside>
   </div>
