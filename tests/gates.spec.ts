@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -687,7 +687,32 @@ test.describe('UI-G8 and the file flow', () => {
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
   });
 
+  test('imposes eight pages as four booklet spreads', async ({ page }) => {
+    await page.goto('/tools/booklet-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#booklet-input').setInputFiles({
+      name: 'eight.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(8),
+    });
+    await expect(page.getByRole('status')).toContainText('8 pages ready');
+    await page.getByRole('button', { name: 'Make the booklet' }).click();
+    await expect(page.getByRole('status')).toContainText('Made 4 sheets from 8 pages', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('eight-booklet.pdf');
+    const pdf = await PDFDocument.load(readFileSync((await saved.path())!));
+    expect(pdf.getPageCount()).toBe(4);
+    expect(Math.abs(pdf.getPage(0).getWidth() - 841.89)).toBeLessThan(0.01);
+    expect(Math.abs(pdf.getPage(0).getHeight() - 595.28)).toBeLessThan(0.01);
+  });
+
   test('redacts by destroying the text on the affected page', async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 1400 });
     await page.goto('/tools/redact-pdf');
     await expect(page.locator('[data-ready="true"]')).toBeVisible();
     await page.locator('#redact-input').setInputFiles({
@@ -697,15 +722,15 @@ test.describe('UI-G8 and the file flow', () => {
     });
     const canvas = page.locator('.redact-stage canvas');
     await canvas.waitFor({ timeout: 30_000 });
-    await page.waitForFunction(() => {
-      const element = document.querySelector<HTMLCanvasElement>('.redact-stage canvas');
-      return Boolean(element && element.width > 300);
+    await expect(page.getByText('Drag a box over anything that must disappear')).toBeVisible({
+      timeout: 30_000,
     });
     await canvas.scrollIntoViewIfNeeded();
     const box = await canvas.boundingBox();
-    await page.mouse.move(box!.x + box!.width * 0.05, box!.y + box!.height * 0.05);
+    await page.mouse.move(box!.x + box!.width * 0.1, box!.y + box!.height * 0.15);
     await page.mouse.down();
-    await page.mouse.move(box!.x + box!.width * 0.95, box!.y + box!.height * 0.3, { steps: 8 });
+    await page.mouse.move(box!.x + box!.width * 0.1, box!.y + box!.height * 0.2);
+    await page.mouse.move(box!.x + box!.width * 0.9, box!.y + box!.height * 0.35, { steps: 8 });
     await page.mouse.up();
     await expect(page.getByText('1 box on this page')).toBeVisible();
     await page.getByRole('button', { name: /Redact 1 area/ }).click();

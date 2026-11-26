@@ -169,4 +169,15 @@ export const editTools: ToolEntry[] = [
       'Draw boxes over sensitive areas and rasterise those pages so the text underneath is destroyed.',
     status: 'live',
   },
+  {
+    id: 'booklet-pdf',
+    name: 'Booklet PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    short: 'Fold-ready page spreads.',
+    blurb:
+      'Reorder pages into A4 landscape spreads for double-sided printing and folding.',
+    status: 'live',
+  },
 ];

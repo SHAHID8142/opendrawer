@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/booklet-pdf/Tool';
+
+const title = 'Booklet PDF: saddle-stitch pages for folding';
+const description =
+  'Reorder PDF pages into A4 landscape spreads so a double-sided stack folds into a booklet. Runs in your browser.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Booklet PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'How do I print it?',
+    answer:
+      'Choose double-sided printing with the flip on the long edge, actual size (100%, no fit-to-page), then fold the printed stack in half. Print one copy first and check the page order.',
+  },
+  {
+    question: 'Why were blank pages added?',
+    answer:
+      'A saddle-stitch booklet needs a page count that is a multiple of four. When the document has 5, 6 or 7 pages, blanks are inserted at the end of the imposition so the pairs still line up.',
+  },
+  {
+    question: 'Does every printer work?',
+    answer:
+      'Any duplex printer can print it, but printers differ in which edge they flip on. If the back side is upside down, print again with "flip on short edge" instead.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="booklet-pdf"
+      breadcrumbLabel="Booklet PDF"
+      heading="Booklet PDF"
+      lead="Turn a normal document into folded spreads: A4 landscape sheets, printed on both sides, stacked and folded into a booklet."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'A4 landscape only; there is no Letter, A5 or custom paper size.',
+            'No crop marks, creep compensation or gutter adjustment.',
+            'Links, forms, comments and bookmarks are lost because pages are embedded anew.',
+            'Pages already rotated may not match the folded orientation.',
+            'Digital signatures stop being valid; password-protected PDFs are refused.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="booklet-pdf" />
+      </aside>
+    </div>
+  </div>
+</Base>
