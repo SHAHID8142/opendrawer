@@ -134,6 +134,7 @@ export default function Tool() {
                 onChange={(event) => {
                   setAngle(Number(event.target.value) as RotationAngle);
                   setRotatedCount(null);
+                  setPhase('idle');
                 }}
               >
                 {ANGLE_OPTIONS.map((option) => (
@@ -160,6 +161,7 @@ export default function Tool() {
                 onChange={(event) => {
                   setRange(event.target.value);
                   setRotatedCount(null);
+                  setPhase('idle');
                 }}
               />
               <p id="rotate-range-help" className="field__hint">

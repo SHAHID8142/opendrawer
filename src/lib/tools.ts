@@ -74,6 +74,16 @@ export const tools: ToolEntry[] = [
       'Split a PDF by page ranges or into one file per page, with pages copied rather than re-rendered.',
     status: 'live',
   },
+  {
+    id: 'rotate-pdf',
+    name: 'Rotate PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    blurb:
+      'Turn selected pages or the whole document by 90, 180 or 270 degrees without re-rendering anything.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

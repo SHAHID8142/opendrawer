@@ -3,7 +3,8 @@
 Every planned phase-1 tool, with its engine, its real limits, and its licence position.
 IDs are permanent: they become URLs and must never be renamed.
 
-**Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`. The rest are planned.
+**Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`,
+`rotate-pdf`. The rest are planned.
 
 Legend for **Reliability**: ●●● exact and predictable · ●● good, with disclosed caveats ·
 ● best-effort, always warn the user.
