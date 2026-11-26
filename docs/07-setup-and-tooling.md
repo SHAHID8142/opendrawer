@@ -56,7 +56,7 @@ and every commit builds and passes the gates on its own.
 | `npm run gates` | Token, contrast, copy, size, unit tests, build, then the Playwright UI gates |
 
 Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`,
-`/tools/images-to-pdf`, `/tools/merge-pdf`, `/tools/split-pdf`, `/tools/rotate-pdf`, `/tools/delete-pages`, `/tools/reorder-pages`, `/tools/extract-pages`, `/tools/page-numbers`, `/tools/watermark-pdf`, `/tools/crop-pdf`, `/tools/flatten-pdf`, `/tools/extract-text`. Fourteen
+`/tools/images-to-pdf`, `/tools/merge-pdf`, `/tools/split-pdf`, `/tools/rotate-pdf`, `/tools/delete-pages`, `/tools/reorder-pages`, `/tools/extract-pages`, `/tools/page-numbers`, `/tools/watermark-pdf`, `/tools/crop-pdf`, `/tools/flatten-pdf`, `/tools/extract-text`, `/tools/add-image`. Fifteen
 tools are live;
 `docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
 `src/tools/<id>/` contract for the next one.

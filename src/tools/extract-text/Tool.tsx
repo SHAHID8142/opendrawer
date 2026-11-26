@@ -5,6 +5,7 @@ import { FileDrop } from '../../components/FileDrop';
 import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { countPdfPages } from '../../lib/pdf';
+import { ResultNotes } from './ResultNotes';
 import { extractText } from './extract';
 import { textFileName } from './engine';
 
@@ -18,9 +19,13 @@ export default function Tool() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [out, setOut] = useState<{ text: string; pageCount: number; emptyPages: number[] } | null>(
-    null,
-  );
+  const [out, setOut] = useState<{
+    text: string;
+    pageCount: number;
+    emptyPages: number[];
+    unreadablePages: number[];
+    partialPages: number[];
+  } | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => setReady(true), []);
@@ -56,7 +61,13 @@ export default function Tool() {
         setPhase('error');
         return;
       }
-      setOut({ text: result.text, pageCount: result.pageCount, emptyPages: result.emptyPages });
+      setOut({
+        text: result.text,
+        pageCount: result.pageCount,
+        emptyPages: result.emptyPages,
+        unreadablePages: result.unreadablePages,
+        partialPages: result.partialPages,
+      });
       setPhase('done');
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'The text could not be extracted.');
@@ -159,16 +170,11 @@ export default function Tool() {
               {out.pageCount} page{out.pageCount === 1 ? '' : 's'}
             </span>
           </p>
-          {out.emptyPages.length > 0 && (
-            <div className="note note--warning">
-              <p>
-                {out.emptyPages.length === 1
-                  ? `Page ${out.emptyPages[0]} has no selectable text.`
-                  : `Pages ${out.emptyPages.join(', ')} have no selectable text.`}{' '}
-                They are probably scans, and this tool does not read text from images.
-              </p>
-            </div>
-          )}
+          <ResultNotes
+            emptyPages={out.emptyPages}
+            unreadablePages={out.unreadablePages}
+            partialPages={out.partialPages}
+          />
           <label className="field__label" htmlFor="extracted-text">
             Preview
           </label>

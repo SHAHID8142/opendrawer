@@ -110,6 +110,7 @@ export default function Tool() {
         buttonLabel={files.length === 0 ? 'Choose PDFs' : 'Add PDFs'}
         multiple
         disabled={!usable}
+        previewFiles={files.map((item) => item.file)}
         onFiles={addFiles}
       />
 

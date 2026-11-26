@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/add-image/Tool';
+
+const title = 'Add an image to a PDF: stamp a logo or picture on pages';
+const description =
+  'Place a PNG or JPEG on the pages you choose, in a corner or the centre, with a chosen width, margin and opacity. Runs in your browser; nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Add an image to PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Can I put a logo in the same place on every page?',
+    answer:
+      'Yes. Leave the page field empty and the image goes on every page at the position and margin you set.',
+  },
+  {
+    question: 'Does the image hide the text underneath?',
+    answer:
+      'Visually yes, but the text is still in the file and can be selected or copied. That is why this is not redaction. Use the redaction approach when content must actually be destroyed.',
+  },
+  {
+    question: 'Why does the position look wrong on a rotated page?',
+    answer:
+      'Positions are calculated in the page’s own coordinate system. A page rotated by 90° or 270° can show the image in a different corner than on upright pages.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Add an image" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Add an image to a PDF</h1>
+      <p>
+        Stamp a logo, a tick or a photograph onto chosen pages. Choose a corner or the centre,
+        then set how wide it is and how strongly it shows.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'PNG and JPEG only. WebP, HEIC, SVG and GIF are refused.',
+            'The image is a layer on top; it covers content but does not remove it.',
+            'There is no drag-and-drop preview or free positioning, only corners and centre.',
+            'On pages rotated by 90° or 270°, the chosen corner can appear elsewhere.',
+            'Digital signatures stop being valid once the file changes.',
+            'Password-protected PDFs are refused, and very large images may run out of memory.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

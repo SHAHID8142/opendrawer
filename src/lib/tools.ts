@@ -234,6 +234,17 @@ export const tools: ToolEntry[] = [
       'Read selectable PDF text and download it as plain UTF-8 text, with optional page labels.',
     status: 'live',
   },
+  {
+    id: 'add-image',
+    name: 'Add an image',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    short: 'Stamp a logo or picture.',
+    blurb:
+      'Place a PNG or JPEG in a corner or the centre of chosen pages, with a set width, margin and opacity.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

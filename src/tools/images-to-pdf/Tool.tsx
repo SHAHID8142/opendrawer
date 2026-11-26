@@ -116,6 +116,7 @@ export default function Tool() {
         buttonLabel={files.length === 0 ? 'Choose images' : 'Add images'}
         multiple
         disabled={!usable}
+        previewFiles={files.map((item) => item.file)}
         onFiles={addFiles}
       />
 

@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image'];
 
 async function createPdf(
   pageCount: number,
@@ -558,6 +558,38 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the text file' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('notes.txt');
+  });
+
+  test('adds an image to the chosen pages and downloads the PDF', async ({ page }) => {
+    const dot = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    );
+
+    await page.goto('/tools/add-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#image-pdf-input').setInputFiles({
+      name: 'report.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(1),
+    });
+    await expect(page.getByRole('status')).toContainText('Now choose a PNG or JPEG image');
+    await page.locator('#image-file-input').setInputFiles({
+      name: 'dot.png',
+      mimeType: 'image/png',
+      buffer: dot,
+    });
+
+    await page.selectOption('#image-placement', 'top-left');
+    await page.getByRole('button', { name: 'Add the image' }).click();
+    await expect(page.getByRole('status')).toContainText('Added the image to 1 page', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('report-with-image.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {
