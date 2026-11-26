@@ -25,6 +25,16 @@ This file must be updated in the same commit that adds or upgrades a dependency.
 | i18next | 25.x | MIT | https://www.i18next.com | Translations (phase 3) |
 | Workbox / `vite-plugin-pwa` | pinned | MIT | https://developer.chrome.com/docs/workbox | Offline shell |
 
+## Bundled data files (dictionaries)
+
+Served from this origin and fetched only when a language pack is first used. The licence text
+for each pack ships beside it in `public/dictionaries/<locale>/LICENSE.txt`.
+
+| Data | Version / date | Licence | Upstream | Used for |
+| --- | --- | --- | --- | --- |
+| SCOWL / Ispell Hunspell dictionaries (`en-US`, `en-GB`, `en-CA`, `en-AU`) | 2020.12.07 | SCOWL/Ispell permissive terms | http://wordlist.sourceforge.net | English spellchecking |
+| `bn_BD` Hunspell dictionary | 2018, Jacob Thomas / Bengal Creative Media LTD | GPL-2.0-or-later | bn_BD Hunspell dictionary (copy shipped with this repository) | Bengali spellchecking |
+
 ## Build and test tooling (not shipped to users)
 
 Vite (MIT), TypeScript (Apache-2.0), Vitest (MIT), Playwright (Apache-2.0), ESLint (MIT),

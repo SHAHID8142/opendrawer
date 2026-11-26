@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/writing-check/Tool';
+
+const title = 'Writing check: spelling and copy checks without AI';
+const description =
+  'Check spelling against offline Hunspell dictionaries and catch repetition, spacing and common confusions with rules. No AI model, no API key, no upload.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Writing check',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is this an AI writing assistant?',
+    answer:
+      'No. It is a Hunspell dictionary plus a small set of transparent rules: repeated words, double spaces, spacing before punctuation, sentence capitalisation, a few common confusions and very long sentences. There is no model, no API key and no account.',
+  },
+  {
+    question: 'Can it rewrite my email to sound better?',
+    answer:
+      'No. It does not generate or rewrite prose. It points at specific spans and offers concrete replacements, and you decide which ones to apply.',
+  },
+  {
+    question: 'Where does the dictionary come from?',
+    answer:
+      'It is served as static files from this site and loaded when you check a language. SCOWL/Ispell dictionaries cover US, UK, Canadian and Australian English; the Bengali pack is also included. The licence text ships beside each dictionary.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="writing-check"
+      breadcrumbLabel="Writing check"
+      heading="Writing check"
+      lead="Paste a draft and get spelling plus a handful of honest mechanical checks. No model writes anything for you, and the text never leaves this tab."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not rewrite, paraphrase or suggest a better tone; there is no language model.',
+            'Grammar coverage is a short list of rules, not a full parser.',
+            'Spelling depends on the chosen dictionary; names, jargon and brands are often flagged.',
+            'It does not detect plagiarism or check facts.',
+            'It only sees text you paste or open from a .txt/.md file; PDFs need another tool first.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="writing-check" />
+      </aside>
+    </div>
+  </div>
+</Base>

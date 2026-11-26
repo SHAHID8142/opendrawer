@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,20 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('checks spelling, fixes it and keeps the text local', async ({ page }) => {
+    await page.goto('/tools/writing-check');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.fill('#writing-text', 'I recieve the the report.');
+    await page.getByRole('button', { name: 'Check the text' }).click();
+    await expect(page.getByRole('status')).toContainText('Found 2 issues', { timeout: 60_000 });
+    await expect(page.getByText('"recieve" may be misspelled.')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Fix all spelling' }).click();
+    await expect(page.locator('#writing-text')).toHaveValue('I receive the the report.');
+    await page.getByRole('button', { name: /Use “the”/ }).click();
+    await expect(page.locator('#writing-text')).toHaveValue('I receive the report.');
   });
 
   test('imposes eight pages as four booklet spreads', async ({ page }) => {

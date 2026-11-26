@@ -16,6 +16,9 @@ needs-verification / rejected.
 | Vite | build | MIT | approved | — |
 | pdf-lib | structure edits, forms, creation | MIT | approved | 1.17.1; maintenance has slowed, so wrap it behind `engines/pdfLib.ts` to allow replacement |
 | PDF.js (`pdfjs-dist`) | rendering, text extraction | Apache-2.0 | approved | Mozilla; actively maintained; the engine behind Firefox's viewer |
+| SCOWL / Ispell Hunspell dictionaries (en-US, en-GB, en-CA, en-AU) | English spellchecking | SCOWL/Ispell permissive terms | approved | 2020.12.07 build; licence text ships in `public/dictionaries/<locale>/LICENSE.txt` |
+| `bn_BD` Hunspell dictionary | Bengali spellchecking | GPL-2.0-or-later | approved | Copyright 2018 Jacob Thomas, Bengal Creative Media LTD; GPLv2-or-later is compatible with AGPL-3.0 |
+
 | Tesseract.js | OCR worker API | Apache-2.0 | approved | 7.0.0; worker, cores and English data are self-hosted from `/ocr/` |
 | `@neslinesli93/qpdf-wasm` | qpdf 12.2.0 in WebAssembly | ISC wrapper / Apache-2.0 qpdf | approved | 0.3.1; 1.3 MB WASM loaded on demand by `src/lib/qpdf-worker.ts` |
 | tesseract.js-core | OCR WebAssembly | Apache-2.0 | approved | 6.1.2; three LSTM cores copied by `scripts/copy-ocr-assets.mjs` |

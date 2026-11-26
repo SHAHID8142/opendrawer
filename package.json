@@ -20,7 +20,7 @@
     "gate:ui": "playwright test",
     "gates": "npm run gate:tokens && npm run gate:contrast && npm run gate:copy && npm run gate:size && npm run test:unit && npm run build && npm run gate:ui",
     "gate:size": "node scripts/gates/size.mjs",
-    "test:unit": "node --test tests/unit/"
+    "test:unit": "node --test tests/unit/ tests/spellcheck/"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.9",

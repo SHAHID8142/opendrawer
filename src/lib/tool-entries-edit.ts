@@ -180,4 +180,15 @@ export const editTools: ToolEntry[] = [
       'Reorder pages into A4 landscape spreads for double-sided printing and folding.',
     status: 'live',
   },
+  {
+    id: 'writing-check',
+    name: 'Writing check',
+    category: 'Text & data',
+    group: 'Edit',
+    accent: 'textdata',
+    short: 'Spelling and copy rules, offline.',
+    blurb:
+      'Check spelling against a local Hunspell dictionary and catch repetition, spacing and common confusions.',
+    status: 'live',
+  },
 ];
