@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^7.1.9",
+    "@neslinesli93/qpdf-wasm": "^0.3.1",
     "@tesseract.js-data/eng": "^1.0.0",
     "astro": "^7.4.13",
     "pdf-lib": "^1.17.1",

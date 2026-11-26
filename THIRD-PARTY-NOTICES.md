@@ -14,8 +14,8 @@ This file must be updated in the same commit that adds or upgrades a dependency.
 | pdf-lib | 1.17.1 | MIT | https://github.com/Hopding/pdf-lib | PDF structure edits, forms, creation |
 | PDF.js (`pdfjs-dist`) | 6.x | Apache-2.0 | https://github.com/mozilla/pdf.js | Rendering, text extraction |
 | jsPDF | 3.x | MIT | https://github.com/parallax/jsPDF | Text/Markdown → PDF |
-| qpdf (WebAssembly build) | 12.x | Apache-2.0 | https://github.com/qpdf/qpdf | Encryption, decryption, repair, lossless optimisation |
-| qpdf browser wrapper | pinned | MIT / ISC / Apache-2.0 (verify) | `qpdf-run` or `@lipoe/browser-qpdf` | Loading the qpdf WASM build |
+| qpdf (WebAssembly build) | 12.2.0 | Apache-2.0 | https://github.com/qpdf/qpdf | Encryption, decryption, repair, lossless optimisation |
+| `@neslinesli93/qpdf-wasm` | 0.3.1 | ISC wrapper | https://github.com/neslinesli93/qpdf-wasm | Loading the qpdf WASM build |
 | Ghostscript (WebAssembly build) | pinned | **AGPL-3.0** | https://ghostscript.com | Strong compression, image downsampling |
 | Tesseract.js | 7.0.0 | Apache-2.0 | https://github.com/naptha/tesseract.js | OCR worker API |
 | tesseract.js-core | 6.1.2 | Apache-2.0 | https://github.com/naptha/tesseract.js-core | OCR WebAssembly cores, self-hosted under `/ocr/core/` |

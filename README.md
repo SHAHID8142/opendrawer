@@ -11,10 +11,10 @@ Every tool runs **inside the visitor's browser**. Files are never uploaded, ther
 no advertising, no payment, no file-size limit and no daily cap. Turn off the internet after the
 page loads and it keeps working.
 
-> Status: **seventeen tools live** — Inspect PDF, PDF to image, Images to PDF, Merge PDF, Split PDF,
+> Status: **twenty-one tools live** — Inspect PDF, PDF to image, Images to PDF, Merge PDF, Split PDF,
 > Rotate PDF, Delete pages, Reorder pages, Extract pages, Page numbers, Watermark PDF, Crop PDF,
-> Flatten PDF, Extract text, Add an image, OCR PDF and Resize pages — on a light-only,
-> token-driven design system. The next categories (images, audio, text, everyday) are planned in
+> Flatten PDF, Extract text, Add an image, OCR PDF, Resize pages, Compress PDF, Protect PDF,
+> Unlock PDF and Repair PDF — on a light-only, token-driven design system. The next categories (images, audio, text, everyday) are planned in
 > `docs/10-scope-and-taxonomy.md`; each tool ships finished, tested and documented.
 
 ---

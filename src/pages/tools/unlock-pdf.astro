@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/unlock-pdf/Tool';
+
+const title = 'Unlock a PDF with its password';
+const description =
+  'Remove a password you already know from a PDF, using qpdf WebAssembly in your browser. No cracking, no guessing, and nothing is uploaded.';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Unlock PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+const faq = [
+  { question: 'Can it crack a password I do not know?', answer: 'No. It only accepts a password you supply and has no guessing mode. Owner-password restrictions in some PDFs are advisory, but the file still has to open first.' },
+  { question: 'Does unlocking weaken the document?', answer: 'The downloaded copy has no password, so anyone who gets that copy can open it. Keep the locked original if the protection matters.' },
+  { question: 'Why does it say the PDF is not encrypted?', answer: 'Some PDFs open without a password and only carry advisory permissions. There is then nothing to remove.' },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="unlock-pdf"
+      breadcrumbLabel="Unlock PDF"
+      heading="Unlock a PDF"
+      lead="Type the password the file already uses and download a copy without it."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'No password cracking, dictionary attacks or owner-password bypass.',
+            'A wrong password changes nothing; the original file stays as it is.',
+            'Removing the password removes protection for anyone who receives the copy.',
+            'It cannot repair unrelated damage; use Repair for that.',
+            'Digital signatures are invalidated because the file is rebuilt.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+    <RelatedTools currentId="unlock-pdf" />
+  </div>
+</Base>

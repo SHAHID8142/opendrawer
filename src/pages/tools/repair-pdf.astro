@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/repair-pdf/Tool';
+
+const title = 'Repair a damaged PDF';
+const description =
+  'Rebuild a broken or truncated PDF with qpdf WebAssembly in your browser. It recovers structure and streams; it cannot restore content that was never saved.';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Repair PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+const faq = [
+  { question: 'Will it recover every page?', answer: 'qpdf rebuilds the file structure and readable streams. Pages whose data is missing or overwritten cannot be recreated, and badly damaged objects may be dropped.' },
+  { question: 'What kinds of damage can it fix?', answer: 'Truncated downloads, broken cross-reference tables, duplicate objects and minor stream corruption are the usual cases. A file that is not a PDF at all is refused.' },
+  { question: 'Should I keep the original?', answer: 'Yes. Open the repaired copy first, check the pages you need, and only then decide. The original on your device is never modified.' },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="repair-pdf"
+      breadcrumbLabel="Repair PDF"
+      heading="Repair a PDF"
+      lead="Let qpdf rebuild a file that no longer opens cleanly, then download the recovered copy."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It cannot restore content that is missing from the file.',
+            'Password-protected files are refused; unlock them first.',
+            'Repair is not a guarantee: some damage is beyond reconstruction.',
+            'It can drop broken objects and pages that cannot be parsed.',
+            'Digital signatures stop being valid because the file is rebuilt.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+    <RelatedTools currentId="repair-pdf" />
+  </div>
+</Base>

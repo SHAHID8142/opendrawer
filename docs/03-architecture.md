@@ -81,7 +81,7 @@ Nothing heavy loads on the home page.
 | App shell (HTML+CSS+JS, gzip) | target ≤ 150 KB | immediately |
 | pdf-lib | a few hundred KB | first structure tool |
 | PDF.js + worker | ~1 MB | first render/extract tool |
-| qpdf WASM | ~2.1 MB | protect/unlock/repair/optimise |
+| qpdf WASM | ~1.3 MB (12.2.0) | protect/unlock/repair/optimise, in a module worker |
 | Ghostscript WASM | ~18 MB | strong compression only, with a progress explanation |
 | Tesseract core + language | ~3 MB + 10–15 MB per language | OCR only, language chosen by the user |
 

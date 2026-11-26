@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/compress-pdf/Tool';
+
+const title = 'Compress PDF without losing quality';
+const description =
+  'Rebuild a PDF with object streams and maximum lossless compression. Images are not resampled, so text and layout stay identical. Runs in your browser using qpdf WebAssembly.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Compress PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  { question: 'How much smaller will it get?', answer: 'It depends on how the PDF was made. Files with redundant structure can drop noticeably; scanned photos that are already JPEG-compressed barely change.' },
+  { question: 'Why does it not touch the images?', answer: 'Downsampling images is lossy and needs Ghostscript, which is not part of this build. This tool only removes structural waste, so nothing visible changes.' },
+  { question: 'What happens if qpdf cannot make it smaller?', answer: 'You get the original file back and a clear message. It never hands you a larger file.' },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="compress-pdf"
+      breadcrumbLabel="Compress PDF"
+      heading="Compress PDF"
+      lead="Strip structural waste without changing a single pixel or glyph. Best for PDFs exported by office software."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not downsample images or convert them to JPEG; that is lossy compression and is not included.',
+            'Scans and photos that are already compressed will barely shrink.',
+            'The file is rebuilt, so digital signatures stop being valid.',
+            'Password-protected PDFs must be unlocked first.',
+            'There is no target file size; the result is whatever lossless optimisation produces.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+    <RelatedTools currentId="compress-pdf" />
+  </div>
+</Base>

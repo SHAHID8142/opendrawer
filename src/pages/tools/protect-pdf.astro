@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/protect-pdf/Tool';
+
+const title = 'Protect PDF with a password';
+const description =
+  'Add an AES-256 password to a PDF using qpdf WebAssembly. The password stays in this tab and is never sent anywhere. No account, no upload, no recovery key.';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Protect PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+const faq = [
+  { question: 'Can this site recover my password?', answer: 'No. Nothing is stored or transmitted, so there is no key, no hint and no reset. Keep the password in a password manager before you close the tab.' },
+  { question: 'What kind of encryption is used?', answer: 'qpdf 12 adds AES-256 encryption. Viewers that support modern PDF encryption will ask for the password when the file is opened.' },
+  { question: 'Can I still edit the file later?', answer: 'Yes, if you keep the password. Removing it later is a separate step that needs the same password.' },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="protect-pdf"
+      breadcrumbLabel="Protect PDF"
+      heading="Protect PDF with a password"
+      lead="Encrypt the file with AES-256 before it leaves your device. The password is the only way back in."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It cannot recover or reset a forgotten password; there is no server and no escrow.',
+            'A weak password is still crackable offline. Use a long phrase.',
+            'It does not set print/copy permissions; the file is encrypted as a whole.',
+            'Digital signatures stop being valid because encryption changes the file.',
+            'A PDF that is already password protected is refused; unlock it first.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+    <RelatedTools currentId="protect-pdf" />
+  </div>
+</Base>

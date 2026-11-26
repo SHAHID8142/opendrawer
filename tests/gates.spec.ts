@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -615,6 +615,71 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('optimises a PDF losslessly and reports the outcome', async ({ page }) => {
+    await page.goto('/tools/compress-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#compress-input').setInputFiles({
+      name: 'office.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(30),
+    });
+    await expect(page.getByRole('status')).toContainText('30 pages ready');
+    await page.getByRole('button', { name: 'Optimise the PDF' }).click();
+    await expect(page.getByRole('status')).toContainText(/Saved \d+%|already as small/, {
+      timeout: 60_000,
+    });
+  });
+
+  test('protects a PDF, then unlocks the downloaded copy with the same password', async ({ page }) => {
+    await page.goto('/tools/protect-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#protect-input').setInputFiles({
+      name: 'contract.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(1),
+    });
+    await page.fill('#protect-password', 'correct horse battery');
+    await page.fill('#protect-confirm', 'correct horse battery');
+    await page.getByRole('button', { name: 'Add the password' }).click();
+    await expect(page.getByRole('status')).toContainText('Protected 1 page', { timeout: 60_000 });
+
+    const protectedDownload = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const protectedFile = await protectedDownload;
+    expect(protectedFile.suggestedFilename()).toBe('contract-protected.pdf');
+    const protectedPath = await protectedFile.path();
+    await expect(PDFDocument.load(readFileSync(protectedPath!))).rejects.toThrow();
+
+    await page.goto('/tools/unlock-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#unlock-input').setInputFiles({
+      name: 'contract-protected.pdf',
+      mimeType: 'application/pdf',
+      buffer: readFileSync(protectedPath!),
+    });
+    await page.fill('#unlock-password', 'correct horse battery');
+    await page.getByRole('button', { name: 'Remove the password' }).click();
+    await expect(page.getByRole('status')).toContainText('Unlocked 1 page', { timeout: 60_000 });
+
+    const openDownload = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const openFile = await openDownload;
+    const pdf = await PDFDocument.load(readFileSync((await openFile.path())!));
+    expect(pdf.getPageCount()).toBe(1);
+  });
+
+  test('refuses a file that is not a PDF in Repair and explains why', async ({ page }) => {
+    await page.goto('/tools/repair-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#repair-input').setInputFiles({
+      name: 'notes.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('not a pdf', 'utf8'),
+    });
+    await page.getByRole('button', { name: 'Repair the PDF' }).click();
+    await expect(page.getByText('does not start like a PDF')).toBeVisible();
   });
 
   test('refuses more than 20 OCR pages and serves the OCR assets itself', async ({ page, request }) => {

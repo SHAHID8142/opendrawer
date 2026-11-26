@@ -17,6 +17,7 @@ needs-verification / rejected.
 | pdf-lib | structure edits, forms, creation | MIT | approved | 1.17.1; maintenance has slowed, so wrap it behind `engines/pdfLib.ts` to allow replacement |
 | PDF.js (`pdfjs-dist`) | rendering, text extraction | Apache-2.0 | approved | Mozilla; actively maintained; the engine behind Firefox's viewer |
 | Tesseract.js | OCR worker API | Apache-2.0 | approved | 7.0.0; worker, cores and English data are self-hosted from `/ocr/` |
+| `@neslinesli93/qpdf-wasm` | qpdf 12.2.0 in WebAssembly | ISC wrapper / Apache-2.0 qpdf | approved | 0.3.1; 1.3 MB WASM loaded on demand by `src/lib/qpdf-worker.ts` |
 | tesseract.js-core | OCR WebAssembly | Apache-2.0 | approved | 6.1.2; three LSTM cores copied by `scripts/copy-ocr-assets.mjs` |
 | `@tesseract.js-data/eng` | English traineddata | MIT package / Apache-2.0 data | approved | 4.0.0_best_int, 2.8 MB gzip, served from this site; no CDN |
 | jsPDF | text/Markdown → PDF | MIT | approved | Generation only; weak layout engine |
