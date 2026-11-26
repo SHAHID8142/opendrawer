@@ -40,7 +40,8 @@ logo, not body text, and those combinations fall below 3:1.
 
 - **Clear space:** one drawer-handle height on every side — 18 units of the 72-unit box
   (0.25 × the mark height). Nothing enters it: no type, rules, buttons or image edges.
-- **Minimum mark:** 16 px (favicon), 24 px in interface.
+- **Minimum mark:** 16 px (favicon), 24 px inside the tile in interface. The header tile is
+  40 px with a 24 px glyph; the wordmark is 26 px.
 - **Minimum lockup:** 140 px wide; below that use the mark alone.
 - **Lockup spacing is fixed:** wordmark starts 20 units after the mark (92 of 372). Do not tighten
   or loosen it.

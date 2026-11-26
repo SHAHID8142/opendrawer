@@ -51,7 +51,7 @@
   color: var(--color-text);
   font-family: var(--font-display);
   font-weight: var(--weight-semibold);
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   letter-spacing: var(--tracking-tight);
   text-decoration: none;
 }
@@ -63,8 +63,8 @@
 .brand__mark {
   display: grid;
   place-items: center;
-  width: var(--space-7);
-  height: var(--space-7);
+  width: var(--space-8);
+  height: var(--space-8);
   flex: none;
   background: var(--color-accent);
   color: var(--color-on-accent);
@@ -73,8 +73,8 @@
 
 .brand__mark img,
 .brand__mark svg {
-  width: var(--space-5);
-  height: var(--space-5);
+  width: var(--space-6);
+  height: var(--space-6);
 }
 
 .site-nav {
@@ -182,8 +182,24 @@ main {
     padding-block: var(--space-7) var(--space-9);
   }
 
+  .brand {
+    gap: var(--space-2);
+    font-size: var(--text-lg);
+  }
+
+  .brand__mark {
+    width: var(--space-7);
+    height: var(--space-7);
+  }
+
+  .brand__mark img,
+  .brand__mark svg {
+    width: var(--space-5);
+    height: var(--space-5);
+  }
+
   .site-nav {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .site-nav a.site-nav__source {
