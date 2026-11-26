@@ -1,5 +1,5 @@
 /*
- * Hero ambient field — organic orbital wave stream scoped cleanly to the hero backdrop.
+ * Hero ambient field — subtle precision dot-matrix elevation wave behind the hero.
  */
 
 .hero-stage {
@@ -15,20 +15,16 @@
   height: calc(100% + var(--space-9));
   z-index: 0;
   pointer-events: none;
-  /* Feather top and bottom edges seamlessly into the porcelain page surface. */
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    currentColor 15%,
-    currentColor 85%,
-    transparent 100%
+  /* Softly dissolve top, bottom, and outer flanks into the porcelain surface. */
+  -webkit-mask-image: radial-gradient(
+    ellipse 88% 82% at 50% 48%,
+    currentColor 38%,
+    transparent 96%
   );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    currentColor 15%,
-    currentColor 85%,
-    transparent 100%
+  mask-image: radial-gradient(
+    ellipse 88% 82% at 50% 48%,
+    currentColor 38%,
+    transparent 96%
   );
 }
 
@@ -37,14 +33,8 @@
   z-index: 1;
 }
 
-@media (max-width: 48rem) {
-  .ambient-canvas {
-    opacity: 0.85;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .ambient-canvas {
-    opacity: 0.65;
+    opacity: 0.55;
   }
 }
