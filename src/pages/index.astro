@@ -4,104 +4,30 @@ import { liveTools } from '../lib/tools';
 ---
 
 <Base
-  title="OpenDrawer — free PDF tools that never upload your files"
-  description="Free, open-source PDF tools that run entirely in your browser. Inspect a PDF and turn its pages into images without uploading them. No account, no ads, no file-size limit."
+  title="OpenDrawer — everyday file tools that never upload"
+  description="Free, open-source tools that run in your browser: inspect a PDF, turn its pages into images, and more added one at a time. No account, no ads, no upload."
 >
   <div class="stack-lg">
-    <section class="hero" aria-labelledby="hero-heading">
-      <div class="hero__copy">
-        <p class="tag">Free · open source · no account</p>
-        <h1 id="hero-heading">PDF tools that keep the file on your device</h1>
-        <p class="hero__lead">
-          Inspect what a document really contains, or turn its pages into images. Everything runs
-          in this tab, on your own processor. There is no server to send the file to.
-        </p>
-        <div class="hero__actions">
-          <a class="btn btn--primary" href="/tools/inspect-pdf">
-            Inspect a PDF
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M5 12h14" />
-              <path d="m13 6 6 6-6 6" />
-            </svg>
-          </a>
-          <a class="btn btn--secondary" href="#tools">See the tools</a>
-        </div>
-        <p class="hero__note">
-          No upload, no watermark, no daily limit. Switch off Wi-Fi after the page loads and the
-          tools keep working.
-        </p>
-      </div>
-
-      <div class="preview" aria-hidden="true">
-        <div class="preview__bar">
-          <span class="preview__file">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
-              <path d="M14 3v5h5" />
-            </svg>
-            <span>tenancy-agreement.pdf</span>
-          </span>
-          <span class="badge">Example report</span>
-        </div>
-        <div class="preview__body">
-          <div class="preview__page">
-            <span class="preview__line preview__line--title"></span>
-            <span class="preview__line"></span>
-            <span class="preview__line"></span>
-            <span class="preview__line preview__line--short"></span>
-            <span class="preview__line"></span>
-            <span class="preview__line preview__line--short"></span>
-          </div>
-          <div class="preview__facts">
-            <div class="preview__fact"><b>12</b><span>pages</span></div>
-            <div class="preview__fact"><b>A4</b><span>page size</span></div>
-            <div class="preview__fact"><b>0</b><span>scripts</span></div>
-          </div>
-          <p class="preview__verdict">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="m5 12 5 5L20 7" />
-            </svg>
-            No scripts, no embedded files, no signatures
-          </p>
-        </div>
-      </div>
+    <section class="home-intro" aria-labelledby="home-heading">
+      <h1 id="home-heading">Everyday file tools. Nothing uploaded.</h1>
+      <p>
+        Inspect a PDF or turn its pages into images. Free, open source, and running entirely in
+        this tab.
+      </p>
     </section>
 
-    <ul class="trust" aria-label="What OpenDrawer guarantees">
-      <li>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="m5 12 5 5L20 7" />
-        </svg>
-        Runs offline after first load
-      </li>
-      <li>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="m5 12 5 5L20 7" />
-        </svg>
-        No account, no tracking cookies
-      </li>
-      <li>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="m5 12 5 5L20 7" />
-        </svg>
-        No watermark on the output
-      </li>
-    </ul>
-
     <section class="stack" id="tools" aria-labelledby="tools-heading">
-      <div class="section-head">
+      <div class="section-head cluster">
         <h2 id="tools-heading">Tools</h2>
-        <p>
-          Added in order of need. Every tool states its limits on its own page before you use it,
-          and runs entirely in your browser.
-        </p>
+        <span class="badge">{liveTools.length} live</span>
       </div>
-      <ul class="card-grid" role="list">
+
+      <ul class="tool-list" role="list">
         {
           liveTools.map((tool) => (
             <li>
-              <a class="tool-card" href={`/tools/${tool.id}`}>
-                <span class="tool-card__icon" aria-hidden="true">
+              <a class="tool-row" href={`/tools/${tool.id}`}>
+                <span class="tool-row__icon" aria-hidden="true">
                   {tool.id === 'inspect-pdf' ? (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <circle cx="11" cy="11" r="6" />
@@ -115,11 +41,13 @@ import { liveTools } from '../lib/tools';
                     </svg>
                   )}
                 </span>
-                <span class="tool-card__title">{tool.name}</span>
-                <span class="tool-card__blurb">{tool.blurb}</span>
-                <span class="tool-card__meta">
-                  Open tool
-                  <svg class="tool-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <span class="tool-row__text">
+                  <span class="tool-row__title">{tool.name}</span>
+                  <span class="tool-row__blurb">{tool.blurb}</span>
+                </span>
+                <span class="tool-row__action">
+                  Open
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M5 12h14" />
                     <path d="m13 6 6 6-6 6" />
                   </svg>
@@ -131,38 +59,8 @@ import { liveTools } from '../lib/tools';
       </ul>
     </section>
 
-    <section class="split section" id="privacy" aria-labelledby="privacy-heading">
-      <div class="section-head">
-        <h2 id="privacy-heading">Privacy you can check, not trust</h2>
-        <p>
-          There is no upload endpoint in this site, and the Content-Security-Policy only permits
-          requests to its own origin. A future change that tried to send a file somewhere else
-          would be blocked by the browser.
-        </p>
-      </div>
-      <ol class="steps">
-        <li>
-          <h3>Open the Network tab</h3>
-          <p>Press F12, or Cmd+Option+I on a Mac, then choose Network and clear the list.</p>
-        </li>
-        <li>
-          <h3>Use a tool</h3>
-          <p>Pick a PDF. No request leaves this page while it is read or converted.</p>
-        </li>
-        <li>
-          <h3>Switch off Wi-Fi</h3>
-          <p>The tool still works after the page loads, because nothing it does needs a server.</p>
-        </li>
-      </ol>
-    </section>
-
-    <aside class="note" aria-labelledby="not-here-heading">
-      <h2 id="not-here-heading">What is not here</h2>
-      <p>
-        Office documents to PDF, PDF/A archiving and certified e-signatures are not offered. They
-        need software that cannot run reliably in a browser, and saying otherwise would waste
-        your time.
-      </p>
-    </aside>
+    <p class="home-next muted">
+      Images, audio, text and everyday tools come next, one finished tool at a time.
+    </p>
   </div>
 </Base>

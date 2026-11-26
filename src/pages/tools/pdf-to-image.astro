@@ -78,20 +78,6 @@ const faq = [
 
       <div class="tool-main stack-lg">
         <Tool client:visible />
-        <section class="prose stack" aria-labelledby="how-heading">
-          <h2 id="how-heading">Choosing a resolution</h2>
-          <p>
-            A PDF page is measured in points, 72 to the inch. Rendering at 72 DPI therefore gives one
-            pixel per point, which looks right on screen at 100 percent zoom. 150 DPI is comfortable
-            for reading on a tablet, and 300 DPI is the usual print figure: an A4 page becomes about
-            2480 by 3508 pixels.
-          </p>
-          <p>
-            The cost is memory. Each page is held as raw pixels while it is drawn, so three A4 pages at
-            300 DPI is roughly 26 megapixels of canvas work. That is why the tool reports progress per
-            page instead of freezing, and why the ceiling exists.
-          </p>
-        </section>
       </div>
     </div>
   </div>

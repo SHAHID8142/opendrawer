@@ -1,67 +1,6 @@
 /*
- * Page patterns — hero, product preview and trust lists. Composition only; every
- * value comes from tokens.css.
+ * Page patterns — numbered explanation steps. Composition only; values come from tokens.
  */
-
-.hero {
-  display: grid;
-  gap: var(--space-8);
-  align-items: center;
-}
-
-.hero__copy {
-  display: grid;
-  gap: var(--space-5);
-  justify-items: start;
-  max-width: var(--measure);
-}
-
-.hero__lead {
-  color: var(--color-text-muted);
-  font-size: var(--text-lg);
-  line-height: var(--leading-relaxed);
-}
-
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
-.hero__note {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
-
-/* Trust strip under the hero. */
-
-.trust {
-  display: flex;
-  margin: 0;
-  padding-inline: 0;
-  list-style: none;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-6);
-  padding-block: var(--space-5);
-  border-block: var(--border-width) solid var(--color-border-subtle);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
-
-.trust li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.trust svg {
-  width: var(--space-4);
-  height: var(--space-4);
-  color: var(--color-success);
-}
-
-/* Numbered explanation steps. */
 
 .steps {
   display: grid;
@@ -104,20 +43,7 @@
   font-size: var(--text-sm);
 }
 
-/* Two-column split used by the privacy explanation. */
-
-.split {
-  display: grid;
-  gap: var(--space-8);
-  align-items: start;
-}
-
 @media (min-width: 62rem) {
-  .hero {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    gap: var(--space-10);
-  }
-
   .steps {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-5);
@@ -126,9 +52,5 @@
   .steps li {
     padding-left: 0;
     padding-top: var(--space-9);
-  }
-
-  .split {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 }

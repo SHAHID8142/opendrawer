@@ -126,8 +126,8 @@ with `--ease-out`; all of it collapses under `prefers-reduced-motion`.
 - **44 × 44 px** minimum touch targets (above the WCAG 2.2 AA floor of 24 × 24 in SC 2.5.8).
 - Primary actions in the lower third (thumb reach); destructive actions never adjacent to the
   primary one.
-- The file list, progress and result panel are single-column below 640 px; two columns only for
-  tool cards at ≥ 768 px.
+- The tool directory is a single list of rows, not a card wall; it stays one column at every width
+  so it scales to forty tools without a layout rewrite.
 - Never rely on hover. Every hover affordance has a focus and a touch equivalent.
 - The app must be usable with images disabled and with JavaScript-heavy engines still loading.
 
@@ -135,21 +135,26 @@ with `--ease-out`; all of it collapses under `prefers-reduced-motion`.
 
 ## 6. Components and their required states
 
-Each component ships with all states; a component without a `focus-visible` style is incomplete.
+Primitives are CSS classes in `src/styles/ui/`, bound to tokens and usable from both Astro and
+React islands. Each ships with all of its states; a primitive without `focus-visible` is
+incomplete. Add a primitive only when a second screen needs it.
 
-| Component | States that must exist |
-| --- | --- |
-| `FileDrop` | idle, drag-over, focus, selected, disabled, error (wrong type), too-large |
-| `ToolCard` | default, hover, focus, visited, unavailable |
-| `Button` | primary / secondary / danger × default, hover, focus-visible, active, disabled, loading |
-| `Progress` | indeterminate (< 1 s unknown), determinate with percentage, stalled, cancelled |
-| `LimitsNote` | info, warning, blocking-with-reason |
-| `ResultPanel` | success with before/after size, no-improvement ("cannot get smaller"), failure with cause and retry |
-| `Dialog` | confirm destructive action, focus trap, Escape to close, focus returned to trigger |
-| `Toast` | polite, assertive, dismissible, auto-expire ≥ 6 s |
+| Primitive | Class / component | States |
+| --- | --- | --- |
+| Button | `.btn` + `--primary` / `--secondary` / `--ghost` / `--danger` | default, hover, focus-visible, active, disabled |
+| Drop zone | `.drop` / `FileDrop.tsx` | idle, drag-over, focus-within, disabled, hydration-pending |
+| Tool directory | `.tool-list` / `.tool-row` | default, hover/focus-within, narrow viewport |
+| Card | `.card` | default, heading scale, nested note |
+| Field | `.field`, `.input`, `.select`, `.textarea`, `.fieldset` | rest, hover, focus-visible, invalid, disabled |
+| Feedback | `.note--warning/danger/success`, `.status`, `.tag`, `.badge` | info, warning, danger, success, live status |
+| Table | `.table-scroll` + `table` | normal, narrow viewport scroll |
+| Progress | `.progress` | determinate (text carries the count) |
+| File list | `.file-list` | one or many files |
+| Dialog | `.dialog` (native `<dialog>`) | open, backdrop, Escape close; no consumer yet |
+| Breadcrumb | `Breadcrumb.astro` | current page, mobile wrap |
 
-Rules: labels are always visible (placeholders are not labels); errors appear next to the field and
-in a live region; the download control names the output file and its size.
+Not yet built: toast, result panel with before/after size, side-by-side compare. Build them with
+the same token contract, not as one-off markup.
 
 ---
 

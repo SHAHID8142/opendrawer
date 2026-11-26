@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+
+const title = 'Privacy: files never leave your device';
+const description =
+  'How OpenDrawer keeps files on your device: no upload endpoint, no account, no analytics, and a Content-Security-Policy that only allows this origin. Verify it yourself in four steps.';
+---
+
+<Base title={`${title} — OpenDrawer`} description={description}>
+  <div class="stack-lg">
+    <Breadcrumb current="Privacy" />
+
+    <header class="tool-head">
+      <h1>Privacy you can verify</h1>
+      <p>
+        There is no upload endpoint in this site and no server behind it. The browser is the
+        computer doing the work, so there is nothing to trust with your file.
+      </p>
+    </header>
+
+    <ol class="steps">
+      <li>
+        <h3>Open the Network tab</h3>
+        <p>Press F12, or Cmd+Option+I on a Mac, then choose Network and clear the list.</p>
+      </li>
+      <li>
+        <h3>Use a tool</h3>
+        <p>Pick a file and let the tool run. No request leaves this page while it works.</p>
+      </li>
+      <li>
+        <h3>Switch off Wi-Fi</h3>
+        <p>The tool still works after the page loads, because none of it needs a server.</p>
+      </li>
+    </ol>
+
+    <section class="prose stack" aria-labelledby="never-heading">
+      <h2 id="never-heading">What this product will never do</h2>
+      <ul>
+        <li>Upload, copy or store a file you open.</li>
+        <li>Ask for an account, an email address or a cookie.</li>
+        <li>Run analytics, error reporting, ads or A/B tests.</li>
+        <li>Add a watermark, a quota, a file limit or an upgrade prompt.</li>
+        <li>Load a script, font or icon from another domain.</li>
+      </ul>
+    </section>
+
+    <aside class="note" aria-labelledby="enforced-heading">
+      <h2 id="enforced-heading">Enforced, not promised</h2>
+      <p>
+        The Content-Security-Policy allows requests to this origin only, so a future change that
+        tried to send a file elsewhere would be blocked by the browser. The repository is open
+        source; the policy is in <code>public/_headers</code> and the tests assert that no
+        off-origin request happens during a tool run.
+      </p>
+    </aside>
+  </div>
+</Base>

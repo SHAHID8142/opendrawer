@@ -5,7 +5,7 @@ export const prerender = true;
 
 export const GET: APIRoute = ({ site }) => {
   const base = site ?? new URL('https://opendrawer.app');
-  const paths = ['/', ...tools.map((tool) => `/tools/${tool.id}`)];
+  const paths = ['/', '/privacy', ...tools.map((tool) => `/tools/${tool.id}`)];
   const urls = paths
     .map((path) => `  <url><loc>${new URL(path, base).href}</loc></url>`)
     .join('\n');

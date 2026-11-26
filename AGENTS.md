@@ -171,7 +171,8 @@ end of it.
 ### 8.4 Placement and cleanliness
 
 - Tool code lives only in `src/tools/<tool-id>/`; shared primitives in `src/styles/ui/`; page
-  composition in `src/styles/patterns.css`; pure helpers in `src/lib/`.
+  composition in `src/styles/patterns.css` and `src/styles/tool-page.css`; pure helpers in
+  `src/lib/`.
 - Reuse the existing pattern. Do not create parallel "v2" trees, new root folders or one-off
   component directories.
 - Scratch files, screenshots and experiment output stay in ignored paths (`.astro/`, `tmp/`,
