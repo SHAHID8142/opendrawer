@@ -168,6 +168,16 @@ export const tools: ToolEntry[] = [
       'Move pages into a new order or reverse the document, then download it without re-rendering a page.',
     status: 'live',
   },
+  {
+    id: 'extract-pages',
+    name: 'Extract pages',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    blurb:
+      'Keep only the pages you need, in the order you type them, and download them as a new PDF.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

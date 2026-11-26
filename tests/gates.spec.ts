@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages'];
 
 async function createPdf(
   pageCount: number,
@@ -427,6 +427,27 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('order-reordered.pdf');
+  });
+
+  test('extracts chosen pages into a new PDF', async ({ page }) => {
+    await page.goto('/tools/extract-pages');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#extract-input').setInputFiles({
+      name: 'bundle.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(5),
+    });
+    await expect(page.getByRole('status')).toContainText('5 pages ready');
+
+    await page.fill('#extract-range', '2,4');
+    await expect(page.locator('#extract-range-help')).toContainText('Keeping 2 of 5 pages');
+    await page.getByRole('button', { name: 'Extract the pages' }).click();
+    await expect(page.getByRole('status')).toContainText('Extracted 2 pages', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('bundle-pages.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

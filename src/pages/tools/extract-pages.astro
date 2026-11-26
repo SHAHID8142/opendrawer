@@ -1,0 +1,83 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/extract-pages/Tool';
+
+const title = 'Extract pages from a PDF: keep only the pages you need';
+const description =
+  'Pick pages and ranges and download a new PDF containing only those pages, in the order you choose. Nothing is uploaded and pages are not re-rendered.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Extract pages',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is the PDF uploaded to extract pages?',
+    answer:
+      'No. The file is read in this tab and the chosen pages are copied into a new document locally.',
+  },
+  {
+    question: 'Can extraction change the page order?',
+    answer:
+      'Yes, within the selection. Typing 3, 1 gives a PDF with page 3 first and page 1 second.',
+  },
+  {
+    question: 'Does the original file change?',
+    answer:
+      'No. A new file is created for download; the original on your device is untouched.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Extract pages" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Extract pages</h1>
+      <p>
+        Keep only the pages that matter. Choose pages and ranges, then download a new PDF with
+        just those pages, copied exactly as they are.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'At least one page must be selected; an empty selection is not a valid PDF.',
+            'Password-protected PDFs are refused. Remove the password first.',
+            'Pages are copied, not compressed, so the output can be close to the original size.',
+            'Bookmarks, form fields and document metadata are not carried into the new file.',
+            'Digital signatures stop being valid in the new file.',
+            'Extraction is not redaction: the original file still contains every page.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div className="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>
