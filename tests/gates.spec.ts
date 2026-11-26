@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -297,6 +297,36 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('one-and-more.pdf');
+
+    const origin = new URL(page.url()).origin;
+    const foreign = requests.filter((url) => {
+      if (url.startsWith('data:') || url.startsWith('blob:')) return false;
+      return new URL(url).origin !== origin;
+    });
+    expect(foreign, 'requests that left the origin').toEqual([]);
+  });
+
+  test('merges two PDFs in order without leaving the origin', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+
+    await page.goto('/tools/merge-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#merge-input').setInputFiles([
+      { name: 'first.pdf', mimeType: 'application/pdf', buffer: await createPdf(2) },
+      { name: 'second.pdf', mimeType: 'application/pdf', buffer: await createPdf(1) },
+    ]);
+    await expect(page.getByRole('status')).toContainText('2 PDFs ready');
+
+    await page.getByRole('button', { name: 'Merge the PDFs' }).click();
+    await expect(page.getByRole('status')).toContainText('Merged 2 PDFs into 3 pages', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the merged PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('first-merged.pdf');
 
     const origin = new URL(page.url()).origin;
     const foreign = requests.filter((url) => {

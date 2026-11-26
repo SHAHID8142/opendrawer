@@ -52,13 +52,11 @@ and every commit builds and passes the gates on its own.
 | `npm run gate:contrast` | UI-G2: token contrast pairs (light theme) |
 | `npm run gate:copy` | UI-G6: hype and placeholder copy |
 | `npm run gate:size` | UI-G10: source files under 300 lines |
-| `npm run gates` | Token, contrast, copy, size, build, then the Playwright UI gates |
-
-> Note: `npm run test:unit` (`node:test` engine suite, no DOM) is planned alongside Wave 1 tool
-> engines and is not yet wired in `package.json`.
+| `npm run test:unit` | `node:test` engine suite, no DOM |
+| `npm run gates` | Token, contrast, copy, size, unit tests, build, then the Playwright UI gates |
 
 Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`,
-`/tools/images-to-pdf`. Three tools are live;
+`/tools/images-to-pdf`, `/tools/merge-pdf`. Four tools are live;
 `docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
 `src/tools/<id>/` contract for the next one.
 
@@ -122,7 +120,7 @@ file. Keep `AGENTS.md` at the repository root regardless — most agents read it
 
 ## 6. Local verification checklist (run before every release)
 
-1. `npm run check && npm run gates` — all green, real exit codes (add `npm run test:unit` once Wave 1 engine unit tests land).
+1. `npm run check && npm run gates` — all green, real exit codes (includes `npm run test:unit` and `gate:ui`).
 2. `npm run build && npm run preview`, then open each tool with a fixture.
 3. Open DevTools → Network → **Clear**, run a tool: no request may leave the origin.
 4. Set DevTools network to "Offline" after load, run the tool again: it must still work.

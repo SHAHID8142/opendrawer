@@ -11,8 +11,8 @@ Every tool runs **inside the visitor's browser**. Files are never uploaded, ther
 no advertising, no payment, no file-size limit and no daily cap. Turn off the internet after the
 page loads and it keeps working.
 
-> Status: **three tools live** — Inspect PDF, PDF to image and Images to PDF — on a light-only,
-> token-driven design system. The next categories (images, audio, text, everyday) are planned in
+> Status: **four tools live** — Inspect PDF, PDF to image, Images to PDF and Merge PDF — on a
+> light-only, token-driven design system. The next categories (images, audio, text, everyday) are planned in
 > `docs/10-scope-and-taxonomy.md`; each tool ships finished, tested and documented.
 
 ---

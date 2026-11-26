@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/merge-pdf/Tool';
+
+const title = 'Merge PDF: combine files into one document';
+const description =
+  'Combine two or more PDFs into one file, in the order you choose. Pages are copied, not re-rendered, and nothing is uploaded. Free and open source.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Merge PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Are the files uploaded to merge them?',
+    answer:
+      'No. Each file is read in this tab and the pages are copied into a new document locally. Nothing leaves the device.',
+  },
+  {
+    question: 'Does merging change the pages?',
+    answer:
+      'No. Pages are copied as they are, so text stays selectable and images keep their resolution. Document-level things such as bookmarks and form fields are not carried across.',
+  },
+  {
+    question: 'What happens to a signature?',
+    answer:
+      'Merging changes the document, so any digital signature in the inputs is no longer valid in the output. Keep the original signed file if you need the signature to hold.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Merge PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Merge PDF</h1>
+      <p>
+        Put several PDFs into one file. Set the order, then merge: the pages are copied here in
+        the browser, so quality and text stay intact.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'Up to 50 files and 200 MB in total per merge.',
+            'Password-protected PDFs are refused. Remove the password first.',
+            'Digital signatures stop being valid after a merge; that is unavoidable.',
+            'Bookmarks, outlines and AcroForm fields are not merged. Pages are.',
+            'The output is not compressed; it can be larger than the inputs.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

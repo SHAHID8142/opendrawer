@@ -6,7 +6,7 @@ export type ToolStatus = 'live' | 'planned';
 export type ToolCategory = 'Documents' | 'Images' | 'Audio & video' | 'Text & data' | 'Everyday';
 
 /** Visual service accent for tool tiles and cards. */
-export type ToolAccent = 'inspect' | 'convert';
+export type ToolAccent = 'inspect' | 'convert' | 'create';
 
 export interface ToolEntry {
   id: string;
@@ -49,9 +49,19 @@ export const tools: ToolEntry[] = [
     name: 'Images to PDF',
     category: 'Documents',
     group: 'Create',
-    accent: 'convert',
+    accent: 'create',
     blurb:
       'Put PNG and JPEG photos or scans into one PDF, one page per image, with the page size you choose.',
+    status: 'live',
+  },
+  {
+    id: 'merge-pdf',
+    name: 'Merge PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    blurb:
+      'Combine several PDFs into one file, in the order you set, without re-rendering a single page.',
     status: 'live',
   },
 ];
