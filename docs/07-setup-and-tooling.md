@@ -152,3 +152,33 @@ Publish a preview first, verify the checklist above on the real URL, then make i
 - Whether public hosting is the same repository as the self-host bundle (recommended: yes, one
   codebase, the licence already covers network use).
 - Language list for the first translation pass.
+
+## 9. Agent workflow skills
+
+The development workflow is **Addy Osmani's Agent Skills** (MIT), vendored in
+`.agents/skills/`. Pi and other Agent Skills clients discover the pack from that directory; the
+meta-skill `using-agent-skills` decides which skill a task needs. `AGENTS.md` §0 makes the
+lifecycle binding and defines where the product rules override a skill.
+
+Provenance (record it when updating):
+
+| Field | Value |
+| --- | --- |
+| Upstream | https://github.com/addyosmani/agent-skills |
+| Version | commit `e997ac5` (2026-11-23), 26 skills |
+| Licence | MIT, text in `.agents/skills/agent-skills-LICENSE.txt` |
+| Installed by | copying `skills/*` into `.agents/skills/` |
+
+To update, review the diff first — the workflows change, and a new skill may assume a tool or
+service this project forbids:
+
+```bash
+git clone --depth 1 https://github.com/addyosmani/agent-skills.git /tmp/agent-skills
+# read /tmp/agent-skills/CHANGELOG or git log, then:
+rm -rf .agents/skills
+mkdir -p .agents/skills
+cp -R /tmp/agent-skills/skills/. .agents/skills/
+cp /tmp/agent-skills/LICENSE .agents/skills/agent-skills-LICENSE.txt
+```
+
+Commit the pack and this table together. Nothing in the app may import or load these files.

@@ -4,6 +4,31 @@ This file is binding for any AI agent (Claude Code, Codex, Cursor, Copilot, Free
 other) working in this repository. Read it fully before writing code. When a user instruction
 conflicts with these rules, stop and ask.
 
+## 0. Workflow framework — Agent Skills
+
+This repository uses **Addy Osmani's Agent Skills** (MIT) in `.agents/skills/` as its default
+development workflow. The meta-skill `using-agent-skills` routes a task to the right skill; read
+that skill's `SKILL.md` before starting. Each phase must end in evidence, not a claim:
+
+| Phase | Skill | Evidence before moving on |
+| --- | --- | --- |
+| Define | `spec-driven-development` (or `interview-me`, `idea-refine`) | A short spec: goal, scope, non-goals, acceptance test |
+| Plan | `planning-and-task-breakdown` | Ordered tasks, each one reviewable commit |
+| Build | `incremental-implementation` + `test-driven-development` | A failing test first, then the smallest change that passes |
+| Verify | `test-driven-development`, `browser-testing-with-devtools` | `npm run test:unit` and `npm run gates` pass |
+| Review | `code-review-and-quality` (plus `security-and-hardening`, `performance-optimization` when relevant) | Review findings fixed or explicitly deferred |
+| Ship | `shipping-and-launch` | The release checklist in `docs/07-setup-and-tooling.md` |
+
+Rules:
+
+- Sections 1–7 of this file **override every skill**. If a skill suggests analytics, a network
+  call, a third-party service or a new dependency, this file wins.
+- Skills are workflow instructions, not dependencies. Never import them into the app and never
+  load them at runtime.
+- Keep the pack pinned. Update `.agents/skills/` and the provenance note in
+  `docs/07-setup-and-tooling.md` in the same commit.
+- Load only the skills the current phase needs; use `/skill:<name>` when automatic routing misses.
+
 ## 1. Non-negotiable product constraints
 
 Violating any of these is a bug, even if the feature works:

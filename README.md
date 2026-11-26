@@ -59,6 +59,7 @@ CONTRIBUTING.md                 how to add a tool, PR checklist
 THIRD-PARTY-NOTICES.md          every dependency, its licence and its obligations
 mcp.example.json                MCP server template for AI-assisted development
 skills/pdf-tools/SKILL.md       project skill teaching the "one tool = one folder" pattern
+.agents/skills/                 Addy Osmani's Agent Skills (MIT), the workflow framework (§0 of AGENTS.md)
 
 docs/01-product-plan.md         vision, users, principles, non-goals, success criteria
 docs/02-tool-catalog.md         every planned tool, its engine, licence and known limits

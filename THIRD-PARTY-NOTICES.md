@@ -29,6 +29,10 @@ This file must be updated in the same commit that adds or upgrades a dependency.
 Vite (MIT), TypeScript (Apache-2.0), Vitest (MIT), Playwright (Apache-2.0), ESLint (MIT),
 Prettier (MIT).
 
+| Component | Licence | Upstream | Used for |
+| --- | --- | --- | --- |
+| Agent Skills (Addy Osmani) | MIT | https://github.com/addyosmani/agent-skills | Development workflow only; vendored in `.agents/skills/`, never shipped or imported by the app |
+
 ## Licence texts to include with a release
 
 1. **AGPL-3.0** — `LICENSE` in this repository (applies to OpenDrawer's own code).
