@@ -26,7 +26,9 @@ interface Props {
 const { title, description, jsonLd } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const siteName = 'OpenDrawer';
-const isHome = Astro.url.pathname === '/';
+const pathname = Astro.url.pathname;
+const isHome = pathname === '/';
+const isPrivacy = pathname === '/privacy' || pathname.startsWith('/privacy/');
 ---
 
 <!doctype html>
@@ -60,15 +62,15 @@ const isHome = Astro.url.pathname === '/';
     <header class="site-header">
       <div class="wrap site-header__inner">
         <a class="brand" href="/">
-          <span class="brand__mark" aria-hidden="true">
-            <img src="/brand/mark-paper.svg" alt="" width="24" height="24" />
-          </span>
+          <img class="brand__mark" src="/brand/mark-color.svg" alt="" width="34" height="34" />
           OpenDrawer
         </a>
         <nav class="site-nav" aria-label="Main">
           <a href="/#tools" aria-current={isHome ? 'page' : undefined}>Tools</a>
-          <a href="/privacy">Privacy</a>
-          <a class="site-nav__source" href="https://github.com/SHAHID8142/opendrawer" rel="noopener">Source</a>
+          <a href="/privacy" aria-current={isPrivacy ? 'page' : undefined}>Privacy</a>
+          <a class="site-nav__source" href="https://github.com/SHAHID8142/opendrawer" rel="noopener">
+            Source
+          </a>
         </nav>
       </div>
     </header>
@@ -76,12 +78,12 @@ const isHome = Astro.url.pathname === '/';
       <slot />
     </main>
     <footer class="site-footer">
-      <div class="wrap stack-sm">
+      <div class="wrap site-footer__inner">
         <p>
-          OpenDrawer is free and open source under the AGPL-3.0. Files are processed in your
-          browser: no account, no advertising, no upload.
+          OpenDrawer is free open-source software under the AGPL-3.0. Files stay in your browser:
+          no account, no ads, no upload.
         </p>
-        <p class="cluster">
+        <p class="site-footer__links">
           <a href="/privacy">How to verify nothing is uploaded</a>
           <a href="https://github.com/SHAHID8142/opendrawer" rel="noopener">Source code</a>
         </p>

@@ -5,58 +5,91 @@ import { liveTools, tools, type ToolCategory } from '../lib/tools';
 const categories: ToolCategory[] = ['Documents', 'Images', 'Audio & video', 'Text & data', 'Everyday'];
 
 function countIn(name: ToolCategory) {
-  return tools.filter((tool) => tool.category === name).length;
+  return tools.filter((tool) => tool.category === name && tool.status === 'live').length;
 }
 ---
 
 <Base
-  title="OpenDrawer — everyday file tools that never upload"
-  description="Free, open-source tools that run in your browser: inspect a PDF, turn its pages into images, and more added one at a time. No account, no ads, no upload."
+  title="OpenDrawer — everyday file tools, kept on your device"
+  description="Free, open-source file tools built for public goodwill. Inspect a PDF or render pages to images inside your browser: offline after first load, zero accounts, zero tracking, zero uploads."
 >
   <div class="stack-lg page-fill">
     <header class="page-head">
-      <h1>Everyday file tools</h1>
-      <p>Free, local, no upload. One finished tool at a time.</p>
+      <h1>Everyday file tools, kept on your device</h1>
+      <p class="page-head__lead">
+        Built for public goodwill as free open-source software under the AGPL-3.0. Every tool runs
+        inside your browser and keeps working offline after the first load, with zero accounts, zero
+        tracking and zero uploads.
+      </p>
+      <ul class="trust-strip" aria-label="Core guarantees">
+        <li>0 uploads</li>
+        <li>No account</li>
+        <li>Offline ready</li>
+        <li>AGPL-3.0</li>
+      </ul>
     </header>
 
     <div class="catalog">
       <aside class="catalog__rail" aria-labelledby="categories-heading">
-        <h2 id="categories-heading">Index</h2>
+        <h2 id="categories-heading">Categories</h2>
         <ul class="cat-list" role="list">
           {
-            categories
-              .filter((category) => countIn(category) > 0)
-              .map((category) => (
-                <li class="cat cat--active">
+            categories.map((category) => {
+              const count = countIn(category);
+              const active = count > 0;
+              return (
+                <li class={`cat${active ? ' cat--active' : ''}`}>
                   <span>{category}</span>
-                  <span class="cat__leader" aria-hidden="true"></span>
-                  <span class="cat__count">{countIn(category)}</span>
+                  <span class="cat__count">{active ? count : 'Planned'}</span>
                 </li>
-              ))
+              );
+            })
           }
         </ul>
-        <p class="rail-note">
-          Files are read in your browser. <a href="/privacy">Verify it in the Network tab</a>.
-        </p>
-        <p class="cat__soon">In progress: Images, audio, text, everyday.</p>
       </aside>
 
       <section class="catalog__main" id="tools" aria-labelledby="tools-heading">
         <div class="catalog__head">
           <h2 id="tools-heading">Documents</h2>
-          <span class="badge">{liveTools.length} tools</span>
+          <span class="badge">{liveTools.length} live tools</span>
         </div>
 
-        <ul class="tool-list" role="list">
+        <div class="tool-search">
+          <label class="field__label" for="tool-filter">Filter tools</label>
+          <div class="tool-search__bar">
+            <div class="tool-search__box">
+              <input
+                id="tool-filter"
+                class="input tool-search__input"
+                type="search"
+                placeholder="Search by job or format, for example metadata or PNG"
+                autocomplete="off"
+                aria-describedby="tool-filter-count"
+              />
+              <kbd class="tool-search__kbd" aria-hidden="true">/</kbd>
+            </div>
+          </div>
+          <p id="tool-filter-count" class="tool-search__count" role="status" aria-live="polite">
+            Showing {liveTools.length} of {liveTools.length} tools
+          </p>
+        </div>
+
+        <ul class="tool-list" role="list" id="tool-list">
           {
             liveTools.map((tool, index) => (
-              <li>
+              <li
+                data-tool-item
+                data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}
+              >
                 <a class="tool-row" href={`/tools/${tool.id}`} data-category={tool.category}>
                   <span class="tool-row__index" aria-hidden="true">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <span class="tool-row__text">
-                    <span class="tool-row__title">{tool.name}</span>
+                    <span class="tool-row__head">
+                      <span class="tool-row__title">{tool.name}</span>
+                      <span class="tool-row__group">{tool.group}</span>
+                    </span>
                     <span class="tool-row__blurb">{tool.blurb}</span>
                   </span>
                   <span class="tool-row__action">
@@ -72,16 +105,110 @@ function countIn(name: ToolCategory) {
           }
         </ul>
 
+        <div id="tool-filter-empty" class="note" hidden>
+          <p>No tools match that filter.</p>
+          <p>
+            <button type="button" class="btn btn--secondary" id="tool-filter-reset">
+              Show all tools
+            </button>
+          </p>
+        </div>
+
         <p class="catalog__foot">
           Every tool is finished, tested and documented before the next one begins.
         </p>
       </section>
+
+      <p class="rail-note">
+        Files stay inside this browser tab. <a href="/privacy">Verify it in the Network tab</a>.
+      </p>
     </div>
 
+    <section aria-labelledby="charter-heading">
+      <h2 id="charter-heading" class="muted">How OpenDrawer works</h2>
+      <ol class="steps">
+        <li>
+          <h3>Runs on your device</h3>
+          <p>Your browser decodes and converts every file in local memory, even on slow mobile data.</p>
+        </li>
+        <li>
+          <h3>Verifiably zero uploads</h3>
+          <p>No upload server exists, and the Content-Security-Policy blocks off-origin requests.</p>
+        </li>
+        <li>
+          <h3>Built for public goodwill</h3>
+          <p>Free AGPL-3.0 software with no quotas, no watermarks, no accounts and no advertising.</p>
+        </li>
+      </ol>
+    </section>
+
     <p class="colophon">
-      <span>Colophon</span>
-      <span>Paper and ink, set in the system serif</span>
-      <span>Runs on your machine</span>
+      <span>OpenDrawer</span>
+      <span>AGPL-3.0 open source</span>
+      <span>Static files, zero backend</span>
     </p>
   </div>
+
+  <script>
+    const input = document.getElementById('tool-filter') as HTMLInputElement | null;
+    const count = document.getElementById('tool-filter-count');
+    const empty = document.getElementById('tool-filter-empty');
+    const reset = document.getElementById('tool-filter-reset');
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-tool-item]'));
+
+    function applyFilter() {
+      if (!input || !count || !empty) return;
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+
+      for (const item of items) {
+        const haystack = item.dataset.search ?? '';
+        const match = query === '' || haystack.includes(query);
+        item.hidden = !match;
+        if (match) visible += 1;
+      }
+
+      const word = visible === 1 ? 'tool' : 'tools';
+      count.textContent =
+        query === ''
+          ? `Showing ${visible} of ${items.length} tools`
+          : `Showing ${visible} matching ${word} of ${items.length}`;
+      empty.hidden = visible > 0;
+    }
+
+    input?.addEventListener('input', applyFilter);
+
+    input?.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && input.value !== '') {
+        event.preventDefault();
+        input.value = '';
+        applyFilter();
+      }
+    });
+
+    reset?.addEventListener('click', () => {
+      if (!input) return;
+      input.value = '';
+      applyFilter();
+      input.focus();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (!input) return;
+      event.preventDefault();
+      input.focus();
+      input.select();
+    });
+  </script>
 </Base>

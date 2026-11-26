@@ -2,13 +2,30 @@
 interface Props {
   title: string;
   items: string[];
+  headingId?: string;
 }
 
-const { title, items } = Astro.props;
+const { title, items, headingId = 'limits-heading' } = Astro.props;
 ---
 
-<section class="note note--warning" aria-labelledby="limits-heading">
-  <h2 id="limits-heading">{title}</h2>
+<section class="note note--warning" aria-labelledby={headingId}>
+  <h2 id={headingId} class="note__title">
+    <svg
+      class="note__icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v5" />
+      <path d="M12 16h.01" />
+    </svg>
+    <span>{title}</span>
+  </h2>
   <ul>
     {items.map((item) => <li>{item}</li>)}
   </ul>

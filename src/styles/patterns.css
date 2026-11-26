@@ -1,41 +1,74 @@
 /*
- * Page patterns — numbered explanation steps, set like a printed list.
+ * Page patterns — sculpted clay charter/step cards and promise lists.
  */
 
 .steps {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-5);
   padding: 0;
   list-style: none;
   counter-reset: step;
 }
 
 .steps li {
-  padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-text);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-clay-sm);
   counter-increment: step;
   margin: 0;
 }
 
 .steps li::before {
   content: counter(step, decimal-leading-zero);
-  display: block;
-  margin-bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-3);
+  background: var(--color-accent-subtle);
+  border-radius: var(--radius-full);
   color: var(--color-accent-strong);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
   letter-spacing: var(--tracking-wide);
 }
 
 .steps h3 {
-  font-family: var(--font-display);
   font-size: var(--text-lg);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
 }
 
 .steps p {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+}
+
+.never-list {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.never-list li {
+  margin: 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-clay-sm);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+@media (min-width: 48rem) {
+  .never-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 62rem) {

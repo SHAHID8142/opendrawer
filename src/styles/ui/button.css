@@ -1,5 +1,5 @@
 /*
- * Buttons — print-room buttons: square corners, ink rules, one red fill.
+ * Buttons — tactile sculpted clay buttons with clear press feedback and 44px targets.
  */
 
 .btn {
@@ -10,7 +10,7 @@
   min-height: var(--tap-target);
   padding: var(--space-2) var(--space-5);
   border: var(--border-width) solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-text);
   font-family: var(--font-sans);
@@ -22,11 +22,17 @@
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .btn:hover {
   color: var(--color-text);
+}
+
+.btn:active:not(:disabled):not([aria-disabled='true']) {
+  transform: translateY(var(--border-width));
 }
 
 .btn:disabled,
@@ -38,43 +44,65 @@
 .btn--primary {
   background: var(--color-accent);
   color: var(--color-on-accent);
+  box-shadow: var(--shadow-clay-accent);
 }
 
-.btn--primary:hover {
+.btn--primary:hover:not(:disabled) {
   background: var(--color-accent-strong);
   color: var(--color-on-accent);
 }
 
+.btn--primary:active:not(:disabled) {
+  box-shadow: var(--shadow-clay-press);
+}
+
 .btn--secondary {
-  background: transparent;
-  border-color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border-subtle);
+  box-shadow: var(--shadow-clay-sm);
   color: var(--color-text);
 }
 
-.btn--secondary:hover {
-  background: var(--color-text);
-  color: var(--color-bg);
+.btn--secondary:hover:not(:disabled) {
+  background: var(--color-surface-subtle);
+  border-color: var(--color-border);
+}
+
+.btn--secondary:active:not(:disabled) {
+  box-shadow: var(--shadow-clay-press);
 }
 
 .btn--ghost {
-  padding-inline: 0;
+  min-width: var(--tap-target);
+  padding-inline: var(--space-3);
   color: var(--color-accent-strong);
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
 
-.btn--ghost:hover {
+.btn--ghost:hover:not(:disabled) {
   color: var(--color-accent);
-  background: transparent;
+  background: var(--color-surface-subtle);
 }
 
 .btn--danger {
   background: var(--color-danger);
   color: var(--color-text-inverse);
+  box-shadow: var(--shadow-clay-sm);
+}
+
+.btn--block {
+  width: 100%;
 }
 
 .btn svg {
   width: var(--space-4);
   height: var(--space-4);
   flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active:not(:disabled):not([aria-disabled='true']) {
+    transform: none;
+  }
 }
