@@ -69,18 +69,48 @@ if (darkBlocks.length > 0) {
 const pairs = [
   ['text', 'bg', 7],
   ['text', 'surface', 7],
+  ['text', 'surface-subtle', 7],
+  ['text', 'warning-subtle', 7],
+  ['text', 'danger-subtle', 7],
+  ['text', 'success-subtle', 7],
   ['text-muted', 'bg', 4.5],
   ['text-muted', 'surface', 4.5],
+  ['text-muted', 'surface-subtle', 4.5],
+  ['text-muted', 'warning-subtle', 4.5],
+  ['text-muted', 'danger-subtle', 4.5],
+  ['text-muted', 'success-subtle', 4.5],
   ['border', 'bg', 3],
   ['border', 'surface', 3],
   ['accent', 'bg', 4.5],
   ['accent', 'surface', 4.5],
+  ['accent-strong', 'bg', 4.5],
+  ['accent-strong', 'surface', 4.5],
+  ['accent-strong', 'accent-subtle', 4.5],
   ['on-accent', 'accent', 4.5],
   ['focus', 'bg', 3],
   ['danger', 'bg', 4.5],
+  ['danger', 'danger-subtle', 4.5],
   ['warning', 'bg', 4.5],
+  ['warning', 'warning-subtle', 4.5],
   ['success', 'bg', 4.5],
+  ['success', 'success-subtle', 4.5],
 ];
+
+const servicePairs = [
+  ['documents', 'documents-subtle', 4.5],
+  ['inspect', 'inspect-subtle', 4.5],
+  ['convert', 'convert-subtle', 4.5],
+  ['images', 'images-subtle', 4.5],
+  ['audio', 'audio-subtle', 4.5],
+  ['textdata', 'textdata-subtle', 4.5],
+  ['everyday', 'everyday-subtle', 4.5],
+];
+
+for (const pair of servicePairs) {
+  if (theme[`color-${pair[0]}`] || theme[`color-${pair[1]}`]) {
+    pairs.push(pair);
+  }
+}
 
 for (const [foreground, background, minimum] of pairs) {
   const fg = theme[`color-${foreground}`];

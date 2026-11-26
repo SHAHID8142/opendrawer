@@ -27,8 +27,8 @@ export function ResultView({ result, onDownload }: ResultViewProps) {
 
   const singleFile = result.files.length === 1;
   const downloadLabel = singleFile
-    ? `Download ${result.format.toUpperCase()} (${formatBytes(result.totalBytes)})`
-    : `Download the ZIP (${result.pageCount} pages · ${formatBytes(result.totalBytes)})`;
+    ? `Download the ${result.format.toUpperCase()}`
+    : `Download the ZIP (${result.baseName}-images.zip)`;
 
   const fileItems = result.files.map((rendered) => (
     <li key={rendered.name}>
@@ -50,23 +50,25 @@ export function ResultView({ result, onDownload }: ResultViewProps) {
         </button>
       </p>
 
-      {previewUrl && firstFile && (
-        <figure className="preview-frame">
-          <img src={previewUrl} alt={`Preview of ${firstFile.name}`} />
-          {result.files.length > 1 && (
-            <figcaption className="muted">First rendered page: {firstFile.name}</figcaption>
-          )}
-        </figure>
-      )}
+      <div className="stack-lg">
+        {previewUrl && firstFile && (
+          <figure className="preview-frame stack-sm">
+            <img src={previewUrl} alt={`Preview of ${firstFile.name}`} />
+            {result.files.length > 1 && (
+              <figcaption className="muted">First rendered page: {firstFile.name}</figcaption>
+            )}
+          </figure>
+        )}
 
-      {result.files.length > 5 ? (
-        <details className="file-disclosure">
-          <summary>Show all {result.files.length} files</summary>
+        {result.files.length > 5 ? (
+          <details className="file-disclosure">
+            <summary>Show all {result.files.length} files</summary>
+            <ul className="file-list">{fileItems}</ul>
+          </details>
+        ) : (
           <ul className="file-list">{fileItems}</ul>
-        </details>
-      ) : (
-        <ul className="file-list">{fileItems}</ul>
-      )}
+        )}
+      </div>
 
       <p className="muted">
         The download is created in this tab. Nothing is stored after you close it.
