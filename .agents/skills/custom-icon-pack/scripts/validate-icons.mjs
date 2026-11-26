@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Validates src/lib/glyph-paths.ts against OpenDrawer Custom Icon Pack standards.
+// Validates src/lib/glyph-paths.ts against OpenDrawer Google Material Symbols Rounded standards.
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,13 +12,13 @@ const toolsRaw = await readFile(resolve(root, 'src/lib/tools.ts'), 'utf8');
 const failures = [];
 
 if (/<text\b/i.test(glyphCode)) {
-  failures.push('Found <text> element inside 24x24 icon pack; use pure vector paths only.');
+  failures.push('Found <text> inside icon pack; use pure vector SVG paths.');
 }
 if (/#[0-9a-fA-F]{3,8}\b/.test(glyphCode) || /\b(?:rgba?|hsla?)\(/.test(glyphCode)) {
-  failures.push('Found raw colour literal in glyph-paths.ts; use currentColor or var(--color-surface).');
+  failures.push('Found raw colour literal in glyph-paths.ts; use currentColor via ToolGlyph.');
 }
-if (!/fill-opacity="/.test(glyphCode)) {
-  failures.push('Expected hierarchical duotone fill-opacity layers in glyph-paths.ts.');
+if (!glyphCode.includes('-')) {
+  failures.push('Expected Material Symbols 960x-960 coordinate path data.');
 }
 
 const categoriesSection = toolsRaw.split('export const categories')[1]?.split('export const tools')[0] ?? '';

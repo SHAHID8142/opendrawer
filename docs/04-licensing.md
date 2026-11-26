@@ -27,6 +27,7 @@ needs-verification / rejected.
 | i18next | translations (phase 3) | MIT | approved | — |
 | `vite-plugin-pwa` / Workbox | offline shell | MIT | approved | — |
 | Playwright | smoke tests | Apache-2.0 | approved | Dev dependency only |
+| Material Symbols (`@material-symbols/svg-300`) | Google Material Symbols Rounded SVG path data in `src/lib/glyph-paths.ts` | Apache-2.0 | approved | Path strings vendored at author time; zero runtime dependency or CDN request |
 
 ## Explicitly rejected
 

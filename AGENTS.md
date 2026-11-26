@@ -34,8 +34,9 @@ Rules:
   skill's advice never overrides the tokens, the product constraints or the accessibility gates.
 - **Icon work loads `custom-icon-pack`:** Whenever creating, editing, replacing, or auditing any
   tool, category, or navigation SVG icon, read `.agents/skills/custom-icon-pack/SKILL.md` first,
-  author pure vector Hierarchical Duotone geometry in `src/lib/glyph-paths.ts` (zero `<text>`,
-  zero icon-box wrappers inside cards), and pass `node .agents/skills/custom-icon-pack/scripts/validate-icons.mjs`.
+  extract Google Material Symbols Rounded (`wght 300`, Apache-2.0) path data into
+  `src/lib/glyph-paths.ts` (zero `<text>`, zero CDN links, zero icon-box wrappers inside cards),
+  and pass `node .agents/skills/custom-icon-pack/scripts/validate-icons.mjs`.
 
 ## 1. Non-negotiable product constraints
 

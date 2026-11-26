@@ -33,13 +33,13 @@
 }
 
 .glyph--lg {
-  width: var(--space-8);
-  height: var(--space-8);
+  width: var(--space-7);
+  height: var(--space-7);
 }
 
 .glyph--lg svg {
-  width: var(--space-8);
-  height: var(--space-8);
+  width: var(--space-7);
+  height: var(--space-7);
 }
 
 /* Contained variant — only when an icon needs its own background tile (e.g. standalone). */
