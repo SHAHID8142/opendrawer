@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages'];
 
 async function createPdf(
   pageCount: number,
@@ -407,6 +407,26 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('keep-pages-removed.pdf');
+  });
+
+  test('reverses page order and downloads the reordered PDF', async ({ page }) => {
+    await page.goto('/tools/reorder-pages');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#reorder-input').setInputFiles({
+      name: 'order.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(3),
+    });
+    await expect(page.getByRole('status')).toContainText('3 pages ready');
+
+    await page.getByRole('button', { name: 'Reverse order' }).click();
+    await page.getByRole('button', { name: 'Save the new order' }).click();
+    await expect(page.getByRole('status')).toContainText('3 pages reordered', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('order-reordered.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

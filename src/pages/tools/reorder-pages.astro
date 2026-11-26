@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/reorder-pages/Tool';
+
+const title = 'Reorder PDF pages: move pages into a new order';
+const description =
+  'Move pages up or down and download the PDF in the new order. Reverse a whole document in one click. Pages are copied, not re-rendered, and nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Reorder pages',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does reordering change the page content?',
+    answer:
+      'No. Pages are copied in a new sequence, so text, images and rotation stay exactly as they were.',
+  },
+  {
+    question: 'Can I reverse a long document?',
+    answer:
+      'Yes. The visual list stops at 100 pages, but the Reverse order button works for any length the browser can open.',
+  },
+  {
+    question: 'Why is the save button disabled?',
+    answer:
+      'It enables once the order differs from the original. Reset to original restores the starting sequence.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Reorder pages" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Reorder pages</h1>
+      <p>
+        Put the pages in the order you need: move them one step at a time, reverse the whole
+        document, then download the new file. Nothing is re-rendered.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'The visual page list covers up to 100 pages; beyond that only Reverse order is offered.',
+            'Password-protected PDFs are refused. Remove the password first.',
+            'Pages are copied, not compressed, so the file size stays close to the original.',
+            'Bookmarks, form fields and document metadata are not carried into the new file.',
+            'Digital signatures stop being valid once the order changes.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div className="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

@@ -157,6 +157,16 @@ export const tools: ToolEntry[] = [
       'Remove the pages you do not need and keep the rest exactly as they were, without re-rendering.',
     status: 'live',
   },
+  {
+    id: 'reorder-pages',
+    name: 'Reorder pages',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    blurb:
+      'Move pages into a new order or reverse the document, then download it without re-rendering a page.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');
