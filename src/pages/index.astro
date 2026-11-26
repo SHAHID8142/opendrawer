@@ -1,8 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
+import ToolGlyph, { type GlyphKind, type GlyphTone } from '../components/ToolGlyph.astro';
 import { liveTools, tools, type ToolCategory } from '../lib/tools';
 
-const categories: ToolCategory[] = ['Documents', 'Images', 'Audio & video', 'Text & data', 'Everyday'];
+const categories: Array<{ name: ToolCategory; kind: GlyphKind; tone: GlyphTone }> = [
+  { name: 'Documents', kind: 'documents', tone: 'documents' },
+  { name: 'Images', kind: 'images', tone: 'images' },
+  { name: 'Audio & video', kind: 'audio', tone: 'audio' },
+  { name: 'Text & data', kind: 'textdata', tone: 'textdata' },
+  { name: 'Everyday', kind: 'everyday', tone: 'everyday' },
+];
 
 function countIn(name: ToolCategory) {
   return tools.filter((tool) => tool.category === name && tool.status === 'live').length;
@@ -22,10 +29,10 @@ function countIn(name: ToolCategory) {
         tracking and zero uploads.
       </p>
       <ul class="trust-strip" aria-label="Core guarantees">
-        <li>0 uploads</li>
-        <li>No account</li>
-        <li>Offline ready</li>
-        <li>AGPL-3.0</li>
+        <li class="trust-chip--mint">0 uploads</li>
+        <li class="trust-chip--sky">No account</li>
+        <li class="trust-chip--amber">Offline ready</li>
+        <li class="trust-chip--coral">AGPL-3.0</li>
       </ul>
     </header>
 
@@ -34,12 +41,15 @@ function countIn(name: ToolCategory) {
         <h2 id="categories-heading">Categories</h2>
         <ul class="cat-list" role="list">
           {
-            categories.map((category) => {
-              const count = countIn(category);
+            categories.map(({ name, kind, tone }) => {
+              const count = countIn(name);
               const active = count > 0;
               return (
                 <li class={`cat${active ? ' cat--active' : ''}`}>
-                  <span>{category}</span>
+                  <span class="cat__label">
+                    <ToolGlyph kind={kind} tone={tone} size="sm" />
+                    <span>{name}</span>
+                  </span>
                   <span class="cat__count">{active ? count : 'Planned'}</span>
                 </li>
               );
@@ -58,14 +68,7 @@ function countIn(name: ToolCategory) {
           <label class="field__label" for="tool-filter">Filter tools</label>
           <div class="tool-search__bar">
             <div class="tool-search__box">
-              <input
-                id="tool-filter"
-                class="input tool-search__input"
-                type="search"
-                placeholder="Search by job or format, for example metadata or PNG"
-                autocomplete="off"
-                aria-describedby="tool-filter-count"
-              />
+              <input id="tool-filter" class="input tool-search__input" type="search" placeholder="Search tools, e.g. metadata or PNG" autocomplete="off" aria-describedby="tool-filter-count" />
               <kbd class="tool-search__kbd" aria-hidden="true">/</kbd>
             </div>
           </div>
@@ -76,15 +79,10 @@ function countIn(name: ToolCategory) {
 
         <ul class="tool-list" role="list" id="tool-list">
           {
-            liveTools.map((tool, index) => (
-              <li
-                data-tool-item
-                data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}
-              >
-                <a class="tool-row" href={`/tools/${tool.id}`} data-category={tool.category}>
-                  <span class="tool-row__index" aria-hidden="true">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
+            liveTools.map((tool) => (
+              <li data-tool-item data-search={`${tool.name} ${tool.category} ${tool.group} ${tool.blurb}`.toLowerCase()}>
+                <a class="tool-row" href={`/tools/${tool.id}`} data-category={tool.category} data-tool={tool.id} data-accent={tool.accent}>
+                  <ToolGlyph kind={tool.id as GlyphKind} tone={tool.accent} size="lg" />
                   <span class="tool-row__text">
                     <span class="tool-row__head">
                       <span class="tool-row__title">{tool.name}</span>
@@ -95,8 +93,7 @@ function countIn(name: ToolCategory) {
                   <span class="tool-row__action">
                     Open
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M5 12h14" />
-                      <path d="m13 6 6 6-6 6" />
+                      <path d="M5 12h14" /><path d="m13 6 6 6-6 6" />
                     </svg>
                   </span>
                 </a>
@@ -128,14 +125,17 @@ function countIn(name: ToolCategory) {
       <h2 id="charter-heading" class="muted">How OpenDrawer works</h2>
       <ol class="steps">
         <li>
+          <div class="step__head"><ToolGlyph kind="device" tone="inspect" size="md" /><span class="step__num step__num--inspect">01</span></div>
           <h3>Runs on your device</h3>
           <p>Your browser decodes and converts every file in local memory, even on slow mobile data.</p>
         </li>
         <li>
+          <div class="step__head"><ToolGlyph kind="shield" tone="convert" size="md" /><span class="step__num step__num--convert">02</span></div>
           <h3>Verifiably zero uploads</h3>
           <p>No upload server exists, and the Content-Security-Policy blocks off-origin requests.</p>
         </li>
         <li>
+          <div class="step__head"><ToolGlyph kind="heart" tone="documents" size="md" /><span class="step__num step__num--documents">03</span></div>
           <h3>Built for public goodwill</h3>
           <p>Free AGPL-3.0 software with no quotas, no watermarks, no accounts and no advertising.</p>
         </li>
@@ -177,7 +177,6 @@ function countIn(name: ToolCategory) {
     }
 
     input?.addEventListener('input', applyFilter);
-
     input?.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && input.value !== '') {
         event.preventDefault();
@@ -185,14 +184,12 @@ function countIn(name: ToolCategory) {
         applyFilter();
       }
     });
-
     reset?.addEventListener('click', () => {
       if (!input) return;
       input.value = '';
       applyFilter();
       input.focus();
     });
-
     window.addEventListener('keydown', (event) => {
       if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return;
       const target = event.target as HTMLElement | null;

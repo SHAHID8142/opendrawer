@@ -26,6 +26,7 @@
 .breadcrumb a {
   display: inline-flex;
   align-items: center;
+  min-width: var(--tap-target);
   min-height: var(--tap-target);
   color: var(--color-accent-strong);
   font-weight: var(--weight-medium);

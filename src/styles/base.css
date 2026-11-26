@@ -1,6 +1,6 @@
 /*
  * Base — reset, document typography, links and focus. Single unified sans-serif
- * font over a warm light clay canvas. No raw values (UI-G1).
+ * font over a bright white-gradient porcelain clay canvas. No raw values (UI-G1).
  */
 
 *,
@@ -28,7 +28,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-md);

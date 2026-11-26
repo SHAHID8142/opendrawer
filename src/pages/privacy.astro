@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
+import ToolGlyph from '../components/ToolGlyph.astro';
 
 const title = 'Privacy: files never leave your device';
 const description =
@@ -21,6 +22,10 @@ const description =
 
     <ol class="steps">
       <li>
+        <div class="step__head">
+          <ToolGlyph kind="network" tone="inspect" size="md" />
+          <span class="step__num step__num--inspect">01 · Network</span>
+        </div>
         <h3>Open the Network tab</h3>
         <p>
           Press <kbd>F12</kbd>, or <kbd>Cmd+Option+I</kbd> on a Mac, then choose Network and clear
@@ -28,10 +33,18 @@ const description =
         </p>
       </li>
       <li>
+        <div class="step__head">
+          <ToolGlyph kind="tool" tone="convert" size="md" />
+          <span class="step__num step__num--convert">02 · Run tool</span>
+        </div>
         <h3>Use a tool</h3>
         <p>Pick a file and let the tool run. No request leaves this page while it works.</p>
       </li>
       <li>
+        <div class="step__head">
+          <ToolGlyph kind="wifi-off" tone="audio" size="md" />
+          <span class="step__num step__num--audio">03 · Wi-Fi off</span>
+        </div>
         <h3>Switch off Wi-Fi</h3>
         <p>The tool still works after the page loads, because none of it needs a server.</p>
       </li>
@@ -45,7 +58,7 @@ const description =
         role="region"
         aria-label="Comparison of cloud PDF sites and OpenDrawer"
       >
-        <table>
+        <table class="table-compare">
           <thead>
             <tr>
               <th scope="col">Check</th>
@@ -55,29 +68,59 @@ const description =
           </thead>
           <tbody>
             <tr>
-              <td>Where files go</td>
-              <td>Uploaded to a remote server</td>
-              <td>Stay in browser memory on your device</td>
+              <th scope="row">Where files go</th>
+              <td>
+                <span class="table-compare__label" aria-hidden="true">Typical cloud PDF site</span>
+                Uploaded to a remote server
+              </td>
+              <td class="table-compare__good">
+                <span class="table-compare__label" aria-hidden="true">OpenDrawer</span>
+                Stay in browser memory on your device
+              </td>
             </tr>
             <tr>
-              <td>Retention</td>
-              <td>Deleted after 1 to 2 hours, by policy</td>
-              <td>Never stored; cleared when the tab closes</td>
+              <th scope="row">Retention</th>
+              <td>
+                <span class="table-compare__label" aria-hidden="true">Typical cloud PDF site</span>
+                Deleted after 1 to 2 hours, by policy
+              </td>
+              <td class="table-compare__good">
+                <span class="table-compare__label" aria-hidden="true">OpenDrawer</span>
+                Never stored; cleared when the tab closes
+              </td>
             </tr>
             <tr>
-              <td>Accounts and quotas</td>
-              <td>Task caps, watermarks or sign-in walls</td>
-              <td>No accounts, no quotas, no watermarks</td>
+              <th scope="row">Accounts and quotas</th>
+              <td>
+                <span class="table-compare__label" aria-hidden="true">Typical cloud PDF site</span>
+                Task caps, watermarks or sign-in walls
+              </td>
+              <td class="table-compare__good">
+                <span class="table-compare__label" aria-hidden="true">OpenDrawer</span>
+                No accounts, no quotas, no watermarks
+              </td>
             </tr>
             <tr>
-              <td>Offline after load</td>
-              <td>Fails without an internet connection</td>
-              <td>Works with Wi-Fi switched off</td>
+              <th scope="row">Offline after load</th>
+              <td>
+                <span class="table-compare__label" aria-hidden="true">Typical cloud PDF site</span>
+                Fails without an internet connection
+              </td>
+              <td class="table-compare__good">
+                <span class="table-compare__label" aria-hidden="true">OpenDrawer</span>
+                Works with Wi-Fi switched off
+              </td>
             </tr>
             <tr>
-              <td>Proof</td>
-              <td>Legal privacy statement</td>
-              <td>Open source plus browser CSP and Network tab</td>
+              <th scope="row">Proof</th>
+              <td>
+                <span class="table-compare__label" aria-hidden="true">Typical cloud PDF site</span>
+                Legal privacy statement
+              </td>
+              <td class="table-compare__good">
+                <span class="table-compare__label" aria-hidden="true">OpenDrawer</span>
+                Open source plus browser CSP and Network tab
+              </td>
             </tr>
           </tbody>
         </table>
@@ -96,8 +139,23 @@ const description =
       </ul>
     </section>
 
-    <aside class="note" aria-labelledby="enforced-heading">
-      <h2 id="enforced-heading" class="note__title">Enforced, not promised</h2>
+    <aside class="note note--inspect" aria-labelledby="enforced-heading">
+      <h2 id="enforced-heading" class="note__title">
+        <svg
+          class="note__icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3 5 6v5.5c0 4.6 3 8.4 7 9.5 4-1.1 7-4.9 7-9.5V6l-7-3Z" />
+          <path d="m9 12 2.2 2.2L15.5 10" />
+        </svg>
+        <span>Enforced, not promised</span>
+      </h2>
       <p>
         The Content-Security-Policy in <code>public/_headers</code> sets{' '}
         <code>default-src 'self'</code>, <code>connect-src 'self'</code>,{' '}

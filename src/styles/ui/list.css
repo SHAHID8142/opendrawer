@@ -13,6 +13,10 @@
   overflow: hidden;
 }
 
+.card .file-list {
+  box-shadow: none;
+}
+
 .file-list li {
   display: flex;
   justify-content: space-between;
@@ -51,7 +55,9 @@
 }
 
 .preview-frame {
-  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
   background: var(--color-surface-subtle);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
@@ -62,8 +68,14 @@
   max-height: 18rem;
   width: auto;
   margin-inline: auto;
+  border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-xs);
-  box-shadow: var(--shadow-clay-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.preview-frame + .file-list,
+.preview-frame + .file-disclosure {
+  margin-top: var(--space-5);
 }
 
 .file-disclosure {

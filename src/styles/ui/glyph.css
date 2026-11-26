@@ -1,0 +1,80 @@
+/*
+ * Glyph tiles — sculpted pastel clay squircles housing universal service and category icons.
+ */
+
+.glyph {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: var(--border-width) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-clay-sm);
+}
+
+.glyph--sm {
+  width: var(--space-7);
+  height: var(--space-7);
+  border-radius: var(--radius-xs);
+  box-shadow: none;
+}
+
+.glyph--sm svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.glyph--md {
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-sm);
+}
+
+.glyph--md svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.glyph--lg {
+  width: var(--space-9);
+  height: var(--space-9);
+  border-radius: var(--radius-md);
+}
+
+.glyph--lg svg {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+
+.glyph--inspect {
+  background: var(--color-inspect-subtle);
+  color: var(--color-inspect);
+}
+
+.glyph--convert {
+  background: var(--color-convert-subtle);
+  color: var(--color-convert);
+}
+
+.glyph--documents {
+  background: var(--color-documents-subtle);
+  color: var(--color-accent-strong);
+}
+
+.glyph--images {
+  background: var(--color-images-subtle);
+  color: var(--color-images);
+}
+
+.glyph--audio {
+  background: var(--color-audio-subtle);
+  color: var(--color-audio);
+}
+
+.glyph--textdata {
+  background: var(--color-textdata-subtle);
+  color: var(--color-textdata);
+}
+
+.glyph--everyday {
+  background: var(--color-everyday-subtle);
+  color: var(--color-everyday);
+}

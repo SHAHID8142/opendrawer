@@ -103,7 +103,7 @@
 }
 
 .site-nav a[aria-current='page'] {
-  background: var(--color-bg);
+  background: var(--color-surface-subtle);
   border-color: var(--color-border-subtle);
   box-shadow: var(--shadow-clay-inset);
   color: var(--color-accent-strong);
@@ -186,6 +186,10 @@ main {
 @media (max-width: 40rem) {
   :root {
     --gutter: var(--space-4);
+  }
+
+  .site-header {
+    position: static;
   }
 
   main {

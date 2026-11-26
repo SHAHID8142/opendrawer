@@ -20,7 +20,6 @@
 }
 
 .drop:focus-within {
-  border-color: var(--color-accent);
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);
 }

@@ -6,6 +6,7 @@ import { chromium } from '@playwright/test';
 
 const root = new URL('../', import.meta.url).pathname;
 const brandDir = join(root, 'public/brand');
+const ogOnly = process.argv.includes('--og-only');
 const FONT_SANS =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 
@@ -24,7 +25,7 @@ function iconHtml(size, markSize) {
     width: ${size}px;
     height: ${size}px;
     overflow: hidden;
-    background: radial-gradient(circle at 32% 24%, #fffdf8 0%, #fcfaf6 60%, #f4f0e8 100%);
+    background: radial-gradient(circle at 32% 24%, #ffffff 0%, #fafcff 62%, #eff3fa 100%);
     display: grid;
     place-items: center;
   }
@@ -59,9 +60,13 @@ function ogHtml() {
     width: 1200px;
     height: 630px;
     overflow: hidden;
-    background: linear-gradient(155deg, #f6f3ec 0%, #f4f0e8 55%, #ede7dc 100%);
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 0%, rgba(219, 234, 254, 0.72), transparent 60%),
+      radial-gradient(ellipse 70% 45% at 92% 4%, rgba(255, 228, 214, 0.62), transparent 55%),
+      radial-gradient(ellipse 75% 50% at 50% 100%, rgba(214, 246, 232, 0.56), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f6f9ff 55%, #ffffff 100%);
     font-family: ${FONT_SANS};
-    color: #16140f;
+    color: #141824;
     padding: 36px;
     display: flex;
   }
@@ -69,24 +74,19 @@ function ogHtml() {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, #fffdf8 0%, #fcfaf6 100%);
-    border-radius: 24px;
+    background: #ffffff;
+    border-radius: 28px;
     overflow: hidden;
-    border: 1px solid rgba(22, 20, 15, 0.07);
+    border: 1px solid #dbe2ef;
     box-shadow:
-      0 24px 48px -14px rgba(22, 20, 15, 0.14),
-      0 6px 14px rgba(22, 20, 15, 0.05),
-      inset 0 2px 0 #fffdf8,
-      inset 0 -3px 0 rgba(212, 203, 188, 0.45);
-  }
-  .rule {
-    height: 8px;
-    background: #b83510;
-    flex-shrink: 0;
+      0 24px 48px -14px rgba(20, 24, 36, 0.10),
+      0 6px 14px rgba(20, 24, 36, 0.05),
+      inset 0 3px 5px rgba(255, 255, 255, 0.96),
+      inset 0 -4px 8px rgba(124, 135, 158, 0.14);
   }
   .inner {
     flex: 1;
-    padding: 52px 64px 46px;
+    padding: 56px 64px 48px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -111,32 +111,29 @@ function ogHtml() {
     font-size: 36px;
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: #16140f;
+    color: #141824;
     line-height: 1;
   }
   .badge {
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.08em;
-    color: #57523f;
-    background: #f4f0e8;
+    color: #9e2a0c;
+    background: #ffebe4;
+    border: 1px solid #dbe2ef;
     padding: 10px 18px;
-    border-radius: 999px;
-    box-shadow:
-      inset 0 1px 0 #fffdf8,
-      inset 0 -1px 0 rgba(22, 20, 15, 0.07),
-      0 2px 6px rgba(22, 20, 15, 0.05);
+    border-radius: 12px;
   }
   h1 {
     font-size: 62px;
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: -0.03em;
-    color: #16140f;
+    color: #141824;
     max-width: 19ch;
   }
   .footer {
-    border-top: 1px solid rgba(22, 20, 15, 0.1);
+    border-top: 1px solid #dbe2ef;
     padding-top: 22px;
     display: flex;
     align-items: center;
@@ -144,18 +141,17 @@ function ogHtml() {
     font-size: 20px;
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: #57523f;
+    color: #4b5568;
   }
   .dot-accent {
-    color: #b83510;
+    color: #c93914;
     font-weight: 700;
-    margin: 0 6px;
+    margin: 0 8px;
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <div class="rule"></div>
     <div class="inner">
       <div class="top">
         <div class="lockup">
@@ -187,11 +183,17 @@ async function renderPng(browser, html, width, height, outPath) {
 
 const browser = await chromium.launch();
 try {
-  await renderPng(browser, iconHtml(180, 122), 180, 180, join(brandDir, 'apple-touch-icon.png'));
-  await renderPng(browser, iconHtml(512, 348), 512, 512, join(brandDir, 'icon-512.png'));
+  if (!ogOnly) {
+    await renderPng(browser, iconHtml(180, 122), 180, 180, join(brandDir, 'apple-touch-icon.png'));
+    await renderPng(browser, iconHtml(512, 348), 512, 512, join(brandDir, 'icon-512.png'));
+  }
   await renderPng(browser, ogHtml(), 1200, 630, join(brandDir, 'og.png'));
 } finally {
   await browser.close();
 }
 
-console.log('Generated apple-touch-icon.png (180x180), icon-512.png (512x512), og.png (1200x630).');
+console.log(
+  ogOnly
+    ? 'Generated og.png (1200x630).'
+    : 'Generated apple-touch-icon.png (180x180), icon-512.png (512x512), og.png (1200x630).',
+);

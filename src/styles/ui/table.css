@@ -1,5 +1,6 @@
 /*
- * Tables — sculpted clay table surface with keyboard-accessible scroll region.
+ * Tables — sculpted clay table surface with keyboard-accessible scroll region
+ * and responsive mobile stacking for comparison tables.
  */
 
 .table-scroll {
@@ -8,6 +9,12 @@
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-clay-sm);
+}
+
+.card .table-scroll {
+  box-shadow: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
 }
 
 table {
@@ -34,12 +41,76 @@ td {
 }
 
 thead th {
-  background: var(--color-bg);
+  background: var(--color-surface-subtle);
   color: var(--color-text-muted);
   font-weight: var(--weight-semibold);
-  white-space: nowrap;
+  white-space: normal;
 }
 
+tbody tr:last-child th,
 tbody tr:last-child td {
   border-bottom: 0;
+}
+
+.table-compare__label {
+  display: none;
+}
+
+.table-compare__good {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+@media (max-width: 40rem) {
+  .table-compare thead {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .table-compare,
+  .table-compare tbody,
+  .table-compare tr,
+  .table-compare th,
+  .table-compare td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-compare tr {
+    padding: var(--space-4);
+    border-bottom: var(--border-width) solid var(--color-border-subtle);
+  }
+
+  .table-compare tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .table-compare th[scope='row'] {
+    padding: 0 0 var(--space-2);
+    border: 0;
+    color: var(--color-text);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+  }
+
+  .table-compare td {
+    padding: var(--space-2) 0 0;
+    border: 0;
+  }
+
+  .table-compare__label {
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+  }
+
+  .table-compare__good .table-compare__label {
+    color: var(--color-convert);
+  }
 }

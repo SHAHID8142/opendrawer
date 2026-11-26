@@ -1,5 +1,6 @@
 /*
  * Feedback — sculpted clay notes, verdict flags, status lines and fact lists.
+ * Full-perimeter uniform borders with pastel clay tints; zero one-sided accent bars.
  */
 
 .badge {
@@ -8,8 +9,7 @@
   padding: var(--space-1) var(--space-3);
   background: var(--color-surface-subtle);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-clay-sm);
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
@@ -20,7 +20,6 @@
   padding: var(--space-5);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
-  border-left: var(--space-1) solid var(--color-text);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-clay-sm);
 }
@@ -55,7 +54,6 @@
 
 .note--warning {
   background: var(--color-warning-subtle);
-  border-left-color: var(--color-warning);
 }
 
 .note--warning .note__icon {
@@ -64,7 +62,6 @@
 
 .note--danger {
   background: var(--color-danger-subtle);
-  border-left-color: var(--color-danger);
 }
 
 .note--danger .note__icon {
@@ -73,38 +70,51 @@
 
 .note--success {
   background: var(--color-success-subtle);
-  border-left-color: var(--color-success);
 }
 
 .note--success .note__icon {
   color: var(--color-success);
 }
 
+.note--inspect {
+  background: var(--color-inspect-subtle);
+}
+
+.note--inspect .note__icon {
+  color: var(--color-inspect);
+}
+
 .flag-list {
   display: grid;
-  gap: var(--space-2);
   margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
+  border-top: var(--border-width) solid var(--color-border-subtle);
 }
 
 .flag {
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border-subtle);
-  border-left: var(--space-1) solid var(--color-border);
-  border-radius: var(--radius-sm);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
   font-size: var(--text-sm);
   color: var(--color-text);
 }
 
-.flag--warning {
-  border-left-color: var(--color-warning);
+.flag:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
-.flag--info {
-  border-left-color: var(--color-success);
+.flag-list + p {
+  margin-top: var(--space-3);
+}
+
+.flag--warning strong {
+  color: var(--color-warning);
+}
+
+.flag--info strong {
+  color: var(--color-success);
 }
 
 .status {

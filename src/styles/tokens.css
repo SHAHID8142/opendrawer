@@ -1,52 +1,61 @@
 /*
  * Design tokens — the only file allowed to contain colour literals, pixel font sizes,
  * millisecond durations or raw shadows. UI-G1 fails on any literal elsewhere; UI-G2
- * checks the declared contrast pairs. Direction: tactile light-only claymorphism on
- * warm matte ceramic/clay surfaces with a single unified sans-serif font family.
+ * checks the declared contrast pairs. Direction: bright white-gradient porcelain claymorphism
+ * with joyful service accents and a single unified sans-serif font family.
  */
 
 :root {
   color-scheme: light;
 
-  /* Warm sunlit ceramic and clay surfaces */
-  --color-bg: #f3efe7;
-  --color-surface: #fcfaf6;
-  --color-surface-subtle: #eae4d8;
-  --color-surface-sunken: #e1dacb;
+  /* Bright porcelain canvas & white-based meaningful radial gradient */
+  --color-bg: #fafcff;
+  --bg-gradient:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(219, 234, 254, 0.65), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 92% 4%, rgba(255, 228, 214, 0.55), transparent 55%),
+    radial-gradient(ellipse 75% 50% at 50% 100%, rgba(214, 246, 232, 0.50), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f6f9ff 55%, #ffffff 100%);
+  --color-surface: #ffffff;
+  --color-surface-subtle: #eff3fa;
+  --color-surface-sunken: #e4eaf4;
 
-  --color-text: #171512;
-  --color-text-muted: #524d3f;
-  --color-text-inverse: #fffdf8;
+  --color-text: #141824;
+  --color-text-muted: #4b5568;
+  --color-text-inverse: #ffffff;
 
-  --color-border: #827b6a;
-  --color-border-subtle: #dcd4c3;
+  --color-border: #7c879e;
+  --color-border-subtle: #dbe2ef;
 
-  /* Terracotta / vermilion clay — the single interaction colour. */
-  --color-accent: #b83510;
-  --color-accent-strong: #8f2709;
-  --color-accent-subtle: #f9e6de;
+  /* Primary vermilion clay accent */
+  --color-accent: #c93914;
+  --color-accent-strong: #9e2a0c;
+  --color-accent-subtle: #ffebe4;
   --color-on-accent: #ffffff;
-  --color-focus: #b83510;
+  --color-focus: #c93914;
 
   /* Semantic feedback */
-  --color-success: #245934;
-  --color-success-subtle: #e6eee0;
-  --color-warning: #7a4805;
-  --color-warning-subtle: #f6ead4;
-  --color-danger: #a32014;
-  --color-danger-subtle: #f7e1db;
+  --color-success: #16653c;
+  --color-success-subtle: #e3f7ec;
+  --color-warning: #8a4b04;
+  --color-warning-subtle: #fff2d8;
+  --color-danger: #b41e1e;
+  --color-danger-subtle: #fde8e8;
 
-  /* Category inks */
-  --color-documents: #b83510;
-  --color-documents-subtle: #f9e6de;
-  --color-images: #1c5851;
-  --color-images-subtle: #e1ece8;
-  --color-audio: #7a4805;
-  --color-audio-subtle: #f6ead4;
-  --color-textdata: #264684;
-  --color-textdata-subtle: #e4e9f2;
-  --color-everyday: #44561b;
-  --color-everyday-subtle: #eaeddd;
+  /* Distinct service, module & category inks */
+  --color-documents: #c43612;
+  --color-documents-subtle: #ffebe4;
+  --color-inspect: #1654b8;
+  --color-inspect-subtle: #e6f0ff;
+  --color-convert: #0d6b56;
+  --color-convert-subtle: #e1f6ee;
+  --color-images: #0d6b56;
+  --color-images-subtle: #e1f6ee;
+  --color-audio: #8a4b04;
+  --color-audio-subtle: #fff2d8;
+  --color-textdata: #3649b3;
+  --color-textdata-subtle: #eaedff;
+  --color-everyday: #6a33a6;
+  --color-everyday-subtle: #f3eaff;
 
   /* Typography — one single unified sans-serif family across the entire UI. */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -117,22 +126,28 @@
   --border-width: 1px;
   --border-width-strong: 2px;
 
-  /* Sculpted clay depth — matte lift + soft top highlight + gentle bottom shade */
+  /* Cool-porcelain daylight clay depth */
   --shadow-xs: none;
   --shadow-sm: none;
-  --shadow-md: 0 4px 10px rgba(23, 21, 18, 0.06), 0 1px 2px rgba(23, 21, 18, 0.05);
-  --shadow-clay-sm: 0 4px 10px rgba(23, 21, 18, 0.06), 0 1px 2px rgba(23, 21, 18, 0.05),
-    inset 0 2px 3px rgba(255, 255, 255, 0.9), inset 0 -2px 4px rgba(130, 123, 106, 0.12);
-  --shadow-clay: 0 10px 24px rgba(23, 21, 18, 0.08), 0 3px 8px rgba(23, 21, 18, 0.05),
-    inset 0 3px 5px rgba(255, 255, 255, 0.95), inset 0 -4px 8px rgba(130, 123, 106, 0.14);
-  --shadow-clay-accent: 0 8px 18px rgba(184, 53, 16, 0.24), 0 2px 6px rgba(184, 53, 16, 0.14),
-    inset 0 2px 3px rgba(255, 232, 224, 0.42), inset 0 -3px 6px rgba(92, 22, 4, 0.28);
-  --shadow-clay-inset: inset 0 2px 5px rgba(23, 21, 18, 0.08),
-    inset 0 -2px 3px rgba(255, 255, 255, 0.75);
-  --shadow-clay-press: 0 2px 5px rgba(23, 21, 18, 0.08),
-    inset 0 3px 6px rgba(23, 21, 18, 0.14);
-  --shadow-focus: 0 0 0 3px rgba(184, 53, 16, 0.25);
-  --color-scrim: rgba(23, 21, 18, 0.45);
+  --shadow-md: 0 4px 12px rgba(20, 24, 36, 0.06), 0 1px 3px rgba(20, 24, 36, 0.04);
+  --shadow-clay-sm: 0 4px 10px rgba(20, 24, 36, 0.05), 0 1px 2px rgba(20, 24, 36, 0.04),
+    inset 0 2px 3px rgba(255, 255, 255, 0.96), inset 0 -2px 4px rgba(124, 135, 158, 0.12);
+  --shadow-clay: 0 10px 26px rgba(20, 24, 36, 0.07), 0 3px 8px rgba(20, 24, 36, 0.04),
+    inset 0 3px 5px rgba(255, 255, 255, 0.96), inset 0 -4px 8px rgba(124, 135, 158, 0.14);
+  --shadow-clay-lift: 0 14px 32px rgba(20, 24, 36, 0.10), 0 5px 12px rgba(20, 24, 36, 0.05),
+    inset 0 3px 5px rgba(255, 255, 255, 0.96), inset 0 -4px 8px rgba(124, 135, 158, 0.16);
+  --shadow-clay-accent: 0 8px 18px rgba(201, 57, 20, 0.24), 0 2px 6px rgba(201, 57, 20, 0.14),
+    inset 0 2px 3px rgba(255, 235, 228, 0.42), inset 0 -3px 6px rgba(108, 25, 6, 0.26);
+  --shadow-clay-inspect: 0 8px 18px rgba(22, 84, 184, 0.22), 0 2px 6px rgba(22, 84, 184, 0.12),
+    inset 0 2px 3px rgba(230, 240, 255, 0.42), inset 0 -3px 6px rgba(12, 46, 108, 0.24);
+  --shadow-clay-convert: 0 8px 18px rgba(13, 107, 86, 0.22), 0 2px 6px rgba(13, 107, 86, 0.12),
+    inset 0 2px 3px rgba(225, 246, 238, 0.42), inset 0 -3px 6px rgba(7, 64, 52, 0.24);
+  --shadow-clay-inset: inset 0 2px 5px rgba(20, 24, 36, 0.07),
+    inset 0 -2px 3px rgba(255, 255, 255, 0.85);
+  --shadow-clay-press: 0 2px 5px rgba(20, 24, 36, 0.08),
+    inset 0 3px 6px rgba(20, 24, 36, 0.14);
+  --shadow-focus: 0 0 0 3px rgba(201, 57, 20, 0.25);
+  --color-scrim: rgba(20, 24, 36, 0.45);
 
   /* Motion */
   --duration-fast: 100ms;

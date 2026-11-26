@@ -58,7 +58,6 @@
 .textarea:focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);
-  border-color: var(--color-accent);
 }
 
 .input[aria-invalid='true'],
