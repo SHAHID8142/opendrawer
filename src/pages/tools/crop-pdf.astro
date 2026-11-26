@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/crop-pdf/Tool';
+
+const title = 'Crop PDF: trim margins from every edge';
+const description =
+  'Trim a uniform margin from the edges of chosen pages. Cropping changes the visible page box, not the content, and nothing is uploaded. Free and open source.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Crop PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does cropping delete the trimmed content?',
+    answer:
+      'No. Cropping changes the page box a viewer displays. The content outside it is still in the file and can be recovered; that is why this is not redaction.',
+  },
+  {
+    question: 'Why do some printers still show the trimmed area?',
+    answer:
+      'The crop box is a hint that most viewers follow. Some printers and older viewers ignore it and print the full media box.',
+  },
+  {
+    question: 'Can I crop different pages by different amounts?',
+    answer: 'Not in this build. One margin is applied to every selected page.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Crop PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Crop PDF</h1>
+      <p>
+        Trim the same margin from every edge of the pages you choose. The page box shrinks; the
+        file itself is not rebuilt.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'Cropping hides content; it does not remove it. Anyone with an editor can recover the trimmed area.',
+            'There is no visual crop preview or draggable box in this build.',
+            'One uniform margin applies to every selected page, not per-page rectangles.',
+            'Any crop already in the file is replaced.',
+            'Some viewers and printers ignore the crop box and show the full page.',
+            'Password-protected PDFs are refused; digital signatures stop being valid.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

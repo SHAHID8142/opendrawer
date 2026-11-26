@@ -185,6 +185,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Edit',
     accent: 'convert',
+    short: 'Add numbered headers or footers.',
     blurb:
       'Stamp page numbers at the top or bottom, as a plain number or "Page 1 of 10", with an optional cover page.',
     status: 'live',
@@ -195,8 +196,20 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Edit',
     accent: 'convert',
+    short: 'Stamp text across every page.',
     blurb:
       'Stamp draft or confidential text across every page, with a chosen angle, opacity and size.',
+    status: 'live',
+  },
+  {
+    id: 'crop-pdf',
+    name: 'Crop PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    short: 'Trim margins from chosen pages.',
+    blurb:
+      'Trim a uniform margin from chosen pages, with a plain warning that cropping hides rather than deletes.',
     status: 'live',
   },
 ];
