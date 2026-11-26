@@ -179,6 +179,16 @@ export const tools: ToolEntry[] = [
       'Keep only the pages you need, in the order you type them, and download them as a new PDF.',
     status: 'live',
   },
+  {
+    id: 'page-numbers',
+    name: 'Page numbers',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    blurb:
+      'Stamp page numbers at the top or bottom, as a plain number or "Page 1 of 10", with an optional cover page.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

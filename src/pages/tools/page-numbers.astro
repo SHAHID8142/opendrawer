@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/page-numbers/Tool';
+
+const title = 'Add page numbers to a PDF: choose position, format and start';
+const description =
+  'Stamp page numbers on a PDF at the top or bottom, as "1", "Page 1" or "Page 1 of 10", and skip a cover page. Runs in your browser; nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Add page numbers',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Are the numbers part of the page or an overlay?',
+    answer:
+      'They are written into the page content as text. They will print and survive most viewers, but they are not a separate editable text field.',
+  },
+  {
+    question: 'Can I start numbering at a number other than 1?',
+    answer: 'Yes. Set First number to any whole number of 1 or more.',
+  },
+  {
+    question: 'Why is the number rotated on some pages?',
+    answer:
+      'Pages that already carry a rotation (a landscape scan stored sideways) rotate their content, including the new text. Remove or normalise rotation first if that matters.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Add page numbers" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Add page numbers</h1>
+      <p>
+        Number the pages of a document at the top or bottom, choose how the number reads, and
+        leave a cover page out. The text is added here in the browser.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It cannot choose a custom font; Helvetica at 11 pt is used.',
+            'Pages with an existing rotation show the number rotated with the page.',
+            'It does not skip pages in the middle or restart numbering per section.',
+            'Password-protected PDFs are refused. Remove the password first.',
+            'Digital signatures stop being valid once the file changes.',
+            'Numbering is added, not redacted: the original file on your device is untouched.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div className="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

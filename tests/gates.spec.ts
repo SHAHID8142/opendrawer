@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers'];
 
 async function createPdf(
   pageCount: number,
@@ -448,6 +448,27 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('bundle-pages.pdf');
+  });
+
+  test('adds page numbers and downloads the numbered PDF', async ({ page }) => {
+    await page.goto('/tools/page-numbers');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#numbers-input').setInputFiles({
+      name: 'draft.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(3),
+    });
+    await expect(page.getByRole('status')).toContainText('3 pages ready');
+
+    await page.selectOption('#numbers-position', 'bottom-right');
+    await page.selectOption('#numbers-format', 'page-of-total');
+    await page.getByRole('button', { name: 'Add page numbers' }).click();
+    await expect(page.getByRole('status')).toContainText('Numbered 3 pages', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('draft-numbered.pdf');
   });
 
   test('validates range live, collapses >5 files in disclosure, and cancels mid-render', async ({ page }) => {

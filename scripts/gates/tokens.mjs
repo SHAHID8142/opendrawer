@@ -5,7 +5,12 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
-const allowed = new Set(['src/styles/tokens.css', 'src/lib/theme-colors.ts']);
+const allowed = new Set([
+  'src/styles/tokens.css',
+  'src/lib/theme-colors.ts',
+  // PDF drawing colours cannot read CSS variables; one recorded literal instead.
+  'src/lib/pdf-ink.ts',
+]);
 const extensions = new Set(['.css', '.astro', '.tsx', '.ts']);
 
 const rules = [
