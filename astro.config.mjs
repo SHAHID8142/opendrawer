@@ -5,7 +5,13 @@ import react from '@astrojs/react';
 // `site` is what canonical URLs and the sitemap are built from, so it is read from the
 // environment at build time and has a single documented default.
 export default defineConfig({
-  site: process.env.SITE_URL ?? 'https://opendrawer.app',
+  // SITE_URL wins; on Vercel the production domain is used when the variable is absent,
+  // so canonical URLs and the sitemap match the deployed host without extra setup.
+  site:
+    process.env.SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : 'https://opendrawer.app'),
   output: 'static',
   integrations: [react()],
   build: {
