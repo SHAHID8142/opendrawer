@@ -1,20 +1,20 @@
 /*
- * Glyph tiles — sculpted pastel clay squircles housing universal service and category icons.
+ * Glyph icons — bare freestanding service-colored icons. No background container
+ * by default; use .glyph--contained only where the icon sits outside a card.
  */
 
 .glyph {
   display: inline-grid;
   place-items: center;
   flex: none;
-  border: var(--border-width) solid var(--color-border-subtle);
-  box-shadow: var(--shadow-clay-sm);
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .glyph--sm {
-  width: var(--space-7);
-  height: var(--space-7);
-  border-radius: var(--radius-xs);
-  box-shadow: none;
+  width: var(--space-5);
+  height: var(--space-5);
 }
 
 .glyph--sm svg {
@@ -23,58 +23,53 @@
 }
 
 .glyph--md {
-  width: var(--space-8);
-  height: var(--space-8);
-  border-radius: var(--radius-sm);
-}
-
-.glyph--md svg {
-  width: var(--space-5);
-  height: var(--space-5);
-}
-
-.glyph--lg {
-  width: var(--space-9);
-  height: var(--space-9);
-  border-radius: var(--radius-md);
-}
-
-.glyph--lg svg {
   width: var(--space-6);
   height: var(--space-6);
 }
 
-.glyph--inspect {
-  background: var(--color-inspect-subtle);
-  color: var(--color-inspect);
+.glyph--md svg {
+  width: var(--space-6);
+  height: var(--space-6);
 }
 
-.glyph--convert {
-  background: var(--color-convert-subtle);
-  color: var(--color-convert);
+.glyph--lg {
+  width: var(--space-7);
+  height: var(--space-7);
 }
 
-.glyph--documents {
-  background: var(--color-documents-subtle);
-  color: var(--color-accent-strong);
+.glyph--lg svg {
+  width: var(--space-7);
+  height: var(--space-7);
 }
 
-.glyph--images {
-  background: var(--color-images-subtle);
-  color: var(--color-images);
+/* Contained variant — only when an icon needs its own background tile (e.g. standalone). */
+.glyph--contained {
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-clay-sm);
+  padding: var(--space-2);
 }
 
-.glyph--audio {
-  background: var(--color-audio-subtle);
-  color: var(--color-audio);
-}
+/* Tone colours — ink only by default; .glyph--contained adds the fill. */
+.glyph--inspect { color: var(--color-inspect); }
+.glyph--contained.glyph--inspect { background: var(--color-inspect-subtle); }
 
-.glyph--textdata {
-  background: var(--color-textdata-subtle);
-  color: var(--color-textdata);
-}
+.glyph--convert { color: var(--color-convert); }
+.glyph--contained.glyph--convert { background: var(--color-convert-subtle); }
 
-.glyph--everyday {
-  background: var(--color-everyday-subtle);
-  color: var(--color-everyday);
-}
+.glyph--create,
+.glyph--everyday { color: var(--color-everyday); }
+.glyph--contained.glyph--create,
+.glyph--contained.glyph--everyday { background: var(--color-everyday-subtle); }
+
+.glyph--documents { color: var(--color-accent-strong); }
+.glyph--contained.glyph--documents { background: var(--color-documents-subtle); }
+
+.glyph--images { color: var(--color-images); }
+.glyph--contained.glyph--images { background: var(--color-images-subtle); }
+
+.glyph--audio { color: var(--color-audio); }
+.glyph--contained.glyph--audio { background: var(--color-audio-subtle); }
+
+.glyph--textdata { color: var(--color-textdata); }
+.glyph--contained.glyph--textdata { background: var(--color-textdata-subtle); }

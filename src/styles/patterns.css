@@ -1,79 +1,57 @@
 /*
- * Page patterns — sculpted clay charter/step cards and promise lists.
- * Zero ::before pseudo-elements or one-sided accent bars.
+ * Page patterns — value proposition cards and promise lists.
+ * Rules: no serial numbers, no cards inside cards, bare icons inside cards.
  */
 
 .section-heading {
   text-align: center;
 }
 
-.steps {
+/* Value-proposition cards — icon, heading, text; no nesting, no numbering. */
+.value-cards {
   display: grid;
   gap: var(--space-5);
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
-.steps li {
-  padding: var(--space-5);
+.value-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-clay-sm);
+  text-align: center;
+}
+
+.value-card .glyph {
+  justify-self: center;
+}
+
+.value-card h3 {
+  font-size: var(--text-lg);
   margin: 0;
 }
 
-.step__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.step__num {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1) var(--space-2);
-  border: var(--border-width) solid var(--color-border-subtle);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-subtle);
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--weight-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-wide);
-}
-
-.step__num--inspect {
-  background: var(--color-inspect-subtle);
-  color: var(--color-inspect);
-}
-
-.step__num--convert {
-  background: var(--color-convert-subtle);
-  color: var(--color-convert);
-}
-
-.step__num--documents {
-  background: var(--color-documents-subtle);
-  color: var(--color-accent-strong);
-}
-
-.step__num--audio {
-  background: var(--color-audio-subtle);
-  color: var(--color-audio);
-}
-
-.steps h3 {
-  font-size: var(--text-lg);
-  margin-bottom: var(--space-2);
-}
-
-.steps p {
+.value-card p {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  margin: 0;
 }
+
+/* Accent tint on the top border — full perimeter, not one-sided. */
+.value-card--inspect { border-color: var(--color-inspect-subtle); }
+.value-card--inspect:hover { border-color: var(--color-inspect); }
+.value-card--convert { border-color: var(--color-convert-subtle); }
+.value-card--convert:hover { border-color: var(--color-convert); }
+.value-card--documents { border-color: var(--color-documents-subtle); }
+.value-card--documents:hover { border-color: var(--color-accent-strong); }
+.value-card--audio { border-color: var(--color-audio-subtle); }
+.value-card--audio:hover { border-color: var(--color-audio); }
 
 .never-list {
   display: grid;
@@ -101,7 +79,7 @@
 }
 
 @media (min-width: 62rem) {
-  .steps {
+  .value-cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-6);
   }

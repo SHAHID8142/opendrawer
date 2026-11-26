@@ -20,35 +20,26 @@ const description =
       </p>
     </header>
 
-    <ol class="steps">
-      <li>
-        <div class="step__head">
-          <ToolGlyph kind="network" tone="inspect" size="md" />
-          <span class="step__num step__num--inspect">01 · Network</span>
-        </div>
+    <ul class="value-cards" role="list">
+      <li class="value-card value-card--inspect">
+        <ToolGlyph kind="network" tone="inspect" size="lg" />
         <h3>Open the Network tab</h3>
         <p>
           Press <kbd>F12</kbd>, or <kbd>Cmd+Option+I</kbd> on a Mac, then choose Network and clear
           the list.
         </p>
       </li>
-      <li>
-        <div class="step__head">
-          <ToolGlyph kind="tool" tone="convert" size="md" />
-          <span class="step__num step__num--convert">02 · Run tool</span>
-        </div>
+      <li class="value-card value-card--convert">
+        <ToolGlyph kind="tool" tone="convert" size="lg" />
         <h3>Use a tool</h3>
         <p>Pick a file and let the tool run. No request leaves this page while it works.</p>
       </li>
-      <li>
-        <div class="step__head">
-          <ToolGlyph kind="wifi-off" tone="audio" size="md" />
-          <span class="step__num step__num--audio">03 · Wi-Fi off</span>
-        </div>
+      <li class="value-card value-card--audio">
+        <ToolGlyph kind="wifi-off" tone="audio" size="lg" />
         <h3>Switch off Wi-Fi</h3>
         <p>The tool still works after the page loads, because none of it needs a server.</p>
       </li>
-    </ol>
+    </ul>
 
     <section class="stack" aria-labelledby="compare-heading">
       <h2 id="compare-heading" class="section-heading">Cloud PDF sites vs OpenDrawer</h2>

@@ -1,6 +1,6 @@
 /*
- * Tool directory — search bar and sculpted clay tool rows with service-color hover lift.
- * Uniform full-perimeter borders; zero one-sided accent bars.
+ * Tool directory — search bar and vertical tool cards with service-color hover lift.
+ * Cards display icon → title → group badge → blurb → action vertically. No nested cards.
  */
 
 .tool-search {
@@ -48,73 +48,66 @@
   font-variant-numeric: tabular-nums;
 }
 
-.tool-list {
+/* Card grid — responsive columns that feel balanced at any count. */
+.tool-grid {
   display: grid;
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.tool-list > li {
+.tool-grid > li {
   margin: 0;
 }
 
-.tool-row {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr) auto;
+/* Vertical tool card — icon on top, text below, action at the bottom. */
+.tool-card {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-5);
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-5);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-clay);
   color: var(--color-text);
+  text-align: center;
   text-decoration: none;
+  height: 100%;
   transition:
-    background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out),
     transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-row:hover,
-.tool-row:focus-visible {
-  background: var(--color-surface);
+.tool-card:hover,
+.tool-card:focus-visible {
   border-color: var(--color-border);
   box-shadow: var(--shadow-clay-lift);
   color: var(--color-text);
   transform: translateY(calc(var(--space-1) * -0.5));
 }
 
-.tool-row[data-accent='inspect']:hover,
-.tool-row[data-accent='inspect']:focus-visible { border-color: var(--color-inspect); }
+.tool-card[data-accent='inspect']:hover,
+.tool-card[data-accent='inspect']:focus-visible { border-color: var(--color-inspect); }
 
-.tool-row[data-accent='convert']:hover,
-.tool-row[data-accent='convert']:focus-visible { border-color: var(--color-convert); }
+.tool-card[data-accent='convert']:hover,
+.tool-card[data-accent='convert']:focus-visible { border-color: var(--color-convert); }
 
-.tool-row__text {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-}
+.tool-card[data-accent='create']:hover,
+.tool-card[data-accent='create']:focus-visible { border-color: var(--color-everyday); }
 
-.tool-row__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.tool-row__title {
+.tool-card__title {
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-snug);
   line-height: var(--leading-snug);
 }
 
-.tool-row__group {
+.tool-card__group {
   padding: var(--space-1) var(--space-2);
   background: var(--color-accent-subtle);
   border-radius: var(--radius-sm);
@@ -123,16 +116,29 @@
   font-weight: var(--weight-semibold);
 }
 
-.tool-row[data-accent='inspect'] .tool-row__group { background: var(--color-inspect-subtle); color: var(--color-inspect); }
-.tool-row[data-accent='convert'] .tool-row__group { background: var(--color-convert-subtle); color: var(--color-convert); }
-
-.tool-row__blurb {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-snug);
+.tool-card[data-accent='inspect'] .tool-card__group {
+  background: var(--color-inspect-subtle);
+  color: var(--color-inspect);
 }
 
-.tool-row__action {
+.tool-card[data-accent='convert'] .tool-card__group {
+  background: var(--color-convert-subtle);
+  color: var(--color-convert);
+}
+
+.tool-card[data-accent='create'] .tool-card__group {
+  background: var(--color-everyday-subtle);
+  color: var(--color-everyday);
+}
+
+.tool-card__blurb {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  flex: 1;
+}
+
+.tool-card__action {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -141,7 +147,6 @@
   background: var(--color-surface-subtle);
   border: var(--border-width) solid var(--color-border-subtle);
   border-radius: var(--radius-full);
-  box-shadow: var(--shadow-clay-sm);
   color: var(--color-text);
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
@@ -149,50 +154,52 @@
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-out);
 }
 
-.tool-row:hover .tool-row__action,
-.tool-row:focus-visible .tool-row__action {
+.tool-card:hover .tool-card__action,
+.tool-card:focus-visible .tool-card__action {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-clay-accent);
   color: var(--color-on-accent);
 }
 
-.tool-row[data-accent='inspect']:hover .tool-row__action,
-.tool-row[data-accent='inspect']:focus-visible .tool-row__action {
-  background: var(--color-inspect); border-color: var(--color-inspect); box-shadow: var(--shadow-clay-inspect);
+.tool-card[data-accent='inspect']:hover .tool-card__action,
+.tool-card[data-accent='inspect']:focus-visible .tool-card__action {
+  background: var(--color-inspect);
+  border-color: var(--color-inspect);
 }
 
-.tool-row[data-accent='convert']:hover .tool-row__action,
-.tool-row[data-accent='convert']:focus-visible .tool-row__action {
-  background: var(--color-convert); border-color: var(--color-convert); box-shadow: var(--shadow-clay-convert);
+.tool-card[data-accent='convert']:hover .tool-card__action,
+.tool-card[data-accent='convert']:focus-visible .tool-card__action {
+  background: var(--color-convert);
+  border-color: var(--color-convert);
 }
 
-.tool-row__action svg {
+.tool-card[data-accent='create']:hover .tool-card__action,
+.tool-card[data-accent='create']:focus-visible .tool-card__action {
+  background: var(--color-everyday);
+  border-color: var(--color-everyday);
+}
+
+.tool-card__action svg {
   width: var(--space-4);
   height: var(--space-4);
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.tool-row:hover .tool-row__action svg {
+.tool-card:hover .tool-card__action svg {
   transform: translateX(var(--space-1));
 }
 
 @media (max-width: 40rem) {
-  .tool-row {
-    grid-template-columns: 3rem minmax(0, 1fr);
-    align-items: start;
-    gap: var(--space-3);
-    padding: var(--space-4);
+  .tool-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 
-  .tool-row__action {
-    grid-column: 2;
-    justify-self: start;
-    margin-top: var(--space-1);
+  .tool-card {
+    padding: var(--space-5) var(--space-4);
   }
 
   .tool-search__kbd {
@@ -205,8 +212,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tool-row:hover,
-  .tool-row:focus-visible {
+  .tool-card:hover,
+  .tool-card:focus-visible {
     transform: none;
   }
 }

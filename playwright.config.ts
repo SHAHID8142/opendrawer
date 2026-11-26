@@ -10,9 +10,9 @@ export default defineConfig({
     trace: 'off',
   },
   webServer: {
-    command: 'npm run preview -- --port 4323 --host 127.0.0.1',
+    command: 'npm run preview -- --port 4323 --host 127.0.0.1 --ignore-lock',
     url: 'http://127.0.0.1:4323',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
 });
