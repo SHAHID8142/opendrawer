@@ -39,6 +39,8 @@ and Firefox; Lighthouse accessibility ≥ 95.
 
 ## Wave 2 — the editor (the hard, differentiating part)
 
+- **Queued for next phase — Uploaded file previews across tool pages (`/tools/<slug>`):** Render lightweight client-side previews of uploaded inputs (PDF page thumbnails rendered on demand via PDF.js and local image previews in `FileList` / per-tool workbenches), releasing decoded canvas buffers explicitly to respect mobile memory limits.
+
 1. `edit-text` (PDF.js text layer + overlay + content-stream rewrite; font matching)
 2. `add-text`, `add-image`, `annotate`, `whiteout`, `date-stamp`
 3. `sign-pdf`, `fill-form`

@@ -98,6 +98,9 @@ Each item is one folder under `src/tools/<id>/` and one line in `registry.ts`.
 Per `06-roadmap.md`. Wave 2 begins with `edit-text`, which needs the coordinate transform from
 Step 1 and a text-layer overlay; wave 3 adds Tesseract and the conversion tools.
 
+**Queued for next phase (tool pages `/tools/<slug>`):**
+- [ ] **Uploaded file previews:** Add lightweight local previews (on-demand PDF page thumbnails via PDF.js and image thumbnails via `FileList`) across tool pages, freeing canvas buffers explicitly after render.
+
 ---
 
 ## Testing that must exist from day one
