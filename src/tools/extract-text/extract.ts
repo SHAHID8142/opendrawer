@@ -87,7 +87,10 @@ export async function extractText(
         const content = await page.getTextContent();
         const items: TextItem[] = content.items
           .filter((item): item is typeof item & { str: string } => 'str' in item)
-          .map((item) => ({ str: item.str, hasEOL: item.hasEOL }));
+          .map((item) => ({
+            str: item.str,
+            hasEOL: 'hasEOL' in item ? item.hasEOL : false,
+          }));
         const hadGlyphs = items.some((item) => item.str.trim() !== '');
         const rawChars = items.reduce((count, item) => count + item.str.length, 0);
         const cleanChars = items.reduce(
