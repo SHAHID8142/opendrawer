@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import AmbientBackdrop from '../components/AmbientBackdrop.astro';
 import ToolCard from '../components/ToolCard.astro';
 import ToolGlyph from '../components/ToolGlyph.astro';
 import InfoTip from '../components/InfoTip.astro';
@@ -15,6 +16,7 @@ const grouped = categories.map((cat) => ({
   title="OpenDrawer — everyday file tools, kept on your device"
   description="Free, open-source file tools built for public goodwill across documents, images, media, text and everyday utilities. Offline after first load, zero accounts, zero tracking, zero uploads."
 >
+  <AmbientBackdrop />
   <div class="stack-lg page-fill">
     <header class="page-head">
       <h1>Everyday file tools, kept on your device</h1>

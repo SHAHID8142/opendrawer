@@ -1,0 +1,173 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Lightweight Antigravity-inspired floating capsule/dot field colored from CSS tokens.
+---
+
+<canvas class="ambient-canvas" id="ambient-canvas" aria-hidden="true"></canvas>
+
+<script>
+  const canvas = document.getElementById('ambient-canvas') as HTMLCanvasElement | null;
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx) {
+    const styles = getComputedStyle(document.documentElement);
+    const palette = [
+      styles.getPropertyValue('--color-inspect').trim(),
+      styles.getPropertyValue('--color-convert').trim(),
+      styles.getPropertyValue('--color-everyday').trim(),
+      styles.getPropertyValue('--color-documents').trim(),
+      styles.getPropertyValue('--color-audio').trim(),
+      styles.getPropertyValue('--color-textdata').trim(),
+    ].filter(Boolean);
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let width = 0;
+    let height = 0;
+    let rafId = 0;
+    const pointer = { x: -9999, y: -9999, active: false };
+
+    interface Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      length: number;
+      angle: number;
+      spin: number;
+      alpha: number;
+      color: string;
+      isDash: boolean;
+    }
+
+    let particles: Particle[] = [];
+
+    function makeParticle(randomY: boolean): Particle {
+      const isDash = Math.random() > 0.42;
+      return {
+        x: Math.random() * width,
+        y: randomY ? Math.random() * height : height + 16,
+        vx: (Math.random() - 0.5) * 0.24,
+        vy: -(0.14 + Math.random() * 0.28),
+        radius: 1.4 + Math.random() * 1.4,
+        length: 5 + Math.random() * 6,
+        angle: Math.random() * Math.PI,
+        spin: (Math.random() - 0.5) * 0.008,
+        alpha: 0.16 + Math.random() * 0.18,
+        color: palette[Math.floor(Math.random() * palette.length)] || styles.getPropertyValue('--color-accent').trim(),
+        isDash,
+      };
+    }
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas!.width = Math.floor(width * dpr);
+      canvas!.height = Math.floor(height * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const targetCount = width < 640 ? 20 : 42;
+      if (particles.length !== targetCount) {
+        particles = Array.from({ length: targetCount }, () => makeParticle(true));
+      }
+    }
+
+    function drawFrame() {
+      ctx!.clearRect(0, 0, width, height);
+      const repelRadius = 130;
+
+      for (const p of particles) {
+        if (!motionQuery.matches) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.angle += p.spin;
+
+          if (pointer.active) {
+            const dx = p.x - pointer.x;
+            const dy = p.y - pointer.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq > 1 && distSq < repelRadius * repelRadius) {
+              const dist = Math.sqrt(distSq);
+              const force = (1 - dist / repelRadius) * 1.8;
+              p.x += (dx / dist) * force;
+              p.y += (dy / dist) * force;
+            }
+          }
+
+          if (p.y < -20) {
+            p.y = height + 16;
+            p.x = Math.random() * width;
+          }
+          if (p.x < -20) p.x = width + 16;
+          if (p.x > width + 20) p.x = -16;
+        }
+
+        ctx!.save();
+        ctx!.globalAlpha = p.alpha;
+        ctx!.fillStyle = p.color;
+        ctx!.strokeStyle = p.color;
+        if (p.isDash) {
+          ctx!.translate(p.x, p.y);
+          ctx!.rotate(p.angle);
+          ctx!.lineWidth = p.radius * 1.35;
+          ctx!.lineCap = 'round';
+          ctx!.beginPath();
+          ctx!.moveTo(-p.length * 0.5, 0);
+          ctx!.lineTo(p.length * 0.5, 0);
+          ctx!.stroke();
+        } else {
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx!.fill();
+        }
+        ctx!.restore();
+      }
+    }
+
+    function tick() {
+      drawFrame();
+      if (!motionQuery.matches && !document.hidden) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        rafId = 0;
+      }
+    }
+
+    function start() {
+      cancelAnimationFrame(rafId);
+      if (motionQuery.matches) {
+        drawFrame();
+        return;
+      }
+      if (!document.hidden) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      resize();
+      if (motionQuery.matches) drawFrame();
+    });
+    window.addEventListener('pointermove', (e) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.active = true;
+    }, { passive: true });
+    window.addEventListener('pointerleave', () => {
+      pointer.active = false;
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      } else {
+        start();
+      }
+    });
+    motionQuery.addEventListener('change', start);
+
+    resize();
+    start();
+  }
+</script>
