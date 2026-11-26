@@ -64,6 +64,16 @@ export const tools: ToolEntry[] = [
       'Combine several PDFs into one file, in the order you set, without re-rendering a single page.',
     status: 'live',
   },
+  {
+    id: 'split-pdf',
+    name: 'Split PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    blurb:
+      'Split a PDF by page ranges or into one file per page, with pages copied rather than re-rendered.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

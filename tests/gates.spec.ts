@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -327,6 +327,37 @@ test.describe('UI-G8 and the file flow', () => {
     await page.getByRole('button', { name: 'Download the merged PDF' }).click();
     const saved = await download;
     expect(saved.suggestedFilename()).toBe('first-merged.pdf');
+
+    const origin = new URL(page.url()).origin;
+    const foreign = requests.filter((url) => {
+      if (url.startsWith('data:') || url.startsWith('blob:')) return false;
+      return new URL(url).origin !== origin;
+    });
+    expect(foreign, 'requests that left the origin').toEqual([]);
+  });
+
+  test('splits a PDF by ranges into a ZIP without leaving the origin', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+
+    await page.goto('/tools/split-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#split-input').setInputFiles({
+      name: 'report.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(4),
+    });
+    await expect(page.getByRole('status')).toContainText('4 pages ready');
+
+    await page.fill('#split-range', '1-2,4');
+    await page.getByRole('button', { name: 'Split the PDF' }).click();
+    await expect(page.getByRole('status')).toContainText('Split into 2 files', { timeout: 30_000 });
+    await expect(page.getByText('report-pages-1-2.pdf')).toBeVisible();
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the ZIP' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('report-split.zip');
 
     const origin = new URL(page.url()).origin;
     const foreign = requests.filter((url) => {

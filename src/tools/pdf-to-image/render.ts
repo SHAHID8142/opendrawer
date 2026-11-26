@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Pure PDF-to-image rendering engine with range validation and abort support.
+import { parsePageSelection, validatePageRangeSyntax } from '../../lib/page-range';
+
+export { validatePageRangeSyntax };
 export type ImageFormat = 'png' | 'jpeg';
 
 export interface RenderOptions {
@@ -26,76 +29,6 @@ export const DPI_CHOICES = [72, 150, 300];
 /** A4 at 300 DPI is about 8.7 megapixels; 40 MP is roughly a 600 DPI A4 page. */
 export const MAX_PIXELS_PER_PAGE = 40_000_000;
 export const MAX_PAGES = 200;
-
-interface RangeSpan {
-  start: number;
-  end: number;
-  label: string;
-}
-
-function parseRangeTokens(spec: string): { spans: RangeSpan[]; error: string | null } {
-  const trimmed = spec.trim();
-  if (trimmed === '' || trimmed.toLowerCase() === 'all') return { spans: [], error: null };
-
-  const pieces = trimmed.split(',').map((part) => part.trim()).filter(Boolean);
-  if (pieces.length === 0) {
-    return { spans: [], error: 'Enter page numbers or ranges separated by commas, such as 1-3, 7.' };
-  }
-
-  const spans: RangeSpan[] = [];
-  for (const piece of pieces) {
-    const range = /^(\d+)\s*-\s*(\d+)$/.exec(piece);
-    if (range) {
-      const start = Number(range[1]);
-      const end = Number(range[2]);
-      if (start < 1 || end < 1) return { spans: [], error: 'Page numbers start at 1.' };
-      if (start > end) {
-        return { spans: [], error: `The range "${piece}" counts backwards. Write it as ${end}-${start}.` };
-      }
-      spans.push({ start, end, label: piece });
-    } else if (/^\d+$/.test(piece)) {
-      const page = Number(piece);
-      if (page < 1) return { spans: [], error: 'Page numbers start at 1.' };
-      spans.push({ start: page, end: page, label: piece });
-    } else {
-      return {
-        spans: [],
-        error: `"${piece}" is not a page or a range. Use numbers and ranges separated by commas, such as 1-3, 7, 10-12.`,
-      };
-    }
-  }
-  return { spans, error: null };
-}
-
-/** Validate page range syntax without throwing, for live form feedback. */
-export function validatePageRangeSyntax(spec: string): string | null {
-  return parseRangeTokens(spec).error;
-}
-
-export function parsePageRange(spec: string, pageCount: number): number[] {
-  const { spans, error } = parseRangeTokens(spec);
-  if (error) throw new Error(error);
-  if (spans.length === 0) return Array.from({ length: pageCount }, (_, index) => index + 1);
-
-  const pages: number[] = [];
-  const seen = new Set<number>();
-  for (const span of spans) {
-    if (span.start > pageCount || span.end > pageCount) {
-      throw new Error(
-        span.start === span.end
-          ? `Page ${span.start} does not exist: this document has ${pageCount} page${pageCount === 1 ? '' : 's'}.`
-          : `The range "${span.label}" is outside this document: it has ${pageCount} page${pageCount === 1 ? '' : 's'}, numbered 1 to ${pageCount}.`,
-      );
-    }
-    for (let page = span.start; page <= span.end; page += 1) {
-      if (!seen.has(page)) {
-        seen.add(page);
-        pages.push(page);
-      }
-    }
-  }
-  return pages;
-}
 
 function throwIfAborted(signal?: AbortSignal): void {
   if (signal?.aborted) throw new DOMException('Rendering was cancelled.', 'AbortError');
@@ -158,7 +91,7 @@ export async function renderPdfToImages(
 
   try {
     throwIfAborted(signal);
-    const pages = parsePageRange(options.range, pdfDocument.numPages);
+    const pages = parsePageSelection(options.range, pdfDocument.numPages);
     if (pages.length > MAX_PAGES) {
       throw new Error(
         `That is ${pages.length} pages. This tool stops at ${MAX_PAGES} pages at once, because the tab would run out of memory. Split the document first.`,
