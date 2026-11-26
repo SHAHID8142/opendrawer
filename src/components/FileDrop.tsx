@@ -15,6 +15,7 @@ export interface FileDropProps {
   label: string;
   hint: string;
   buttonLabel: string;
+  multiple?: boolean;
   disabled?: boolean;
   working?: boolean;
   pasteEnabled?: boolean;
@@ -29,6 +30,7 @@ export function FileDrop({
   label,
   hint,
   buttonLabel,
+  multiple = false,
   disabled = false,
   working = false,
   pasteEnabled = false,
@@ -85,6 +87,7 @@ export function FileDrop({
       className="drop__input"
       type="file"
       accept={accept}
+      multiple={multiple}
       disabled={disabled}
       tabIndex={-1}
       aria-hidden="true"

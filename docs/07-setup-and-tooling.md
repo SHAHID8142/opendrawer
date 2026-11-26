@@ -57,7 +57,8 @@ and every commit builds and passes the gates on its own.
 > Note: `npm run test:unit` (`node:test` engine suite, no DOM) is planned alongside Wave 1 tool
 > engines and is not yet wired in `package.json`.
 
-Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`. Two tools are live;
+Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`,
+`/tools/images-to-pdf`. Three tools are live;
 `docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
 `src/tools/<id>/` contract for the next one.
 

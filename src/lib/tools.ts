@@ -44,6 +44,16 @@ export const tools: ToolEntry[] = [
       'Turn pages into PNG or JPEG images at 72, 150 or 300 DPI, one page or a whole ZIP of them.',
     status: 'live',
   },
+  {
+    id: 'images-to-pdf',
+    name: 'Images to PDF',
+    category: 'Documents',
+    group: 'Create',
+    accent: 'convert',
+    blurb:
+      'Put PNG and JPEG photos or scans into one PDF, one page per image, with the page size you choose.',
+    status: 'live',
+  },
 ];
 
 export const liveTools = tools.filter((tool) => tool.status === 'live');

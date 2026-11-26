@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -264,6 +264,39 @@ test.describe('UI-G8 and the file flow', () => {
     await expect(page.locator('.drop-bar')).toBeVisible();
     await expect(page.getByRole('status')).toContainText('1 page rendered', { timeout: 60_000 });
     await expect(page.getByRole('button', { name: 'Download the PNG' })).toBeVisible();
+
+    const origin = new URL(page.url()).origin;
+    const foreign = requests.filter((url) => {
+      if (url.startsWith('data:') || url.startsWith('blob:')) return false;
+      return new URL(url).origin !== origin;
+    });
+    expect(foreign, 'requests that left the origin').toEqual([]);
+  });
+
+  test('builds one PDF from two images without leaving the origin', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+
+    await page.goto('/tools/images-to-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    await page.locator('#images-input').setInputFiles([
+      { name: 'one.png', mimeType: 'image/png', buffer: png },
+      { name: 'two.png', mimeType: 'image/png', buffer: png },
+    ]);
+    await expect(page.getByRole('status')).toContainText('2 images ready');
+
+    await page.getByRole('button', { name: 'Create the PDF' }).click();
+    await expect(page.getByRole('status')).toContainText('PDF ready with 2 pages', { timeout: 30_000 });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('one-and-more.pdf');
 
     const origin = new URL(page.url()).origin;
     const foreign = requests.filter((url) => {

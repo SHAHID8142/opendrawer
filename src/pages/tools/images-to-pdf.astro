@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/images-to-pdf/Tool';
+
+const title = 'Images to PDF: combine PNG and JPEG photos into one file';
+const description =
+  'Put several PNG or JPEG images into one PDF, one page per image. Choose A4, US Letter or a page that matches the image. Runs in your browser; nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Images to PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Are my photos uploaded to make the PDF?',
+    answer:
+      'No. Each image is read in this tab and written into the PDF by the browser, so the files never leave the device.',
+  },
+  {
+    question: 'Why are WebP and HEIC not accepted?',
+    answer:
+      'The PDF writer embeds PNG and JPEG directly. Other formats would have to be re-encoded first, which changes quality; that conversion is not part of this tool yet.',
+  },
+  {
+    question: 'Does it keep the photo metadata?',
+    answer:
+      'No. Camera metadata such as GPS location and capture time is not copied into the PDF. The image pixels are embedded as they are.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <Breadcrumb current="Images to PDF" />
+
+    <header class="tool-head">
+      <h1 id="tool-heading">Images to PDF</h1>
+      <p>
+        Put photos, scans or screenshots into one PDF: one page per image, in the order you add
+        them. The file is built here in the browser.
+      </p>
+    </header>
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'PNG and JPEG only. WebP, HEIC, GIF and TIFF are refused rather than silently re-encoded.',
+            'Up to 50 images per PDF, and each image must be under 25 MB.',
+            'Pages follow the order you add them. Reordering and rotating come with a later tool.',
+            'No OCR: text inside a photo stays a picture, not selectable text.',
+            'Each image is fitted inside the page, never cropped, so wide photos leave white space.',
+          ]}
+        />
+        <section class="stack" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <div class="faq">
+            {faq.map((item) => (
+              <div class="note">
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>
