@@ -235,4 +235,15 @@ export const tools: ToolEntry[] = [
       'Rebuild the structure of a damaged PDF and recover what qpdf can read.',
     status: 'live',
   },
+  {
+    id: 'fill-forms',
+    name: 'Fill forms',
+    category: 'Documents',
+    group: 'Edit',
+    accent: 'convert',
+    short: 'Complete form fields.',
+    blurb:
+      'Fill AcroForm text fields, checkboxes and option lists, then flatten them so they cannot be changed.',
+    status: 'live',
+  },
 ];

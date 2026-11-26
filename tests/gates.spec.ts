@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms'];
 
 async function createPdf(
   pageCount: number,
@@ -615,6 +615,41 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('fills a text field and flattens the form', async ({ page }) => {
+    const pdf = await PDFDocument.create();
+    const formPage = pdf.addPage([595.28, 841.89]);
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const form = pdf.getForm();
+    const name = form.createTextField('full_name');
+    name.setText('Ada Lovelace');
+    name.addToPage(formPage, { x: 72, y: 700, width: 240, height: 24, font });
+    const agree = form.createCheckBox('agree');
+    agree.addToPage(formPage, { x: 72, y: 660, width: 16, height: 16 });
+
+    await page.goto('/tools/fill-forms');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#fill-input').setInputFiles({
+      name: 'application.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from(await pdf.save()),
+    });
+    await expect(page.getByRole('status')).toContainText('2 fields ready');
+
+    await page.fill('#field-full_name', 'Grace Hopper');
+    await page.check('#field-agree');
+    await page.getByRole('button', { name: 'Fill the form' }).click();
+    await expect(page.getByRole('status')).toContainText('Filled 2 fields and flattened', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('application-filled.pdf');
+    const out = await PDFDocument.load(readFileSync((await saved.path())!));
+    expect(out.getForm().getFields().length).toBe(0);
   });
 
   test('optimises a PDF losslessly and reports the outcome', async ({ page }) => {

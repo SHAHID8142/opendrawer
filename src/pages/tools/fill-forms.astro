@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/fill-forms/Tool';
+
+const title = 'Fill a PDF form in your browser';
+const description =
+  'Fill standard AcroForm text fields, checkboxes and option lists, then optionally flatten them so the answers cannot be changed. Nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Fill PDF forms',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Why does a field not appear?',
+    answer:
+      'Only standard AcroForm text fields, checkboxes, dropdowns, radio groups and option lists can be filled. Signature fields and XFA forms are left alone or refused.',
+  },
+  {
+    question: 'Is a typed name a signature?',
+    answer:
+      'No. This fills a form; it does not create a certified or legally recognised signature. Use a real signing product when that matters.',
+  },
+  {
+    question: 'Should I flatten?',
+    answer:
+      'Flatten when you are sending the finished form to someone who should not change it. Keep it unflattened if you may need to correct an answer later.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="fill-forms"
+      breadcrumbLabel="Fill forms"
+      heading="Fill PDF forms"
+      lead="Answer the form's own fields here, then download it. Flatten only when the answers are final."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'XFA forms are refused; standard AcroForm fields only.',
+            'Signature fields are not signed, and a typed name is not a certified signature.',
+            'No required-field checks or validation rules are enforced; check the form yourself.',
+            'A value that relies on the viewer to draw it can appear blank after flattening.',
+            'Password-protected PDFs must be unlocked first; digital signatures stop being valid.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools current="fill-forms" />
+      </aside>
+    </div>
+  </div>
+</Base>
