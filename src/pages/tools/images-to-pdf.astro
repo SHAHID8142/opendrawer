@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/images-to-pdf/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Images to PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Images to PDF</h1>
-      <p>
-        Put photos, scans or screenshots into one PDF: one page per image, in the order you add
-        them. The file is built here in the browser.
-      </p>
-    </header>
+    <ToolHeader
+      id="images-to-pdf"
+      breadcrumbLabel="Images to PDF"
+      heading="Images to PDF"
+      lead="Put photos, scans or screenshots into one PDF: one page per image, in the order you add them. The file is built here in the browser."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +63,7 @@ const faq = [
             'Each image is fitted inside the page, never cropped, so wide photos leave white space.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

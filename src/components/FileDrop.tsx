@@ -43,6 +43,7 @@ export function FileDrop({
 }: FileDropProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dragDepth = useRef(0);
+  const hadSelectedRef = useRef(Boolean(selectedFile));
   const [over, setOver] = useState(false);
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
 
@@ -52,6 +53,13 @@ export function FileDrop({
       setOver(false);
     }
   }, [disabled]);
+
+  useEffect(() => {
+    if (hadSelectedRef.current && !selectedFile) {
+      setDroppedFiles([]);
+    }
+    hadSelectedRef.current = Boolean(selectedFile);
+  }, [selectedFile]);
 
   function acceptFiles(list: FileList | null) {
     if (!list || list.length === 0) return;
@@ -65,7 +73,7 @@ export function FileDrop({
     onClear?.();
   }
 
-  const activePreviewFiles = previewFiles ?? (selectedFile ? droppedFiles : []);
+  const activePreviewFiles = previewFiles ?? droppedFiles;
 
   function handleDragEnter(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();

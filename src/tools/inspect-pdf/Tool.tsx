@@ -9,6 +9,7 @@ type Phase = 'idle' | 'working' | 'done' | 'error';
 
 export default function Tool() {
   const [phase, setPhase] = useState<Phase>('idle');
+  const [sourceFile, setSourceFile] = useState<File | null>(null);
   const [result, setResult] = useState<InspectResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -20,6 +21,7 @@ export default function Tool() {
     const file = files[0];
     if (!file || workingRef.current) return;
     workingRef.current = true;
+    setSourceFile(file);
     setPhase('working');
     setError(null);
     setResult(null);
@@ -35,6 +37,7 @@ export default function Tool() {
   }
 
   function clear() {
+    setSourceFile(null);
     setPhase('idle');
     setResult(null);
     setError(null);
@@ -70,6 +73,7 @@ export default function Tool() {
         working={phase === 'working'}
         pasteEnabled
         selectedFile={selectedFile}
+        previewFiles={sourceFile ? [sourceFile] : []}
         onClear={clear}
         onFiles={run}
       />

@@ -1,12 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/pdf-to-image/Tool';
 
-const title = 'PDF to image: pages as PNG or JPEG at 72, 150 or 300 DPI';
+const title = 'PDF to image: pages as PNG, JPEG, WebP or AVIF';
 const description =
-  'Turn PDF pages into PNG or JPEG images at the resolution you choose. Choose a page range, then download one image or a ZIP. Runs in your browser, nothing uploaded.';
+  'Turn PDF pages into PNG, JPEG, WebP or AVIF images at the resolution you choose. Pick a page range, then download one image or a ZIP. Runs in your browser; nothing is uploaded.';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -30,6 +31,16 @@ const faq = [
       '72 DPI is one pixel per point, which is screen size and roughly what the page looks like at 100 percent zoom. Text is drawn as pixels, so for reading or printing choose 150 or 300 DPI.',
   },
   {
+    question: 'Which image format should I choose?',
+    answer:
+      'PNG keeps every pixel and is best for text and screenshots. JPEG is smaller and fine for photographs. WebP is smaller again with little visible loss and is widely supported. AVIF is the smallest, and the option only appears as available when this browser can actually encode it.',
+  },
+  {
+    question: 'Why is AVIF greyed out?',
+    answer:
+      'Browsers encode images through their canvas API, and not every browser can write AVIF. The format list is checked in this tab when the page loads, so an unsupported format is labelled rather than silently producing a PNG with an .avif name.',
+  },
+  {
     question: 'Can I get the text back out of the images?',
     answer:
       'Not from these files. A rendered page is a picture: the text is no longer selectable or searchable, and OCR would be needed to recover it. Use a text extraction tool when you need the words.',
@@ -39,16 +50,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="PDF to image" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">PDF to image</h1>
-      <p>
-        Turn the pages of a PDF into pictures: PNG if you want no quality loss, JPEG if you want
-        smaller files. Pick the resolution and the pages, and the images are drawn here in your
-        browser.
-      </p>
-    </header>
+    <ToolHeader
+      id="pdf-to-image"
+      breadcrumbLabel="PDF to image"
+      heading="PDF to image"
+      lead="Turn the pages of a PDF into pictures: PNG for no quality loss, JPEG or WebP for smaller files, and AVIF where your browser can write it. Pick the resolution and the pages; the images are drawn here in your browser."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -64,19 +71,10 @@ const faq = [
             'More than 200 pages in one run is refused. Split the document first.',
             'Page ranges are 1-based and can be combined: 1-3, 7, 10-12.',
             'Links, forms, annotations and hidden layers are not drawn as interactive elements; they appear only as whatever the page shows.',
+            'AVIF depends on the browser. Where it cannot be encoded, the option is disabled instead of quietly falling back to another format.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

@@ -15,10 +15,11 @@ export interface PreviewSettings {
   mat: MatStyle;
   guide: GuideMode;
   rotation: InspectRotation;
-  pageCap: number;
+  autoLoadAll: boolean;
   showLabels: boolean;
   showShadow: boolean;
   squareCrop: boolean;
+  wrapText: boolean;
 }
 
 export const DEFAULT_PREVIEW_SETTINGS: PreviewSettings = {
@@ -28,13 +29,14 @@ export const DEFAULT_PREVIEW_SETTINGS: PreviewSettings = {
   mat: 'subtle',
   guide: 'none',
   rotation: 0,
-  pageCap: 12,
+  autoLoadAll: false,
   showLabels: true,
   showShadow: true,
   squareCrop: false,
+  wrapText: true,
 };
 
-const STORAGE_KEY = 'od-preview-prefs-v1';
+const STORAGE_KEY = 'od-preview-prefs-v2';
 
 export function loadPreviewPrefs(): PreviewSettings {
   if (typeof window === 'undefined') return DEFAULT_PREVIEW_SETTINGS;

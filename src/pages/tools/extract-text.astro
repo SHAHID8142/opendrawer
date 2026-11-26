@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/extract-text/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Extract text" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Extract text from PDF</h1>
-      <p>
-        Get the words out of a PDF without retyping them. The text is shown here first, then
-        downloaded as a plain .txt file you can open anywhere.
-      </p>
-    </header>
+    <ToolHeader
+      id="extract-text"
+      breadcrumbLabel="Extract text"
+      heading="Extract text from PDF"
+      lead="Get the words out of a PDF without retyping them. The text is shown here first, then downloaded as a plain .txt file you can open anywhere."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -66,17 +64,7 @@ const faq = [
             'It stops at 500 pages at once.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

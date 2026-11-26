@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/extract-pages/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Extract pages" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Extract pages</h1>
-      <p>
-        Keep only the pages that matter. Choose pages and ranges, then download a new PDF with
-        just those pages, copied exactly as they are.
-      </p>
-    </header>
+    <ToolHeader
+      id="extract-pages"
+      breadcrumbLabel="Extract pages"
+      heading="Extract pages"
+      lead="Keep only the pages that matter. Choose pages and ranges, then download a new PDF with just those pages, copied exactly as they are."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -66,17 +64,7 @@ const faq = [
             'Extraction is not redaction: the original file still contains every page.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

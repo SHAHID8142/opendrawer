@@ -1,0 +1,103 @@
+/*
+ * Universal preview formats — verification status pill, text excerpt, media player, and file summary card.
+ */
+
+.preview-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.preview-status__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-semibold);
+  background: var(--color-success-subtle);
+  color: var(--color-success);
+}
+
+.preview-status[data-tone='warn'] .preview-status__badge {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}
+
+.preview-status__meta {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-doc {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.preview-text {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  overflow-x: auto;
+}
+
+.preview-text--wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.preview-media {
+  display: grid;
+  place-items: center;
+}
+
+.preview-media audio,
+.preview-media video {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.preview-doc-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.preview-doc-card__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.preview-doc-card__facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-xs);
+}
+
+.preview-doc-card__facts div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.preview-doc-card__facts dt {
+  min-width: 5rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.preview-doc-card__facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

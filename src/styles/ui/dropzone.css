@@ -36,19 +36,14 @@
 }
 
 .drop__icon {
-  display: grid;
+  display: inline-grid;
   place-items: center;
-  width: var(--space-9);
-  height: var(--space-9);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-subtle);
-  box-shadow: var(--shadow-clay-sm);
   color: var(--color-accent-strong);
 }
 
 .drop__icon svg {
-  width: var(--space-5);
-  height: var(--space-5);
+  width: var(--space-7);
+  height: var(--space-7);
 }
 
 .drop__label {

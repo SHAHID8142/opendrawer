@@ -1,0 +1,38 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Quiet, homepage-aligned tool header with breadcrumb, bare service icon, title, and lead copy.
+import Breadcrumb from './Breadcrumb.astro';
+import ToolGlyph from './ToolGlyph.astro';
+import { categories, tools } from '../lib/tools';
+
+interface Props {
+  id: string;
+  heading: string;
+  lead: string;
+  breadcrumbLabel?: string;
+}
+
+const { id, heading, lead, breadcrumbLabel } = Astro.props;
+const entry = tools.find((t) => t.id === id);
+const tone = entry?.accent ?? 'documents';
+const fallback = categories.find((c) => c.id === entry?.category)?.tone ?? 'documents';
+const group = entry?.group;
+const currentLabel = breadcrumbLabel ?? entry?.name ?? heading;
+---
+
+<div class="tool-topbar">
+  <Breadcrumb current={currentLabel} group={group} />
+  <span class="tool-topbar__note">Runs locally · Zero uploads</span>
+</div>
+
+<header class="tool-head">
+  <div class="tool-head__row">
+    <div class="tool-head__copy">
+      <h1 id="tool-heading">{heading}</h1>
+      <p class="tool-head__lead">{lead}</p>
+    </div>
+    <span class="tool-head__mark" aria-hidden="true">
+      <ToolGlyph kind={id} fallback={fallback} tone={tone} size="lg" />
+    </span>
+  </div>
+</header>

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/merge-pdf/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Merge PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Merge PDF</h1>
-      <p>
-        Put several PDFs into one file. Set the order, then merge: the pages are copied here in
-        the browser, so quality and text stay intact.
-      </p>
-    </header>
+    <ToolHeader
+      id="merge-pdf"
+      breadcrumbLabel="Merge PDF"
+      heading="Merge PDF"
+      lead="Put several PDFs into one file. Set the order, then merge: the pages are copied here in the browser, so quality and text stay intact."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +63,7 @@ const faq = [
             'The output is not compressed; it can be larger than the inputs.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

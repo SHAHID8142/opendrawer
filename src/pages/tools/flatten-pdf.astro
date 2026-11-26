@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/flatten-pdf/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Flatten PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Flatten PDF</h1>
-      <p>
-        Send a filled form back as a finished document. Field values are drawn into the page and
-        the inputs stop being editable.
-      </p>
-    </header>
+    <ToolHeader
+      id="flatten-pdf"
+      breadcrumbLabel="Flatten PDF"
+      heading="Flatten PDF"
+      lead="Send a filled form back as a finished document. Field values are drawn into the page and the inputs stop being editable."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +63,7 @@ const faq = [
             'Password-protected PDFs must be unlocked first.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

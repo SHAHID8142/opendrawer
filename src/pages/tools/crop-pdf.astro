@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/crop-pdf/Tool';
 
@@ -38,15 +39,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Crop PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Crop PDF</h1>
-      <p>
-        Trim the same margin from every edge of the pages you choose. The page box shrinks; the
-        file itself is not rebuilt.
-      </p>
-    </header>
+    <ToolHeader
+      id="crop-pdf"
+      breadcrumbLabel="Crop PDF"
+      heading="Crop PDF"
+      lead="Trim the same margin from every edge of the pages you choose. The page box shrinks; the file itself is not rebuilt."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +63,7 @@ const faq = [
             'Password-protected PDFs are refused; digital signatures stop being valid.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

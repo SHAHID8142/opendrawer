@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Customization controls bar for UploadedPreview (layout modes, backdrop, guides, zoom, rotation).
+// Quiet preview toolbar aligned with homepage card controls (mode, backdrop, scale, guides, rotation).
 import type {
   GuideMode,
   InspectRotation,
@@ -11,6 +11,7 @@ import type {
 } from '../lib/preview-prefs';
 
 interface PreviewToolbarProps {
+  kind: 'pdf' | 'image' | 'text' | 'media' | 'summary';
   settings: PreviewSettings;
   customizeOpen: boolean;
   summaryText: string;
@@ -46,9 +47,9 @@ const GUIDES: { value: GuideMode; label: string }[] = [
   { value: 'cross', label: 'Center' },
 ];
 const ROTATIONS: InspectRotation[] = [0, 90, 180, 270];
-const PAGE_CAPS = [6, 12, 24, 48];
 
 export function PreviewToolbar({
+  kind,
   settings,
   customizeOpen,
   summaryText,
@@ -56,6 +57,8 @@ export function PreviewToolbar({
   onChange,
   onReset,
 }: PreviewToolbarProps) {
+  const isVisual = kind === 'pdf' || kind === 'image';
+
   return (
     <>
       <div className="preview-bar">
@@ -65,18 +68,29 @@ export function PreviewToolbar({
         </div>
 
         <div className="preview-bar__actions">
-          <div className="preview-seg" role="group" aria-label="Preview layout mode">
-            {MODES.map((m) => (
-              <button
-                key={m.value}
-                type="button"
-                aria-pressed={settings.mode === m.value}
-                onClick={() => onChange({ mode: m.value })}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
+          {isVisual ? (
+            <div className="preview-seg" role="group" aria-label="Preview layout mode">
+              {MODES.map((m) => (
+                <button
+                  key={m.value}
+                  type="button"
+                  aria-pressed={settings.mode === m.value}
+                  onClick={() => onChange({ mode: m.value })}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="preview-chip"
+              aria-pressed={settings.mode !== 'hidden'}
+              onClick={() => onChange({ mode: settings.mode === 'hidden' ? 'grid' : 'hidden' })}
+            >
+              {settings.mode === 'hidden' ? 'Show preview' : 'Hide preview'}
+            </button>
+          )}
 
           {settings.mode !== 'hidden' && (
             <button
@@ -98,121 +112,80 @@ export function PreviewToolbar({
             <span className="preview-custom__label">Backdrop</span>
             <div className="preview-seg" role="group" aria-label="Preview backdrop">
               {MATS.map((m) => (
-                <button
-                  key={m.value}
-                  type="button"
-                  aria-pressed={settings.mat === m.value}
-                  onClick={() => onChange({ mat: m.value })}
-                >
+                <button key={m.value} type="button" aria-pressed={settings.mat === m.value} onClick={() => onChange({ mat: m.value })}>
                   {m.label}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="preview-custom__row">
-            <span className="preview-custom__label">
-              {settings.mode === 'grid' ? 'Thumbnail size' : 'Zoom'}
-            </span>
-            <div className="preview-seg" role="group" aria-label="Scale options">
-              {settings.mode === 'grid'
-                ? SIZES.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      aria-pressed={settings.thumbSize === s}
-                      onClick={() => onChange({ thumbSize: s })}
-                    >
-                      {s.toUpperCase()}
-                    </button>
-                  ))
-                : ZOOMS.map((z) => (
-                    <button
-                      key={z.value}
-                      type="button"
-                      aria-pressed={settings.zoom === z.value}
-                      onClick={() => onChange({ zoom: z.value })}
-                    >
-                      {z.label}
+          {isVisual && (
+            <>
+              <div className="preview-custom__row">
+                <span className="preview-custom__label">{settings.mode === 'grid' ? 'Thumbnail size' : 'Zoom'}</span>
+                <div className="preview-seg" role="group" aria-label="Scale options">
+                  {settings.mode === 'grid'
+                    ? SIZES.map((s) => (
+                        <button key={s} type="button" aria-pressed={settings.thumbSize === s} onClick={() => onChange({ thumbSize: s })}>
+                          {s.toUpperCase()}
+                        </button>
+                      ))
+                    : ZOOMS.map((z) => (
+                        <button key={z.value} type="button" aria-pressed={settings.zoom === z.value} onClick={() => onChange({ zoom: z.value })}>
+                          {z.label}
+                        </button>
+                      ))}
+                </div>
+              </div>
+
+              <div className="preview-custom__row">
+                <span className="preview-custom__label">Guides</span>
+                <div className="preview-seg" role="group" aria-label="Overlay guides">
+                  {GUIDES.map((g) => (
+                    <button key={g.value} type="button" aria-pressed={settings.guide === g.value} onClick={() => onChange({ guide: g.value })}>
+                      {g.label}
                     </button>
                   ))}
-            </div>
-          </div>
+                </div>
+              </div>
 
-          <div className="preview-custom__row">
-            <span className="preview-custom__label">Guides</span>
-            <div className="preview-seg" role="group" aria-label="Overlay guides">
-              {GUIDES.map((g) => (
-                <button
-                  key={g.value}
-                  type="button"
-                  aria-pressed={settings.guide === g.value}
-                  onClick={() => onChange({ guide: g.value })}
-                >
-                  {g.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="preview-custom__row">
-            <span className="preview-custom__label">Inspect angle</span>
-            <div className="preview-seg" role="group" aria-label="Inspect rotation">
-              {ROTATIONS.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  aria-pressed={settings.rotation === r}
-                  onClick={() => onChange({ rotation: r })}
-                >
-                  {r}°
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="preview-custom__row">
-            <span className="preview-custom__label">Pages to load</span>
-            <div className="preview-seg" role="group" aria-label="Page batch limit">
-              {PAGE_CAPS.map((cap) => (
-                <button
-                  key={cap}
-                  type="button"
-                  aria-pressed={settings.pageCap === cap}
-                  onClick={() => onChange({ pageCap: cap })}
-                >
-                  {cap}
-                </button>
-              ))}
-            </div>
-          </div>
+              <div className="preview-custom__row">
+                <span className="preview-custom__label">Inspect angle</span>
+                <div className="preview-seg" role="group" aria-label="Inspect rotation">
+                  {ROTATIONS.map((r) => (
+                    <button key={r} type="button" aria-pressed={settings.rotation === r} onClick={() => onChange({ rotation: r })}>
+                      {r}°
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="preview-custom__row">
             <div className="cluster">
-              <button
-                type="button"
-                className="preview-chip"
-                aria-pressed={settings.showLabels}
-                onClick={() => onChange({ showLabels: !settings.showLabels })}
-              >
-                Labels & sizes
-              </button>
-              <button
-                type="button"
-                className="preview-chip"
-                aria-pressed={settings.showShadow}
-                onClick={() => onChange({ showShadow: !settings.showShadow })}
-              >
-                Paper shadow
-              </button>
-              {settings.mode === 'grid' && (
-                <button
-                  type="button"
-                  className="preview-chip"
-                  aria-pressed={settings.squareCrop}
-                  onClick={() => onChange({ squareCrop: !settings.squareCrop })}
-                >
-                  Square tiles
+              {isVisual ? (
+                <>
+                  <button type="button" className="preview-chip" aria-pressed={settings.showLabels} onClick={() => onChange({ showLabels: !settings.showLabels })}>
+                    Labels & sizes
+                  </button>
+                  <button type="button" className="preview-chip" aria-pressed={settings.showShadow} onClick={() => onChange({ showShadow: !settings.showShadow })}>
+                    Paper shadow
+                  </button>
+                  {kind === 'pdf' && (
+                    <button type="button" className="preview-chip" aria-pressed={settings.autoLoadAll} onClick={() => onChange({ autoLoadAll: !settings.autoLoadAll })}>
+                      Always load all pages
+                    </button>
+                  )}
+                  {settings.mode === 'grid' && (
+                    <button type="button" className="preview-chip" aria-pressed={settings.squareCrop} onClick={() => onChange({ squareCrop: !settings.squareCrop })}>
+                      Square tiles
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button type="button" className="preview-chip" aria-pressed={settings.wrapText} onClick={() => onChange({ wrapText: !settings.wrapText })}>
+                  Wrap lines
                 </button>
               )}
             </div>

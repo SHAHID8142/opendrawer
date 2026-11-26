@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Lazy client-side thumbnail & page renderer for uploaded PDFs and images with buffer cleanup.
+// Lazy universal preview loader supporting incremental PDF page ranges, images, text, media, and containers.
+import { inspectUploadedFile, type FileInspection } from './file-inspect';
 
 export interface PreviewFrame {
   key: string;
@@ -12,17 +13,21 @@ export interface PreviewFrame {
 }
 
 export interface RenderedPreview {
-  kind: 'pdf' | 'image';
+  kind: 'pdf' | 'image' | 'text' | 'media' | 'summary';
   totalPages: number;
   frames: PreviewFrame[];
+  inspection: FileInspection;
+  mediaUrl?: string;
+  mediaType?: 'audio' | 'video';
 }
 
-function isPdfFile(file: File): boolean {
-  return file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-}
+const isPdf = (file: File) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+const isImg = (file: File) => file.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|svg|bmp|avif)$/i.test(file.name);
 
-function isImageFile(file: File): boolean {
-  return file.type.startsWith('image/') || /\.(png|jpe?g|webp)$/i.test(file.name);
+function mediaKindOf(file: File): 'audio' | 'video' | null {
+  if (file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|flac|aac)$/i.test(file.name)) return 'audio';
+  if (file.type.startsWith('video/') || /\.(mp4|webm|mov|m4v|ogv)$/i.test(file.name)) return 'video';
+  return null;
 }
 
 function readImageDimensions(url: string): Promise<{ w: number; h: number }> {
@@ -37,31 +42,89 @@ function readImageDimensions(url: string): Promise<{ w: number; h: number }> {
 function encodeCanvasUrl(canvas: HTMLCanvasElement): Promise<string> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          reject(new Error('Could not encode preview frame.'));
-          return;
-        }
-        resolve(URL.createObjectURL(blob));
-      },
+      (blob) => (blob ? resolve(URL.createObjectURL(blob)) : reject(new Error('Could not encode preview frame.'))),
       'image/jpeg',
       0.84,
     );
   });
 }
 
+export async function renderPdfPages(
+  file: File,
+  startPage: number,
+  endPage: number,
+  highRes: boolean,
+  signal: AbortSignal,
+): Promise<{ totalPages: number; frames: PreviewFrame[] }> {
+  const pdfjs = await import('pdfjs-dist');
+  const workerMod = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+  pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default;
+
+  const data = new Uint8Array(await file.arrayBuffer());
+  if (signal.aborted) return { totalPages: 0, frames: [] };
+
+  const loading = pdfjs.getDocument({ data, useSystemFonts: false });
+  const abortHandler = () => void loading.destroy();
+  signal.addEventListener('abort', abortHandler, { once: true });
+
+  try {
+    const doc = await loading.promise;
+    const from = Math.max(1, startPage);
+    const to = Math.min(doc.numPages, endPage);
+    const frames: PreviewFrame[] = [];
+
+    for (let pageNo = from; pageNo <= to; pageNo += 1) {
+      if (signal.aborted) break;
+      const page = await doc.getPage(pageNo);
+      const baseVp = page.getViewport({ scale: 1 });
+      const scale = Math.min(2, Math.max(0.25, (highRes ? 880 : 300) / Math.max(baseVp.width, 1)));
+      const viewport = page.getViewport({ scale });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.floor(viewport.width));
+      canvas.height = Math.max(1, Math.floor(viewport.height));
+      const ctx = canvas.getContext('2d');
+      if (ctx) await page.render({ canvasContext: ctx, canvas, viewport }).promise;
+      const url = await encodeCanvasUrl(canvas);
+      canvas.width = 0;
+      canvas.height = 0;
+      page.cleanup();
+
+      frames.push({
+        key: `${file.name}-p${pageNo}`,
+        pageNumber: pageNo,
+        url,
+        width: Math.round(baseVp.width),
+        height: Math.round(baseVp.height),
+        label: `Page ${pageNo}`,
+        dimensions: `${Math.round(baseVp.width)} × ${Math.round(baseVp.height)} pt`,
+      });
+    }
+    return { totalPages: doc.numPages, frames };
+  } finally {
+    signal.removeEventListener('abort', abortHandler);
+    void loading.destroy();
+  }
+}
+
 export async function renderUploadedPreview(
   files: File[],
-  pageCap: number,
+  endPage: number,
   highRes: boolean,
   signal: AbortSignal,
 ): Promise<RenderedPreview> {
-  if (files.length === 0) return { kind: 'pdf', totalPages: 0, frames: [] };
+  const target = files[0];
+  if (!target) {
+    const empty = await inspectUploadedFile(new File([], 'empty'));
+    return { kind: 'summary', totalPages: 0, frames: [], inspection: empty };
+  }
 
-  const allImages = files.every(isImageFile);
-  if (allImages) {
+  const inspection = await inspectUploadedFile(target);
+  if (signal.aborted) return { kind: 'summary', totalPages: 0, frames: [], inspection };
+
+  if (files.every(isImg)) {
     const frames: PreviewFrame[] = [];
-    for (const [index, file] of files.slice(0, pageCap).entries()) {
+    for (const [index, file] of files.entries()) {
       if (signal.aborted) break;
       const url = URL.createObjectURL(file);
       const { w, h } = await readImageDimensions(url);
@@ -75,70 +138,41 @@ export async function renderUploadedPreview(
         dimensions: w && h ? `${w} × ${h} px` : 'Image',
       });
     }
-    return { kind: 'image', totalPages: files.length, frames };
+    return { kind: 'image', totalPages: files.length, frames, inspection };
   }
 
-  const target = files.find(isPdfFile) ?? files[0];
-  if (!target || !isPdfFile(target)) {
-    return { kind: 'pdf', totalPages: 0, frames: [] };
+  const mediaType = mediaKindOf(target);
+  if (mediaType) {
+    return { kind: 'media', totalPages: 1, frames: [], inspection, mediaUrl: URL.createObjectURL(target), mediaType };
   }
 
-  const pdfjs = await import('pdfjs-dist');
-  const workerMod = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
-  pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default;
-
-  const data = new Uint8Array(await target.arrayBuffer());
-  if (signal.aborted) return { kind: 'pdf', totalPages: 0, frames: [] };
-
-  const loading = pdfjs.getDocument({ data, useSystemFonts: false });
-  const abortHandler = () => void loading.destroy();
-  signal.addEventListener('abort', abortHandler, { once: true });
-
-  const doc = await loading.promise;
-  try {
-    const count = Math.min(doc.numPages, pageCap);
-    const frames: PreviewFrame[] = [];
-
-    for (let pageNo = 1; pageNo <= count; pageNo += 1) {
-      if (signal.aborted) break;
-      const page = await doc.getPage(pageNo);
-      const baseVp = page.getViewport({ scale: 1 });
-      const targetWidth = highRes ? 880 : 320;
-      const scale = Math.min(2, Math.max(0.25, targetWidth / Math.max(baseVp.width, 1)));
-      const viewport = page.getViewport({ scale });
-
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.floor(viewport.width));
-      canvas.height = Math.max(1, Math.floor(viewport.height));
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        await page.render({ canvasContext: ctx, canvas, viewport }).promise;
-      }
-      const url = await encodeCanvasUrl(canvas);
-      canvas.width = 0;
-      canvas.height = 0;
-      page.cleanup();
-
-      frames.push({
-        key: `${target.name}-p${pageNo}`,
-        pageNumber: pageNo,
-        url,
-        width: Math.round(baseVp.width),
-        height: Math.round(baseVp.height),
-        label: `Page ${pageNo}`,
-        dimensions: `${Math.round(baseVp.width)} × ${Math.round(baseVp.height)} pt`,
-      });
+  if (inspection.detectedFormat === 'PDF document' || (isPdf(target) && inspection.statusTone === 'ready')) {
+    try {
+      const rendered = await renderPdfPages(target, 1, endPage, highRes, signal);
+      return { kind: 'pdf', totalPages: rendered.totalPages, frames: rendered.frames, inspection };
+    } catch (cause) {
+      const protectedPdf = /password/i.test(cause instanceof Error ? cause.message : String(cause));
+      return {
+        kind: 'summary',
+        totalPages: 0,
+        frames: [],
+        inspection: {
+          ...inspection,
+          statusTone: 'warn',
+          statusLabel: protectedPdf ? 'Password-protected PDF' : 'Could not decode pages',
+          detailNote: protectedPdf
+            ? 'PDF header verified, but pages are encrypted and require a password to preview.'
+            : 'PDF header present, though the internal page tree could not be rendered.',
+        },
+      };
     }
-
-    return { kind: 'pdf', totalPages: doc.numPages, frames };
-  } finally {
-    signal.removeEventListener('abort', abortHandler);
-    void doc.destroy();
   }
+
+  if (inspection.textExcerpt !== undefined) return { kind: 'text', totalPages: 1, frames: [], inspection };
+  return { kind: 'summary', totalPages: 1, frames: [], inspection };
 }
 
-export function revokePreviewFrames(frames: PreviewFrame[]): void {
-  for (const frame of frames) {
-    URL.revokeObjectURL(frame.url);
-  }
+export function revokePreviewResources(preview: { frames: PreviewFrame[]; mediaUrl?: string }): void {
+  for (const frame of preview.frames) URL.revokeObjectURL(frame.url);
+  if (preview.mediaUrl) URL.revokeObjectURL(preview.mediaUrl);
 }

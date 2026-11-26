@@ -1,0 +1,42 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Collapsible hairline FAQ panel for tool slug sidebars with 44px summary targets.
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="stack" aria-labelledby="faq-heading">
+  <h2 id="faq-heading">Questions</h2>
+  <div class="faq">
+    {
+      items.map((item, index) => (
+        <details class="faq__item" open={index === 0}>
+          <summary class="faq__summary">
+            <span>{item.question}</span>
+            <svg
+              class="faq__chevron"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <p class="faq__answer">{item.answer}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>

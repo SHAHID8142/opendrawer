@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/ocr-pdf/Tool';
+
+const title = 'OCR a PDF: read a scan and get its text';
+const description =
+  'Turn scanned pages into selectable text with OCR. English only, up to 20 pages, and everything runs in your browser: the engine and language data come from this site, and your PDF is never uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — OCR PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is my PDF uploaded for OCR?',
+    answer:
+      'No. The page images are drawn in this tab and read by a Tesseract worker loaded from this site. The only network traffic is this site’s own JavaScript, WASM and language files.',
+  },
+  {
+    question: 'Why is the English language data 17 MB?',
+    answer:
+      'OCR needs a trained model, not a lookup table. The worker, the WebAssembly engine and the English data are served from this site once per visit and then run locally. They are not fetched from a third-party CDN.',
+  },
+  {
+    question: 'How accurate is it?',
+    answer:
+      'Clear printed pages are usually good. Handwriting, low-resolution scans, tables, formulas and unusual fonts are often wrong. Treat the output as a first draft and check it against the page.',
+  },
+  {
+    question: 'Does this make the PDF searchable?',
+    answer:
+      'No. It produces a plain .txt file. The PDF is not modified, so nothing needs rescuing and its signatures stay valid.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="ocr-pdf"
+      breadcrumbLabel="OCR PDF"
+      heading="OCR a PDF"
+      lead="Recover words from scans and photographs of pages. The text is read here, shown for a check, and downloaded as a plain .txt file."
+    />
+
+    <div class="tool-layout">
+      <div class="tool-main stack-lg">
+        <Tool client:load />
+      </div>
+
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'English only in this build. Other languages are not installed.',
+            'It stops at 20 pages at once, at a fixed 200 DPI.',
+            'Handwriting, tables, formulas and very small print are often misread.',
+            'It produces text only: layout, images and formatting are lost, and the PDF is not made searchable.',
+            'The first run downloads about 17 MB of engine and language data from this site; after that it is cached by the browser during the visit.',
+            'Password-protected PDFs are refused. Digital signatures are unaffected because the file is only read.',
+            'For a PDF that already has selectable text, Extract text is faster and exact.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+  </div>
+</Base>

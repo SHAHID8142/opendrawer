@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/rotate-pdf/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Rotate PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Rotate PDF</h1>
-      <p>
-        Turn sideways scans and upside-down pages the right way up. Choose an angle and the pages
-        it applies to; the change is written where the file already keeps rotation.
-      </p>
-    </header>
+    <ToolHeader
+      id="rotate-pdf"
+      breadcrumbLabel="Rotate PDF"
+      heading="Rotate PDF"
+      lead="Turn sideways scans and upside-down pages the right way up. Choose an angle and the pages it applies to; the change is written where the file already keeps rotation."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +63,7 @@ const faq = [
             'Digital signatures stop being valid once the file changes.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

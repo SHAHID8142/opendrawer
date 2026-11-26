@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/add-image/Tool';
 
@@ -39,15 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Add an image" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Add an image to a PDF</h1>
-      <p>
-        Stamp a logo, a tick or a photograph onto chosen pages. Choose a corner or the centre,
-        then set how wide it is and how strongly it shows.
-      </p>
-    </header>
+    <ToolHeader
+      id="add-image"
+      breadcrumbLabel="Add an image"
+      heading="Add an image to a PDF"
+      lead="Stamp a logo, a tick or a photograph onto chosen pages. Choose a corner or the centre, then set how wide it is and how strongly it shows."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -66,17 +64,7 @@ const faq = [
             'Password-protected PDFs are refused, and very large images may run out of memory.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>

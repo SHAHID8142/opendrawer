@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
 import LimitsNote from '../../components/LimitsNote.astro';
 import Tool from '../../tools/inspect-pdf/Tool';
 
@@ -39,16 +40,12 @@ const faq = [
 
 <Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
   <div class="stack-lg">
-    <Breadcrumb current="Inspect PDF" />
-
-    <header class="tool-head">
-      <h1 id="tool-heading">Inspect a PDF</h1>
-      <p>
-        Find out what a document carries before you send it: how many pages, what size they are,
-        who is named as the author, which software produced it, and whether it contains scripts,
-        embedded files or a signature.
-      </p>
-    </header>
+    <ToolHeader
+      id="inspect-pdf"
+      breadcrumbLabel="Inspect PDF"
+      heading="Inspect a PDF"
+      lead="Find out what a document carries before you send it: how many pages, what size they are, who is named as the author, which software produced it, and whether it contains scripts, embedded files or a signature."
+    />
 
     <div class="tool-layout">
       <div class="tool-main stack-lg">
@@ -65,17 +62,7 @@ const faq = [
             'Files over 100 MB are refused so a very large document cannot freeze the tab.',
           ]}
         />
-        <section class="stack" aria-labelledby="faq-heading">
-          <h2 id="faq-heading">Questions</h2>
-          <div class="faq">
-            {faq.map((item) => (
-              <div class="note">
-                <h3>{item.question}</h3>
-                <p>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ToolFaq items={faq} />
       </aside>
     </div>
   </div>
