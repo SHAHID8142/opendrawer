@@ -12,7 +12,7 @@
 .tool-search__box {
   position: relative;
   width: 100%;
-  max-width: var(--container-sm);
+  max-width: var(--measure);
 }
 
 .tool-search__icon {
@@ -55,10 +55,10 @@
   text-align: center;
 }
 
-/* Card grid — 3 columns on desktop, balanced auto-fill with zero sibling margin drift. */
+/* Card grid — up to 4 columns on wide desktop, balanced auto-fill with zero sibling margin drift. */
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   gap: var(--space-5);
   margin: 0;
   padding: 0;

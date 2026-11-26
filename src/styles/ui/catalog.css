@@ -52,7 +52,7 @@
   gap: var(--space-6);
   align-items: start;
   width: 100%;
-  max-width: var(--container-md);
+  max-width: var(--container-lg);
   margin-inline: auto;
 }
 

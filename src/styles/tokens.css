@@ -110,8 +110,8 @@
   --measure: 66ch;
   --measure-tight: 52ch;
   --container-sm: 42rem;
-  --container-md: 56rem;
-  --container-lg: 76rem;
+  --container-md: 68rem;
+  --container-lg: 84rem;
   --gutter: var(--space-5);
   --header-height: 4.5rem;
   --tap-target: 2.75rem;
