@@ -56,6 +56,14 @@
   margin: 0;
 }
 
+.value-card__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+}
+
 .never-list {
   display: grid;
   gap: var(--space-3);

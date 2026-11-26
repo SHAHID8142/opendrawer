@@ -174,6 +174,7 @@ export const tools: ToolEntry[] = [
     category: 'Documents',
     group: 'Organise',
     accent: 'convert',
+    short: 'Keep chosen pages in custom order.',
     blurb:
       'Keep only the pages you need, in the order you type them, and download them as a new PDF.',
     status: 'live',

@@ -119,6 +119,16 @@
 .cat-tab--textdata  { --cat-ink: var(--color-textdata); --cat-tint: var(--color-textdata-subtle); }
 .cat-tab--everyday  { --cat-ink: var(--color-everyday); --cat-tint: var(--color-everyday-subtle); }
 
+.cat-tab--soon {
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+.cat-tab--soon:hover,
+.cat-tab--soon[aria-pressed='true'] {
+  opacity: 1;
+}
+
 /* Category sections inside the directory — generous rhythm above, tight inside. */
 .cat-sections {
   display: grid;
@@ -180,13 +190,6 @@
   max-width: var(--measure-tight);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
-}
-
-.catalog__foot {
-  margin-top: var(--space-2);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  text-align: center;
 }
 
 @media (max-width: 40rem) {

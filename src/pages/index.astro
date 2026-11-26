@@ -51,7 +51,7 @@ const grouped = categories.map((cat) => ({
               <li>
                 <button
                   type="button"
-                  class={`cat-tab cat-tab--${cat.tone}`}
+                  class={`cat-tab cat-tab--${cat.tone}${cat.items.length === 0 ? ' cat-tab--soon' : ''}`}
                   data-cat-filter={cat.id}
                   data-cat-summary={cat.summary}
                   aria-pressed="false"
@@ -81,7 +81,7 @@ const grouped = categories.map((cat) => ({
             />
             <kbd class="tool-search__kbd" aria-hidden="true">/</kbd>
           </div>
-          <p id="tool-filter-count" class="tool-search__count" role="status" aria-live="polite">
+          <p id="tool-filter-count" class="tool-search__count sr-only" role="status" aria-live="polite">
             Showing {liveTools.length} of {liveTools.length} tools
           </p>
         </div>
@@ -114,10 +114,6 @@ const grouped = categories.map((cat) => ({
             Show all tools
           </button>
         </div>
-
-        <p class="catalog__foot">
-          <a href="/privacy">Verify zero uploads in the Network tab</a>.
-        </p>
       </section>
     </div>
 
@@ -133,6 +129,7 @@ const grouped = categories.map((cat) => ({
           <ToolGlyph kind="shield" tone="convert" size="lg" />
           <h3>Zero uploads</h3>
           <p>No upload server; CSP blocks off-origin calls.</p>
+          <a class="value-card__link" href="/privacy">Verify zero uploads in the Network tab</a>
         </li>
         <li class="value-card">
           <ToolGlyph kind="heart" tone="documents" size="lg" />
@@ -173,11 +170,12 @@ const grouped = categories.map((cat) => ({
         section.hidden = sectionItems.every((item) => item.hidden);
       }
 
+      const unfiltered = query === '' && activeCategory === 'All';
+      count.classList.toggle('sr-only', unfiltered);
       const word = visible === 1 ? 'tool' : 'tools';
-      count.textContent =
-        query === '' && activeCategory === 'All'
-          ? `Showing ${visible} of ${items.length} tools`
-          : `Showing ${visible} matching ${word} of ${items.length}`;
+      count.textContent = unfiltered
+        ? `Showing ${visible} of ${items.length} tools`
+        : `Showing ${visible} matching ${word} of ${items.length}`;
 
       empty.hidden = visible > 0;
       if (visible === 0 && emptyTitle && emptyBody) {
