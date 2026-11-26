@@ -1,6 +1,6 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Lightweight Antigravity-inspired floating capsule/dot field colored from CSS tokens.
+// Structured orbital micro-dot constellation inside the hero backdrop with spring pointer physics.
 ---
 
 <canvas class="ambient-canvas" id="ambient-canvas" aria-hidden="true"></canvas>
@@ -24,110 +24,112 @@
     let width = 0;
     let height = 0;
     let rafId = 0;
+    let time = 0;
+    let inView = true;
     const pointer = { x: -9999, y: -9999, active: false };
 
-    interface Particle {
+    interface Node {
+      homeX: number;
+      homeY: number;
       x: number;
       y: number;
       vx: number;
       vy: number;
       radius: number;
-      length: number;
-      angle: number;
-      spin: number;
+      phase: number;
       alpha: number;
       color: string;
-      isDash: boolean;
     }
 
-    let particles: Particle[] = [];
+    let nodes: Node[] = [];
 
-    function makeParticle(randomY: boolean): Particle {
-      const isDash = Math.random() > 0.42;
-      return {
-        x: Math.random() * width,
-        y: randomY ? Math.random() * height : height + 16,
-        vx: (Math.random() - 0.5) * 0.24,
-        vy: -(0.14 + Math.random() * 0.28),
-        radius: 1.4 + Math.random() * 1.4,
-        length: 5 + Math.random() * 6,
-        angle: Math.random() * Math.PI,
-        spin: (Math.random() - 0.5) * 0.008,
-        alpha: 0.16 + Math.random() * 0.18,
-        color: palette[Math.floor(Math.random() * palette.length)] || styles.getPropertyValue('--color-accent').trim(),
-        isDash,
-      };
+    function buildOrbitalField() {
+      nodes = [];
+      const cx = width * 0.5;
+      const cy = height * 0.46;
+      const rings = width < 640 ? [150, 210] : [230, 320, 420];
+      const counts = width < 640 ? [18, 24] : [28, 38, 46];
+
+      rings.forEach((rxBase, ringIdx) => {
+        const count = counts[ringIdx];
+        const ryBase = rxBase * 0.52;
+        for (let i = 0; i < count; i += 1) {
+          const theta = (i / count) * Math.PI * 2 + ringIdx * 0.35;
+          const jitter = ((i % 3) - 1) * 10;
+          const homeX = cx + Math.cos(theta) * (rxBase * (width < 640 ? 1 : 1.25) + jitter);
+          const homeY = cy + Math.sin(theta) * (ryBase + jitter * 0.5);
+          nodes.push({
+            homeX,
+            homeY,
+            x: homeX,
+            y: homeY,
+            vx: 0,
+            vy: 0,
+            radius: ringIdx === 0 ? 1.8 : 2.2,
+            phase: theta * 2 + ringIdx,
+            alpha: 0.28 + (ringIdx === 1 ? 0.14 : 0),
+            color: palette[(i + ringIdx * 2) % palette.length] || styles.getPropertyValue('--color-accent').trim(),
+          });
+        }
+      });
     }
 
     function resize() {
+      const rect = canvas!.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas!.width = Math.floor(width * dpr);
-      canvas!.height = Math.floor(height * dpr);
+      width = rect.width;
+      height = rect.height;
+      canvas!.width = Math.max(1, Math.floor(width * dpr));
+      canvas!.height = Math.max(1, Math.floor(height * dpr));
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const targetCount = width < 640 ? 20 : 42;
-      if (particles.length !== targetCount) {
-        particles = Array.from({ length: targetCount }, () => makeParticle(true));
-      }
+      buildOrbitalField();
     }
 
     function drawFrame() {
       ctx!.clearRect(0, 0, width, height);
-      const repelRadius = 130;
+      const rect = canvas!.getBoundingClientRect();
+      const localPx = pointer.x - rect.left;
+      const localPy = pointer.y - rect.top;
+      const radius = 140;
 
-      for (const p of particles) {
+      if (!motionQuery.matches) time += 0.014;
+
+      for (const n of nodes) {
+        const targetX = n.homeX + (motionQuery.matches ? 0 : Math.cos(time + n.phase) * 7);
+        const targetY = n.homeY + (motionQuery.matches ? 0 : Math.sin(time * 0.9 + n.phase) * 5);
+
         if (!motionQuery.matches) {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.angle += p.spin;
-
           if (pointer.active) {
-            const dx = p.x - pointer.x;
-            const dy = p.y - pointer.y;
-            const distSq = dx * dx + dy * dy;
-            if (distSq > 1 && distSq < repelRadius * repelRadius) {
-              const dist = Math.sqrt(distSq);
-              const force = (1 - dist / repelRadius) * 1.8;
-              p.x += (dx / dist) * force;
-              p.y += (dy / dist) * force;
+            const dx = n.x - localPx;
+            const dy = n.y - localPy;
+            const d2 = dx * dx + dy * dy;
+            if (d2 > 1 && d2 < radius * radius) {
+              const d = Math.sqrt(d2);
+              const push = (1 - d / radius) * 3.2;
+              n.vx += (dx / d) * push;
+              n.vy += (dy / d) * push;
             }
           }
-
-          if (p.y < -20) {
-            p.y = height + 16;
-            p.x = Math.random() * width;
-          }
-          if (p.x < -20) p.x = width + 16;
-          if (p.x > width + 20) p.x = -16;
+          n.vx += (targetX - n.x) * 0.045;
+          n.vy += (targetY - n.y) * 0.045;
+          n.vx *= 0.84;
+          n.vy *= 0.84;
+          n.x += n.vx;
+          n.y += n.vy;
         }
 
-        ctx!.save();
-        ctx!.globalAlpha = p.alpha;
-        ctx!.fillStyle = p.color;
-        ctx!.strokeStyle = p.color;
-        if (p.isDash) {
-          ctx!.translate(p.x, p.y);
-          ctx!.rotate(p.angle);
-          ctx!.lineWidth = p.radius * 1.35;
-          ctx!.lineCap = 'round';
-          ctx!.beginPath();
-          ctx!.moveTo(-p.length * 0.5, 0);
-          ctx!.lineTo(p.length * 0.5, 0);
-          ctx!.stroke();
-        } else {
-          ctx!.beginPath();
-          ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx!.fill();
-        }
-        ctx!.restore();
+        ctx!.globalAlpha = n.alpha;
+        ctx!.fillStyle = n.color;
+        ctx!.beginPath();
+        ctx!.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx!.fill();
       }
+      ctx!.globalAlpha = 1;
     }
 
     function tick() {
       drawFrame();
-      if (!motionQuery.matches && !document.hidden) {
+      if (!motionQuery.matches && !document.hidden && inView) {
         rafId = requestAnimationFrame(tick);
       } else {
         rafId = 0;
@@ -140,10 +142,20 @@
         drawFrame();
         return;
       }
-      if (!document.hidden) {
+      if (!document.hidden && inView) {
         rafId = requestAnimationFrame(tick);
       }
     }
+
+    const observer = new IntersectionObserver((entries) => {
+      inView = entries[0]?.isIntersecting ?? true;
+      if (inView) start();
+      else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    });
+    observer.observe(canvas);
 
     window.addEventListener('resize', () => {
       resize();

@@ -16,24 +16,26 @@ const grouped = categories.map((cat) => ({
   title="OpenDrawer — everyday file tools, kept on your device"
   description="Free, open-source file tools built for public goodwill across documents, images, media, text and everyday utilities. Offline after first load, zero accounts, zero tracking, zero uploads."
 >
-  <AmbientBackdrop />
   <div class="stack-lg page-fill">
-    <header class="page-head">
-      <h1>Everyday file tools, kept on your device</h1>
-      <p class="page-head__lead">
-        Private, offline file tools that run inside your browser.
-        <InfoTip
-          label="How OpenDrawer stays private and free"
-          text="Free AGPL-3.0 open-source software. Every tool runs locally in your browser memory and keeps working offline after the first load, with zero accounts, tracking or uploads."
-        />
-      </p>
-      <ul class="trust-line" aria-label="Core guarantees">
-        <li>Zero uploads</li>
-        <li>No account</li>
-        <li>Works offline</li>
-        <li>AGPL-3.0</li>
-      </ul>
-    </header>
+    <div class="hero-stage">
+      <AmbientBackdrop />
+      <header class="page-head">
+        <h1>Everyday file tools, kept on your device</h1>
+        <p class="page-head__lead">
+          Private, offline file tools that run inside your browser.
+          <InfoTip
+            label="How OpenDrawer stays private and free"
+            text="Free AGPL-3.0 open-source software. Every tool runs locally in your browser memory and keeps working offline after the first load, with zero accounts, tracking or uploads."
+          />
+        </p>
+        <ul class="trust-line" aria-label="Core guarantees">
+          <li>Zero uploads</li>
+          <li>No account</li>
+          <li>Works offline</li>
+          <li>AGPL-3.0</li>
+        </ul>
+      </header>
+    </div>
 
     <div class="catalog">
       <section class="catalog__main" id="tools" aria-label="Tool directory">
@@ -91,10 +93,9 @@ const grouped = categories.map((cat) => ({
               .map((cat) => (
                 <section class="cat-section" data-cat-section={cat.id} aria-labelledby={`cat-${cat.slug}`}>
                   <header class="cat-section__head">
-                    <span class="cat-section__title">
-                      <ToolGlyph kind={cat.tone} tone={cat.tone} size="md" />
-                      <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
-                      <span class="cat-section__count">{cat.items.length}</span>
+                    <h2 id={`cat-${cat.slug}`}>{cat.id}</h2>
+                    <span class="cat-section__count">
+                      {cat.items.length} {cat.items.length === 1 ? 'tool' : 'tools'}
                     </span>
                   </header>
 

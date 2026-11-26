@@ -7,8 +7,12 @@
 }
 
 .principles-band {
-  padding-top: var(--space-8);
+  padding-top: var(--space-9);
   border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+.principles-band > .value-cards {
+  margin-top: var(--space-7);
 }
 
 /* Borderless 3-column architectural strip — no heavy card chrome competing with interactive cards. */
