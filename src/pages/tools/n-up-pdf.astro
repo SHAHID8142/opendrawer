@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/n-up-pdf/Tool';
+
+const title = 'N-up PDF: several pages on one A4 sheet';
+const description =
+  'Put 2, 4, 6 or 9 PDF pages on each A4 sheet to save paper. Pages are scaled and centred, and everything runs in your browser.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — N-up PDF',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'What is N-up good for?',
+    answer:
+      'Printing handouts, proofs and reference copies. Four pages per sheet cuts the paper use to a quarter while keeping the text readable at A6 size.',
+  },
+  {
+    question: 'Does it make a booklet?',
+    answer:
+      'No. This is a fixed grid in reading order. A saddle-stitch booklet needs a different page order and is not part of this build.',
+  },
+  {
+    question: 'Why did my links and form fields disappear?',
+    answer:
+      'Every page is embedded into a new sheet, which keeps the visible content but not interactive elements. Keep the original for anything you need to fill or click.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="n-up-pdf"
+      breadcrumbLabel="N-up PDF"
+      heading="N-up PDF"
+      lead="Fit several pages on one A4 sheet for printing. Pages keep their shape and are centred in their cell."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'The output is always A4 portrait; there is no Letter, landscape or custom paper.',
+            'This is not booklet imposition, so pages are not reordered for folding or stapling.',
+            'No crop marks, gutters or border lines are drawn between the cells.',
+            'Links, forms, comments and bookmarks are lost, and rotated pages may appear upright.',
+            'Digital signatures stop being valid; password-protected PDFs are refused.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+      </aside>
+    </div>
+    <RelatedTools currentId="n-up-pdf" />
+  </div>
+</Base>

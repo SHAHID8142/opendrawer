@@ -4,7 +4,7 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf'];
 
 async function createPdf(
   pageCount: number,
@@ -651,6 +651,30 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('lays five pages out on two A4 sheets', async ({ page }) => {
+    await page.goto('/tools/n-up-pdf');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.locator('#nup-input').setInputFiles({
+      name: 'five.pdf',
+      mimeType: 'application/pdf',
+      buffer: await createPdf(5),
+    });
+    await expect(page.getByRole('status')).toContainText('5 pages ready');
+    await page.selectOption('#nup-count', '4');
+    await page.getByRole('button', { name: 'Make the sheets' }).click();
+    await expect(page.getByRole('status')).toContainText('Made 2 sheets from 5 pages', {
+      timeout: 30_000,
+    });
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the PDF' }).click();
+    const saved = await download;
+    expect(saved.suggestedFilename()).toBe('five-4up.pdf');
+    const pdf = await PDFDocument.load(readFileSync((await saved.path())!));
+    expect(pdf.getPageCount()).toBe(2);
+    expect(Math.abs(pdf.getPage(0).getWidth() - 595.28)).toBeLessThan(0.01);
   });
 
   test('extracts a raster image and downloads a real PNG', async ({ page }) => {

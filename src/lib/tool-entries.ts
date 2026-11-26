@@ -257,4 +257,15 @@ export const tools: ToolEntry[] = [
       'Pull the raster pictures out of every page as PNG files, with a size filter and a ZIP download.',
     status: 'live',
   },
+  {
+    id: 'n-up-pdf',
+    name: 'N-up PDF',
+    category: 'Documents',
+    group: 'Organise',
+    accent: 'convert',
+    short: 'Several pages per sheet.',
+    blurb:
+      'Put 2, 4, 6 or 9 pages on each A4 sheet, scaled and centred for printing handouts.',
+    status: 'live',
+  },
 ];
