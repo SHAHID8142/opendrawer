@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,45 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('re-encodes an image and reports the real size change', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/compress-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200;
+      canvas.height = 900;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      const image = context.createImageData(canvas.width, canvas.height);
+      for (let index = 0; index < image.data.length; index += 4) {
+        image.data[index] = Math.random() * 255;
+        image.data[index + 1] = Math.random() * 255;
+        image.data[index + 2] = Math.random() * 255;
+        image.data[index + 3] = 255;
+      }
+      context.putImageData(image, 0, 0);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    const source = Buffer.from(base64, 'base64');
+    await page.locator('#compress-input').setInputFiles({
+      name: 'noise.png',
+      mimeType: 'image/png',
+      buffer: source,
+    });
+    await page.selectOption('#compress-format', 'jpeg');
+    await page.selectOption('#compress-edge', '0');
+    await page.getByRole('button', { name: 'Compress the image' }).click();
+    await expect(page.getByRole('status')).toContainText('→', { timeout: 60_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the image' }).click();
+    const saved = await download;
+    const bytes = readFileSync((await saved.path())!);
+    expect(bytes.subarray(0, 3).toString('hex')).toBe('ffd8ff');
+    expect(bytes.length).toBeLessThan(source.length);
+    expect(saved.suggestedFilename()).toBe('noise-compressed.jpg');
   });
 
   test('reads text from an image with the local OCR engine', async ({ page }) => {

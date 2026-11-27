@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/compress-image/Tool';
+
+const title = 'Compress image: smaller JPEG, WebP or PNG offline';
+const description =
+  'Resize and re-encode a PNG, JPEG, WebP or AVIF image in your browser. See the before and after size, then download. No upload.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Compress image',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is my photo uploaded?',
+    answer:
+      'No. The image is decoded and re-encoded in this tab with the canvas API. There is no server, account or analytics.',
+  },
+  {
+    question: 'Will JPEG or WebP always be smaller?',
+    answer:
+      'No. Compression depends on the picture. A screenshot with flat colour may grow when saved as JPEG, and PNG is lossless so it can be larger than a photo. The result shows the real sizes before you download.',
+  },
+  {
+    question: 'What happens to photo metadata?',
+    answer:
+      'Re-encoding through a canvas drops EXIF and other metadata, including camera details and GPS location. The new file contains only pixels.',
+  },
+  {
+    question: 'Can I keep transparency?',
+    answer:
+      'WebP and PNG keep transparency. JPEG has no alpha channel, so transparent areas become white.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="compress-image"
+      breadcrumbLabel="Compress image"
+      heading="Compress image"
+      lead="Resize and re-encode a photo or screenshot, then see exactly how many bytes you saved before downloading."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not use a smarter encoder than your browser; JPEG and WebP quality are the browser settings.',
+            'PNG is lossless and may be larger than a photo; lower quality does not apply to it.',
+            'Animated images keep only the first frame.',
+            'Transparency becomes white when you choose JPEG.',
+            'It does not strip metadata selectively or edit EXIF; re-encoding removes all of it.',
+            'Images are limited to 25 MB and 40 megapixels.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="compress-image" />
+      </aside>
+    </div>
+  </div>
+</Base>

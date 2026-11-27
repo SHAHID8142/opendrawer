@@ -205,3 +205,12 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* Compressed preview: keep a wide photo inside the card. */
+.compressed-preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}

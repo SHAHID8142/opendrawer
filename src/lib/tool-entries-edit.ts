@@ -231,4 +231,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Turn a screenshot, receipt or photo into editable text with a self-hosted English OCR model.',
     status: 'live',
   },
+  {
+    id: 'compress-image',
+    name: 'Compress image',
+    category: 'Images',
+    group: 'Optimise & secure',
+    accent: 'images',
+    short: 'Smaller JPEG, WebP or PNG.',
+    blurb: 'Resize and re-encode a photo or screenshot locally and see the before and after size.',
+    status: 'live',
+  },
 ];
