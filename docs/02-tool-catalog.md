@@ -4,7 +4,7 @@ Every planned phase-1 tool, with its engine, its real limits, and its licence po
 IDs are permanent: they become URLs and must never be renamed.
 
 **Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`,
-`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`. The rest are planned.
+`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`, `text-transform`. The rest are planned.
 
 Legend for **Reliability**: ●●● exact and predictable · ●● good, with disclosed caveats ·
 ● best-effort, always warn the user.
@@ -90,6 +90,7 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 | ID | Tool | Engine | Reliability | Limits to state in the UI |
 | --- | --- | --- | --- | --- |
 | `writing-check` | Spelling and copy checks | Hunspell dictionaries + local rules | ●● | No language model, no rewrite or tone advice. Rule list is short (repetition, spacing, sentence case, a few confusions, long sentences). Names and jargon are often flagged. Text only; not a PDF reader. |
+| `text-transform` | Case, line and literal find/replace edits | Local pure functions | ●●● | Literal replacement only, no regex. Sentence case lowercases acronyms. One-step undo. Plain text only; no formatting preserved. |
 
 ## G. Cross-cutting UI, not tools
 
@@ -102,5 +103,5 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 
 ## Count
 
-6 create + 12 organise + 8 edit + 7 convert + 17 optimise/secure + 1 writing ≈ **51 tools**, of which
+6 create + 12 organise + 8 edit + 7 convert + 17 optimise/secure + 2 writing ≈ **52 tools**, of which
 about 40 are independent user-facing operations (some share an engine and UI shell).

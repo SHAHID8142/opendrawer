@@ -191,4 +191,14 @@ export const editTools: ToolEntry[] = [
       'Check spelling against a local Hunspell dictionary and catch repetition, spacing and common confusions.',
     status: 'live',
   },
+  {
+    id: 'text-transform',
+    name: 'Text transform',
+    category: 'Text & data',
+    group: 'Edit',
+    accent: 'textdata',
+    short: 'Case, lines and find-and-replace.',
+    blurb: 'Change case, tidy, sort, dedupe and replace text locally, with one-step undo.',
+    status: 'live',
+  },
 ];

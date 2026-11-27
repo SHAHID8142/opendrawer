@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,25 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('sorts, dedupes and replaces text locally', async ({ page }) => {
+    await page.goto('/tools/text-transform');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    await page.fill('#transform-text', 'banana\nApple\napple');
+    await page.getByRole('button', { name: 'Sort A–Z' }).click();
+    await expect(page.locator('#transform-text')).toHaveValue('Apple\napple\nbanana');
+    await page.getByRole('button', { name: 'Remove duplicate lines' }).click();
+    await expect(page.locator('#transform-text')).toHaveValue('Apple\nbanana');
+
+    await page.fill('#transform-find', 'apple');
+    await page.fill('#transform-replace', 'cherry');
+    await page.getByRole('button', { name: 'Replace all' }).click();
+    await expect(page.locator('#transform-text')).toHaveValue('cherry\nbanana');
+    await expect(page.getByRole('status')).toContainText('Replaced 1 occurrence.');
+
+    await page.getByRole('button', { name: 'Undo last change' }).click();
+    await expect(page.locator('#transform-text')).toHaveValue('Apple\nbanana');
   });
 
   test('checks spelling, fixes it and keeps the text local', async ({ page }) => {

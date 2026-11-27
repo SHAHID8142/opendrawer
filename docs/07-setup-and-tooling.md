@@ -57,7 +57,7 @@ and every commit builds and passes the gates on its own.
 
 Current routes: `/`, `/privacy`, `/tools/inspect-pdf`, `/tools/pdf-to-image`,
 `/tools/images-to-pdf`, `/tools/merge-pdf`, `/tools/split-pdf`, `/tools/rotate-pdf`, `/tools/delete-pages`, `/tools/reorder-pages`, `/tools/extract-pages`, `/tools/page-numbers`, `/tools/watermark-pdf`, `/tools/crop-pdf`, `/tools/flatten-pdf`, `/tools/extract-text`, `/tools/add-image`, `/tools/ocr-pdf`, `/tools/resize-pdf`, `/tools/compress-pdf`, `/tools/protect-pdf`, `/tools/unlock-pdf`,
-`/tools/repair-pdf`, `/tools/fill-forms`, `/tools/extract-images`, `/tools/n-up-pdf`, `/tools/edit-metadata`, `/tools/split-by-bookmarks`, `/tools/redact-pdf`, `/tools/booklet-pdf`, `/tools/writing-check`. Twenty-nine tools are live;
+`/tools/repair-pdf`, `/tools/fill-forms`, `/tools/extract-images`, `/tools/n-up-pdf`, `/tools/edit-metadata`, `/tools/split-by-bookmarks`, `/tools/redact-pdf`, `/tools/booklet-pdf`, `/tools/writing-check`, `/tools/text-transform`. Thirty tools are live;
 `docs/10-scope-and-taxonomy.md` defines the categories, and `AGENTS.md` §3 defines the
 `src/tools/<id>/` contract for the next one.
 

@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/text-transform/Tool';
+
+const title = 'Text transform: case, lines and find-and-replace offline';
+const description =
+  'Change case, tidy lines, sort, dedupe, number, reverse and replace text entirely in your browser. No upload, no account, no model.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Text transform',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does my text get uploaded?',
+    answer: 'No. The transformations run in this tab. Nothing is sent anywhere, and no account is needed.',
+  },
+  {
+    question: 'Does find-and-replace support regular expressions?',
+    answer:
+      'No. It replaces literal text, with an optional match-case toggle. That keeps the behaviour predictable for non-technical users.',
+  },
+  {
+    question: 'What does “Title case” do with small words?',
+    answer:
+      'It keeps short joining words such as “of” and “the” lowercase except at the start or end, and leaves all-caps acronyms like NASA alone.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="text-transform"
+      breadcrumbLabel="Text transform"
+      heading="Text transform"
+      lead="Case, lines and literal find-and-replace, applied in this tab. There is no model and no upload."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'Find-and-replace is literal; there are no regular expressions.',
+            'Title case is a style rule, not a grammar engine; unusual capitalisation may need hand edits.',
+            'Sentence case lowercases acronyms too (NASA becomes nasa); restore them by hand if they matter.',
+            'Sorting is case-insensitive line sorting, not a table or CSV parser.',
+            'It works on plain text; formatting in a Word or PDF file is not preserved.',
+            'This is one-step undo only; download a copy before a large change.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="text-transform" />
+      </aside>
+    </div>
+  </div>
+</Base>
