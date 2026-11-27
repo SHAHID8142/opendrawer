@@ -53,3 +53,29 @@ test('separates readable OCR text from punctuation noise', () => {
   assert.equal(isUsableOcrText('Hello there, receipt 42.'), true);
   assert.equal(isUsableOcrText('..,-'), false);
 });
+
+test('grayscale makes channels equal and keeps alpha', async () => {
+  const { processPixels } = await import('../../src/tools/image-to-text/preprocess.ts');
+  const data = new Uint8ClampedArray([100, 150, 200, 255]);
+  processPixels(data, { grayscale: true, contrast: false });
+  assert.equal(data[0], data[1]);
+  assert.equal(data[1], data[2]);
+  assert.equal(data[3], 255);
+});
+
+test('contrast pushes dark pixels darker and light pixels lighter', async () => {
+  const { processPixels } = await import('../../src/tools/image-to-text/preprocess.ts');
+  const dark = new Uint8ClampedArray([100, 100, 100, 255]);
+  const light = new Uint8ClampedArray([200, 200, 200, 255]);
+  processPixels(dark, { grayscale: false, contrast: true });
+  processPixels(light, { grayscale: false, contrast: true });
+  assert.ok((dark[0] ?? 0) < 100);
+  assert.ok((light[0] ?? 0) > 200);
+});
+
+test('no options leaves the pixels untouched', async () => {
+  const { processPixels } = await import('../../src/tools/image-to-text/preprocess.ts');
+  const data = new Uint8ClampedArray([10, 20, 30, 255]);
+  processPixels(data, { grayscale: false, contrast: false });
+  assert.deepEqual([...data], [10, 20, 30, 255]);
+});

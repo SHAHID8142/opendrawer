@@ -709,6 +709,8 @@ test.describe('UI-G8 and the file flow', () => {
       mimeType: 'image/png',
       buffer: Buffer.from(base64, 'base64'),
     });
+    await page.getByLabel('Grayscale').check();
+    await page.getByLabel('Boost contrast').check();
     await page.getByRole('button', { name: 'Read the image' }).click();
     await expect(page.locator('#ocr-text')).toContainText('Hello', { timeout: 90_000 });
     await expect(page.locator('#ocr-text')).toContainText('42');

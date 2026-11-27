@@ -93,7 +93,7 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 | `text-transform` | Case, line and literal find/replace edits | Local pure functions | ●●● | Literal replacement only, no regex. Sentence case lowercases acronyms. One-step undo. Plain text only; no formatting preserved. |
 | `text-statistics` | Word counts and English readability estimates | Local pure functions | ●● | Flesch formulas are English-only. Syllables are heuristic. Abbreviations can split sentences. Describes difficulty, not quality. |
 | `text-diff` | Compare two text drafts line by line | Local LCS diff | ●●● | Line-level only, no word highlights. Each side capped at 1,000 lines. No three-way or folder comparison. |
-| `image-to-text` | Read text from a screenshot or photo | Tesseract.js + Canvas | ●● | English only. Handwriting and stylised fonts often fail. 25 MB / 40 MP limits. Plain text output; no layout, tables or columns. Check names and numbers by hand. |
+| `image-to-text` | Read text from a screenshot or photo | Tesseract.js + Canvas | ●● | English only. Handwriting and stylised fonts often fail. 25 MB / 40 MP limits. Plain text output; no layout, tables or columns. Grayscale/contrast only, no deskew. Check names and numbers by hand. |
 
 ## G. Cross-cutting UI, not tools
 

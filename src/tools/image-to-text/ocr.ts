@@ -3,6 +3,7 @@
 
 import { isUsableOcrText } from '../../lib/ocr-text';
 import { byteLimitMessage, pixelLimitMessage, sniffImage } from './engine';
+import { processPixels, type PreprocessOptions } from './preprocess';
 
 interface OcrWorker {
   recognize: (input: HTMLCanvasElement) => Promise<{ data: { text?: string } }>;
@@ -19,6 +20,7 @@ function throwIfAborted(signal: AbortSignal | undefined): void {
 
 export async function readImage(
   file: File,
+  options: PreprocessOptions,
   onProgress: (percent: number) => void,
   signal?: AbortSignal,
 ): Promise<ImageOcrResult> {
@@ -87,6 +89,11 @@ export async function readImage(
     context.drawImage(bitmap, 0, 0);
     bitmap.close();
     bitmap = null;
+    if (options.grayscale || options.contrast) {
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+      processPixels(pixels.data, options);
+      context.putImageData(pixels, 0, 0);
+    }
     throwIfAborted(signal);
 
     onProgress(0);

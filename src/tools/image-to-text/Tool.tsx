@@ -6,6 +6,7 @@ import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { byteLimitMessage, sniffImage, textFileName } from './engine';
 import { readImage } from './ocr';
+import type { PreprocessOptions } from './preprocess';
 
 type Phase = 'idle' | 'working' | 'done' | 'error';
 
@@ -16,6 +17,7 @@ export default function Tool() {
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
+  const [options, setOptions] = useState<PreprocessOptions>({ grayscale: false, contrast: false });
   const [ready, setReady] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -31,7 +33,7 @@ export default function Tool() {
     const controller = new AbortController();
     abortRef.current = controller;
     try {
-      const result = await readImage(file, setPercent, controller.signal);
+      const result = await readImage(file, options, setPercent, controller.signal);
       if (result.ok) {
         setText(result.text);
         setPhase('done');
@@ -107,6 +109,33 @@ export default function Tool() {
             setPhase('idle');
           }}
         />
+
+        <fieldset className="field">
+          <legend className="field__label">Photo clean-up</legend>
+          <div className="cluster">
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={options.grayscale}
+                disabled={!ready || busy}
+                onChange={(event) => setOptions({ ...options, grayscale: event.target.checked })}
+              />
+              Grayscale
+            </label>
+            <label className="checkbox">
+              <input
+                type="checkbox"
+                checked={options.contrast}
+                disabled={!ready || busy}
+                onChange={(event) => setOptions({ ...options, contrast: event.target.checked })}
+              />
+              Boost contrast
+            </label>
+          </div>
+          <p className="field__hint">
+            Worth trying on dim or coloured photos of printed text. It does not fix blur or handwriting.
+          </p>
+        </fieldset>
 
         <p className="cluster">
           <button
