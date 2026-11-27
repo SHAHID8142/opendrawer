@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,33 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('reads text from an image with the local OCR engine', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/image-to-text');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 220;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = '#000000';
+      context.font = '600 56px Arial, sans-serif';
+      context.fillText('Hello receipt 42', 28, 130);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    await page.locator('#image-input').setInputFiles({
+      name: 'receipt.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(base64, 'base64'),
+    });
+    await page.getByRole('button', { name: 'Read the image' }).click();
+    await expect(page.locator('#ocr-text')).toContainText('Hello', { timeout: 90_000 });
+    await expect(page.locator('#ocr-text')).toContainText('42');
   });
 
   test('compares two drafts and marks added and removed lines', async ({ page }) => {

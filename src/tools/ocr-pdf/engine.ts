@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Text assembly and limits for OCR, kept free of browser APIs so node --test can cover it.
 
+export { isUsableOcrText } from '../../lib/ocr-text.ts';
+
 export const MAX_PAGES = 20;
 export const OCR_DPI = 200;
 
@@ -15,17 +17,6 @@ export function assembleOcrText(pages: readonly OcrPage[]): string {
     .map((page) => `--- Page ${page.pageNumber} ---\n${page.text.trim()}`)
     .join('\n\n');
   return `${body.replace(/\n+$/, '')}\n`;
-}
-
-/** True when OCR produced enough letters to be worth keeping rather than punctuation noise. */
-export function isUsableOcrText(text: string): boolean {
-  const meaningful = text.replace(/\s+/g, '');
-  if (meaningful.length < 3) return false;
-  let letters = 0;
-  for (const char of meaningful) {
-    if (/[\p{L}\p{N}]/u.test(char)) letters += 1;
-  }
-  return letters / meaningful.length >= 0.5;
 }
 
 export function ocrFileName(pdfName: string): string {

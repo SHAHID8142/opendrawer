@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/image-to-text/Tool';
+
+const title = 'Image to text: OCR for screenshots and photos, offline';
+const description =
+  'Read text from a PNG, JPEG, WebP or AVIF image with a self-hosted OCR engine. The image never leaves your browser and no account is needed.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Image to text',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Is my image uploaded?',
+    answer:
+      'No. The image is decoded and read inside this tab. The OCR worker, WebAssembly cores and English language data are served from this site, never from a CDN or an API.',
+  },
+  {
+    question: 'Why is the first run slower?',
+    answer:
+      'The first read loads the OCR engine and the English model, about 18 MB from this site. Later reads in the same tab reuse the cached files.',
+  },
+  {
+    question: 'Can it read handwriting?',
+    answer:
+      'Only sometimes. The model is trained for printed text; cursive and messy handwriting often produce nothing useful. Do not rely on it for legal, medical or financial documents.',
+  },
+  {
+    question: 'What makes a good image?',
+    answer:
+      'Sharp focus, even lighting, high contrast and text that fills most of the frame. Crop away background before reading, and fix any names or numbers by hand afterwards.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="image-to-text"
+      breadcrumbLabel="Image to text"
+      heading="Image to text"
+      lead="Turn a screenshot, receipt or photographed page into editable text. Recognition runs in this tab with an English OCR model served from this site."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It reads English only, because that is the language model bundled today.',
+            'Handwriting, stylised fonts and low-resolution photos often fail or produce wrong words.',
+            'OCR never guarantees accuracy: check names, amounts, dates and punctuation by hand.',
+            'Images are limited to 25 MB and 40 megapixels.',
+            'It does not read PDFs; use OCR PDF for scanned documents.',
+            'It does not preserve layout, tables or columns; the output is plain text.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="image-to-text" />
+      </aside>
+    </div>
+  </div>
+</Base>

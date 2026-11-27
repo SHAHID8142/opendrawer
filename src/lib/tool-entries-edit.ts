@@ -221,4 +221,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'See added and removed lines between two text versions and download a .diff file, locally.',
     status: 'live',
   },
+  {
+    id: 'image-to-text',
+    name: 'Image to text',
+    category: 'Text & data',
+    group: 'Convert',
+    accent: 'textdata',
+    short: 'Read text from an image.',
+    blurb: 'Turn a screenshot, receipt or photo into editable text with a self-hosted English OCR model.',
+    status: 'live',
+  },
 ];

@@ -4,7 +4,7 @@ Every planned phase-1 tool, with its engine, its real limits, and its licence po
 IDs are permanent: they become URLs and must never be renamed.
 
 **Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`,
-`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`, `text-transform`, `text-statistics`, `text-diff`. The rest are planned.
+`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`, `text-transform`, `text-statistics`, `text-diff`, `image-to-text`. The rest are planned.
 
 Legend for **Reliability**: ●●● exact and predictable · ●● good, with disclosed caveats ·
 ● best-effort, always warn the user.
@@ -93,6 +93,7 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 | `text-transform` | Case, line and literal find/replace edits | Local pure functions | ●●● | Literal replacement only, no regex. Sentence case lowercases acronyms. One-step undo. Plain text only; no formatting preserved. |
 | `text-statistics` | Word counts and English readability estimates | Local pure functions | ●● | Flesch formulas are English-only. Syllables are heuristic. Abbreviations can split sentences. Describes difficulty, not quality. |
 | `text-diff` | Compare two text drafts line by line | Local LCS diff | ●●● | Line-level only, no word highlights. Each side capped at 1,000 lines. No three-way or folder comparison. |
+| `image-to-text` | Read text from a screenshot or photo | Tesseract.js + Canvas | ●● | English only. Handwriting and stylised fonts often fail. 25 MB / 40 MP limits. Plain text output; no layout, tables or columns. Check names and numbers by hand. |
 
 ## G. Cross-cutting UI, not tools
 
@@ -105,5 +106,5 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 
 ## Count
 
-6 create + 12 organise + 8 edit + 7 convert + 17 optimise/secure + 4 writing ≈ **54 tools**, of which
+6 create + 12 organise + 8 edit + 7 convert + 17 optimise/secure + 5 writing ≈ **55 tools**, of which
 about 40 are independent user-facing operations (some share an engine and UI shell).

@@ -83,7 +83,7 @@ Nothing heavy loads on the home page.
 | PDF.js + worker | ~1 MB | first render/extract tool |
 | qpdf WASM | ~1.3 MB (12.2.0) | protect/unlock/repair/optimise, in a module worker |
 | Ghostscript WASM | ~18 MB | strong compression only, with a progress explanation |
-| Tesseract core + language | ~3 MB + 10–15 MB per language | OCR only, language chosen by the user |
+| Tesseract core + language | ~3 MB + ~15 MB per language | OCR only, language chosen by the user |
 
 Techniques: route-level `import()`, `<link rel="preload">` only for the shell, `Cache-Control:
 immutable` on hashed assets, WASM served from the same origin (never a CDN), and a visible
