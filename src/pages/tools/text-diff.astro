@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/text-diff/Tool';
+
+const title = 'Text diff: compare two drafts offline';
+const description =
+  'Compare two text versions line by line, with added and removed lines, line numbers and a .diff download. Runs entirely in your browser.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Text diff',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Does this highlight changes inside a line?',
+    answer:
+      'No. It compares line by line, so an edited line appears once as removed and once as added. That keeps the result predictable and easy to copy into another tool.',
+  },
+  {
+    question: 'Is anything uploaded?',
+    answer: 'No. Both drafts and the comparison stay in this tab. There is no account and no network request.',
+  },
+  {
+    question: 'Why is there a line limit?',
+    answer:
+      'The comparison uses a table whose size grows with both drafts. The 1,000-line cap keeps it fast on a phone; split larger files and compare the parts.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="text-diff"
+      breadcrumbLabel="Text diff"
+      heading="Text diff"
+      lead="Two drafts, one line-by-line comparison. Added and removed lines are marked, numbered and downloadable as a .diff file."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It compares lines, not characters or words inside a line.',
+            'Each side is capped at 1,000 lines to keep the comparison fast.',
+            'There are no three-way or folder comparisons.',
+            'It only reads .txt and .md files; formatting in Word or PDF files is not preserved.',
+            'It does not merge drafts; copy the lines you want into one version yourself.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="text-diff" />
+      </aside>
+    </div>
+  </div>
+</Base>

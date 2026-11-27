@@ -211,4 +211,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Count words, sentences and syllables, estimate reading time and compute Flesch readability locally.',
     status: 'live',
   },
+  {
+    id: 'text-diff',
+    name: 'Text diff',
+    category: 'Text & data',
+    group: 'Inspect',
+    accent: 'textdata',
+    short: 'Compare two drafts line by line.',
+    blurb: 'See added and removed lines between two text versions and download a .diff file, locally.',
+    status: 'live',
+  },
 ];
