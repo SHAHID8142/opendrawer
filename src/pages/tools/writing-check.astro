@@ -32,6 +32,11 @@ const faq = [
       'No. It does not generate or rewrite prose. It points at specific spans and offers concrete replacements, and you decide which ones to apply.',
   },
   {
+    question: 'Can I stop it flagging a name or a brand?',
+    answer:
+      'Yes. Add it under “Allowed words”. The list lives in this tab only: it is not saved to storage, not sent anywhere and disappears when you reload.',
+  },
+  {
     question: 'Where does the dictionary come from?',
     answer:
       'It is served as static files from this site and loaded when you check a language. SCOWL/Ispell dictionaries cover US, UK, Canadian and Australian English; the Bengali pack is also included. The licence text ships beside each dictionary.',
@@ -58,6 +63,7 @@ const faq = [
             'Spelling depends on the chosen dictionary; names, jargon and brands are often flagged.',
             'It does not detect plagiarism or check facts.',
             'It only sees text you paste or open from a .txt/.md file; PDFs need another tool first.',
+            'Allowed words last for this tab only; reloading clears them.',
           ]}
         />
         <ToolFaq items={faq} />

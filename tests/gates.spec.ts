@@ -718,6 +718,14 @@ test.describe('UI-G8 and the file flow', () => {
     await expect(page.locator('#writing-text')).toHaveValue('I receive the the report.');
     await page.getByRole('button', { name: 'Fix all mechanical' }).click();
     await expect(page.locator('#writing-text')).toHaveValue('I receive the report.');
+
+    await page.fill('#writing-text', 'I recieve the report.');
+    await page.fill('#allow-word', 'recieve');
+    await page.getByRole('button', { name: 'Allow word' }).click();
+    await page.getByRole('button', { name: 'Check the text' }).click();
+    await expect(page.getByRole('status')).toContainText('Found 0 issues');
+    await page.getByRole('button', { name: 'Stop ignoring recieve' }).click();
+    await expect(page.getByRole('status')).toContainText('Found 1 issue');
   });
 
   test('imposes eight pages as four booklet spreads', async ({ page }) => {

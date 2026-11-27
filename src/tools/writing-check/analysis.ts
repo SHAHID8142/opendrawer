@@ -61,6 +61,7 @@ export async function analyzeWriting(
   text: string,
   packId: string,
   fetcher: TextFetcher,
+  allowed: Iterable<string> = [],
 ): Promise<AnalysisResult> {
   const pack = packById(packId);
   if (!pack) return { ok: false, message: 'Choose a language first.' };
@@ -73,7 +74,11 @@ export async function analyzeWriting(
       message: `The ${pack.label} dictionary could not be loaded. Check your connection and try again.`,
     };
   }
-  const issues = [...spellingIssues(text, engine), ...mechanicalIssues(text)]
+  const allow = new Set([...allowed].map((word) => word.toLocaleLowerCase()));
+  const issues = [
+    ...spellingIssues(text, engine).filter((issue) => !allow.has(issue.text.toLocaleLowerCase())),
+    ...mechanicalIssues(text),
+  ]
     .sort((a, b) => a.from - b.from)
     .slice(0, 300);
   return { ok: true, analysis: { issues, stats: writingStats(text), wordCount: engine.wordCount } };

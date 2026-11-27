@@ -5,6 +5,7 @@ import { bytesToBlob } from '../../lib/blob';
 import { downloadBlob } from '../../lib/download';
 import { LANGUAGE_PACKS } from '../../lib/spellcheck/packs/registry';
 import { analyzeWriting, type Analysis, type TextFetcher } from './analysis';
+import { AllowList } from './AllowList';
 import { IssuesList } from './IssuesList';
 import { applyClearFixes, writingStats, type RuleIssue } from './rules';
 
@@ -23,6 +24,8 @@ export default function Tool() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState('');
+  const [allowed, setAllowed] = useState<string[]>([]);
+  const [allowDraft, setAllowDraft] = useState('');
   const [ready, setReady] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
@@ -30,12 +33,12 @@ export default function Tool() {
   const busy = phase === 'working';
   const score = analysis ? Math.max(0, 100 - analysis.issues.filter((i) => i.severity !== 'info').length * 4) : null;
 
-  async function check(value = text) {
+  async function check(value = text, allow = allowed) {
     setPhase('working');
     setError(null);
     setNotice('');
     try {
-      const result = await analyzeWriting(value, language, fetcher);
+      const result = await analyzeWriting(value, language, fetcher, allow);
       if (!result.ok) {
         setError(result.message);
         setPhase('error');
@@ -47,6 +50,27 @@ export default function Tool() {
       setError('The text could not be checked.');
       setPhase('error');
     }
+  }
+
+  function addAllowed() {
+    const words = allowDraft
+      .split(/[,\n]/)
+      .map((word) => word.trim())
+      .filter(Boolean);
+    setAllowDraft('');
+    if (words.length === 0) return;
+    const next = [...allowed];
+    for (const word of words) {
+      if (!next.some((entry) => entry.toLocaleLowerCase() === word.toLocaleLowerCase())) next.push(word);
+    }
+    setAllowed(next);
+    if (analysis) void check(text, next);
+  }
+
+  function removeAllowed(word: string) {
+    const next = allowed.filter((entry) => entry !== word);
+    setAllowed(next);
+    if (analysis) void check(text, next);
   }
 
   async function apply(issue: RuleIssue, replacement: string) {
@@ -171,6 +195,15 @@ export default function Tool() {
             />
           </div>
         </div>
+
+        <AllowList
+          allowed={allowed}
+          draft={allowDraft}
+          disabled={!ready || busy}
+          onDraft={setAllowDraft}
+          onAdd={addAllowed}
+          onRemove={removeAllowed}
+        />
 
         <p>
           <button type="button" className="btn btn--primary" disabled={!ready || busy || text.trim() === ''} onClick={() => void check()}>

@@ -89,7 +89,7 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 
 | ID | Tool | Engine | Reliability | Limits to state in the UI |
 | --- | --- | --- | --- | --- |
-| `writing-check` | Spelling and copy checks | Hunspell dictionaries + local rules | ●● | No language model, no rewrite or tone advice. Rule list is short (repetition, spacing, sentence case, a few confusions, long sentences). Names and jargon are often flagged. Text only; not a PDF reader. |
+| `writing-check` | Spelling and copy checks | Hunspell dictionaries + local rules | ●● | No language model, no rewrite or tone advice. Rule list is short (repetition, spacing, sentence case, a few confusions, long sentences). Names and jargon are often flagged; a session-only allow list handles them. Text only; not a PDF reader. |
 | `text-transform` | Case, line and literal find/replace edits | Local pure functions | ●●● | Literal replacement only, no regex. Sentence case lowercases acronyms. One-step undo. Plain text only; no formatting preserved. |
 
 ## G. Cross-cutting UI, not tools

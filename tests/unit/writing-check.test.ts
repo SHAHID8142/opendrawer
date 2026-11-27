@@ -28,6 +28,13 @@ test('accepts correctly spelled text with mechanical issues only', async () => {
   assert.ok(result.analysis.issues.some((issue) => issue.ruleId === 'repeated-word'));
 });
 
+test('leaves allowed words out of the spelling report, ignoring case', async () => {
+  const result = await analyzeWriting('I recieve the report.', 'en-US', fetcher, ['RECIEVE']);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.ok(!result.analysis.issues.some((issue) => issue.text === 'recieve'));
+});
+
 test('refuses an unknown language', async () => {
   const result = await analyzeWriting('Hello', 'xx-YY', fetcher);
   assert.equal(result.ok, false);

@@ -140,3 +140,44 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+/* Session-only allowed words in writing-check. */
+.allow-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.allow-row .input {
+  flex: 1 1 12rem;
+}
+
+.allow-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.allow-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 0.15rem 0.6rem;
+  background: var(--color-surface-subtle);
+}
+
+.allow-chip__remove {
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
