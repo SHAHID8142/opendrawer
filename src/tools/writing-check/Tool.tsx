@@ -6,7 +6,7 @@ import { downloadBlob } from '../../lib/download';
 import { LANGUAGE_PACKS } from '../../lib/spellcheck/packs/registry';
 import { analyzeWriting, type Analysis, type TextFetcher } from './analysis';
 import { IssuesList } from './IssuesList';
-import { writingStats, type RuleIssue } from './rules';
+import { applyClearFixes, writingStats, type RuleIssue } from './rules';
 
 type Phase = 'idle' | 'working' | 'done' | 'error';
 
@@ -65,8 +65,19 @@ export default function Tool() {
       next = next.slice(0, issue.from) + replacement + next.slice(issue.to);
     }
     setText(next);
-    setNotice(`Applied ${spelling.length} spelling fix${spelling.length === 1 ? '' : 'es'}.`);
     await check(next);
+    setNotice(`Applied ${spelling.length} spelling fix${spelling.length === 1 ? '' : 'es'}.`);
+  }
+
+  async function fixMechanical() {
+    if (!analysis) return;
+    const candidates = analysis.issues.filter(
+      (issue) => issue.category === 'mechanical' || issue.category === 'confusable',
+    );
+    const { text: next, applied } = applyClearFixes(text, candidates);
+    setText(next);
+    await check(next);
+    setNotice(`Applied ${applied} mechanical fix${applied === 1 ? '' : 'es'}.`);
   }
 
   async function loadFile(file: File) {
@@ -170,6 +181,16 @@ export default function Tool() {
               Fix all spelling
             </button>
           )}
+          {analysis &&
+            analysis.issues.some(
+              (issue) =>
+                (issue.category === 'mechanical' || issue.category === 'confusable') &&
+                issue.replacements.length > 0,
+            ) && (
+              <button type="button" className="btn btn--secondary" disabled={busy} onClick={() => void fixMechanical()}>
+                Fix all mechanical
+              </button>
+            )}
         </p>
       </div>
 

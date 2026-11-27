@@ -159,6 +159,23 @@ export function mechanicalIssues(text: string): RuleIssue[] {
   return issues.sort((a, b) => a.from - b.from);
 }
 
+/** Applies the first replacement for each clear issue, skipping overlaps, from the end. */
+export function applyClearFixes(text: string, issues: RuleIssue[]): { text: string; applied: number } {
+  let next = text;
+  let applied = 0;
+  let lastStart = Number.POSITIVE_INFINITY;
+  const usable = issues
+    .filter((issue) => issue.replacements[0] !== undefined && issue.to > issue.from)
+    .sort((a, b) => b.from - a.from);
+  for (const issue of usable) {
+    if (issue.to > lastStart) continue;
+    next = next.slice(0, issue.from) + (issue.replacements[0] ?? '') + next.slice(issue.to);
+    lastStart = issue.from;
+    applied += 1;
+  }
+  return { text: next, applied };
+}
+
 export function writingStats(text: string): WritingStats {
   const words = tokenizeWords(text).length;
   const sentences = (text.match(/[.!?]+(\s|$)/g) ?? []).length || (text.trim() === '' ? 0 : 1);

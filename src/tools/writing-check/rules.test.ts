@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { mechanicalIssues, writingStats } from './rules.ts';
+import { applyClearFixes, mechanicalIssues, writingStats } from './rules.ts';
 
 function ids(text: string) {
   return mechanicalIssues(text).map((issue) => issue.ruleId);
@@ -49,4 +49,12 @@ test('counts words, sentences and reading time', () => {
   assert.equal(stats.sentences, 2);
   assert.equal(stats.characters, 25);
   assert.equal(stats.readingMinutes, 1);
+});
+
+test('applies non-overlapping clear fixes from the end', () => {
+  const text = 'I recieve the the report  with care.';
+  const issues = mechanicalIssues(text);
+  const { text: fixed, applied } = applyClearFixes(text, issues);
+  assert.equal(fixed, 'I recieve the report with care.');
+  assert.equal(applied, 2);
 });

@@ -697,7 +697,7 @@ test.describe('UI-G8 and the file flow', () => {
 
     await page.getByRole('button', { name: 'Fix all spelling' }).click();
     await expect(page.locator('#writing-text')).toHaveValue('I receive the the report.');
-    await page.getByRole('button', { name: /Use “the”/ }).click();
+    await page.getByRole('button', { name: 'Fix all mechanical' }).click();
     await expect(page.locator('#writing-text')).toHaveValue('I receive the report.');
   });
 
