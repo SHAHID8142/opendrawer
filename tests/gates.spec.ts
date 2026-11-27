@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,43 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('crops an image to exact pixels and downloads a valid PNG', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/crop-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1000;
+      canvas.height = 700;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.fillStyle = '#c93914';
+      context.fillRect(0, 0, 500, 350);
+      context.fillStyle = '#16653c';
+      context.fillRect(500, 350, 500, 350);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    await page.locator('#crop-input').setInputFiles({
+      name: 'quadrants.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(base64, 'base64'),
+    });
+    await page.fill('#crop-x', '100');
+    await page.fill('#crop-y', '100');
+    await page.fill('#crop-width', '400');
+    await page.fill('#crop-height', '300');
+    await page.getByRole('button', { name: 'Crop the image' }).click();
+    await expect(page.getByRole('status')).toContainText('Cropped to 400 × 300.', { timeout: 30_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the cropped image' }).click();
+    const saved = await download;
+    const bytes = readFileSync((await saved.path())!);
+    expect(bytes.subarray(1, 4).toString()).toBe('PNG');
+    expect(bytes.readUInt32BE(16)).toBe(400);
+    expect(bytes.readUInt32BE(20)).toBe(300);
+    expect(saved.suggestedFilename()).toBe('quadrants-cropped.png');
   });
 
   test('re-encodes an image and reports the real size change', async ({ page }) => {

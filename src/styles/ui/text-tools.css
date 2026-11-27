@@ -214,3 +214,46 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
 }
+
+/* Crop image: stage, box and resize handle. */
+.crop-stage {
+  position: relative;
+  width: 100%;
+  max-width: 52rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  touch-action: none;
+  user-select: none;
+}
+
+.crop-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.crop-box {
+  position: absolute;
+  border: 2px solid var(--color-on-accent);
+  box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-text) 45%, transparent);
+  cursor: move;
+}
+
+.crop-handle {
+  position: absolute;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: 2px solid var(--color-on-accent);
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: nwse-resize;
+}
+
+.crop-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-3);
+}

@@ -241,4 +241,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Resize and re-encode a photo or screenshot locally and see the before and after size.',
     status: 'live',
   },
+  {
+    id: 'crop-image',
+    name: 'Crop image',
+    category: 'Images',
+    group: 'Edit',
+    accent: 'images',
+    short: 'Crop with exact pixel values.',
+    blurb: 'Drag a crop box or type exact pixels, preview the result and download locally.',
+    status: 'live',
+  },
 ];

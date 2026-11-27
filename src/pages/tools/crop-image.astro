@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/crop-image/Tool';
+
+const title = 'Crop image: exact pixels, offline';
+const description =
+  'Crop a PNG, JPEG, WebP or AVIF image by dragging a box or typing exact pixel values. Preview and download without uploading anything.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Crop image',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Can I crop to exact pixels?',
+    answer:
+      'Yes. Drag the box for a rough selection, then type the left, top, width and height values. The output uses those exact pixels, and the result shows the final dimensions before you download.',
+  },
+  {
+    question: 'Does cropping upload my photo?',
+    answer: 'No. The image is decoded and cropped in this tab. There is no server and no account.',
+  },
+  {
+    question: 'What happens to transparency and metadata?',
+    answer:
+      'PNG and WebP keep transparency; JPEG has none, so transparent areas become white. Re-encoding also removes EXIF metadata such as camera details and GPS location.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="crop-image"
+      breadcrumbLabel="Crop image"
+      heading="Crop image"
+      lead="Drag a box or type the exact pixel values, check the result, then download. The image never leaves this tab."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not rotate, straighten, filter or retouch the image.',
+            'The box is constrained to the image; it cannot extend beyond the frame.',
+            'Only one rectangle can be cropped at a time.',
+            'Animated images keep only the first frame.',
+            'JPEG has no transparency; transparent areas become white.',
+            'It does not edit EXIF selectively; re-encoding removes metadata.',
+            'Images are limited to 25 MB and 40 megapixels.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="crop-image" />
+      </aside>
+    </div>
+  </div>
+</Base>
