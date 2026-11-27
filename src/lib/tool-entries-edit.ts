@@ -201,4 +201,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Change case, tidy, sort, dedupe and replace text locally, with one-step undo.',
     status: 'live',
   },
+  {
+    id: 'text-statistics',
+    name: 'Text statistics',
+    category: 'Text & data',
+    group: 'Inspect',
+    accent: 'textdata',
+    short: 'Word counts and readability scores.',
+    blurb: 'Count words, sentences and syllables, estimate reading time and compute Flesch readability locally.',
+    status: 'live',
+  },
 ];

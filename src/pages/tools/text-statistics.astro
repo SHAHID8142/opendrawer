@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/text-statistics/Tool';
+
+const title = 'Text statistics: word count and readability offline';
+const description =
+  'Count words, sentences and paragraphs, estimate syllables and reading time, and get Flesch reading scores. All in your browser, with no upload.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Text statistics',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'How is the readability score calculated?',
+    answer:
+      'With the Flesch Reading Ease and Flesch–Kincaid formulas: average sentence length plus an estimated syllable count per word. The syllable count is a spelling heuristic, not a pronunciation dictionary, so treat the score as an estimate.',
+  },
+  {
+    question: 'Does this use AI?',
+    answer: 'No. It is arithmetic over the text you type. Nothing is uploaded and no model or API is involved.',
+  },
+  {
+    question: 'Why is the grade not a judgement of my writing?',
+    answer:
+      'It measures how hard the text is to read, not whether it is good. A high score can still be a bad argument, and a low score can suit a technical audience.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="text-statistics"
+      breadcrumbLabel="Text statistics"
+      heading="Text statistics"
+      lead="Word counts, reading time and Flesch readability estimates, calculated in this tab as you type."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'The readability formulas are calibrated for English; other languages get a misleading score.',
+            'Syllable counts are a heuristic. Words such as “simple” can be one syllable off.',
+            'Abbreviations with full stops (“Dr.”, “e.g.”) can be counted as sentence ends.',
+            'Emoji, hashtags and symbols are not counted as words.',
+            'A score describes reading difficulty, not writing quality or accuracy.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="text-statistics" />
+      </aside>
+    </div>
+  </div>
+</Base>
