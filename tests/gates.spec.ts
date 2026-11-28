@@ -710,6 +710,9 @@ test.describe('UI-G8 and the file flow', () => {
       mimeType: 'image/png',
       buffer: Buffer.from(base64, 'base64'),
     });
+    await page.fill('#favicon-name', 'My Site');
+    await page.fill('#favicon-short', 'MS');
+    await page.fill('#favicon-theme', 'navy');
     await page.getByRole('button', { name: 'Generate favicons' }).click();
     await expect(page.getByRole('status')).toContainText('Built 8 files.', { timeout: 60_000 });
     await expect(page.getByText('/site.webmanifest', { exact: false })).toBeVisible();
@@ -719,7 +722,7 @@ test.describe('UI-G8 and the file flow', () => {
     const saved = await download;
     const zip = readFileSync((await saved.path())!);
     expect(zip.subarray(0, 2).toString()).toBe('PK');
-    for (const name of ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-512x512.png', 'site.webmanifest', 'html-snippet.txt']) {
+    for (const name of ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-512x512.png', 'site.webmanifest', 'html-snippet.txt', 'My Site', 'navy']) {
       expect(zip.includes(Buffer.from(name))).toBe(true);
     }
     expect(saved.suggestedFilename()).toBe('favicon-package.zip');

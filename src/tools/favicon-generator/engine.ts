@@ -25,17 +25,35 @@ export function htmlSnippet(): string {
   ].join('\n');
 }
 
-export function manifestJson(): string {
+export interface ManifestOptions {
+  name: string;
+  shortName: string;
+  themeColor: string;
+  backgroundColor: string;
+}
+
+export const DEFAULT_MANIFEST: ManifestOptions = {
+  name: 'Site',
+  shortName: 'Site',
+  themeColor: 'black',
+  backgroundColor: 'white',
+};
+
+function clean(value: string, fallback: string): string {
+  return value.trim() === '' ? fallback : value.trim();
+}
+
+export function manifestJson(options: ManifestOptions = DEFAULT_MANIFEST): string {
   return JSON.stringify(
     {
-      name: 'Site',
-      short_name: 'Site',
+      name: clean(options.name, DEFAULT_MANIFEST.name),
+      short_name: clean(options.shortName, clean(options.name, DEFAULT_MANIFEST.shortName)),
       icons: [
         { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
       ],
-      theme_color: 'white',
-      background_color: 'white',
+      theme_color: clean(options.themeColor, DEFAULT_MANIFEST.themeColor),
+      background_color: clean(options.backgroundColor, DEFAULT_MANIFEST.backgroundColor),
       display: 'standalone',
     },
     null,

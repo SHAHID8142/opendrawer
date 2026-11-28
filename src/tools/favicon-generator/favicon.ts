@@ -5,7 +5,7 @@ import { decodeImageFile } from '../../lib/decode-image';
 import { ICO_SIZES, wrapIcoMulti } from '../../lib/ico';
 import { byteLimitMessage, pixelLimitMessage } from '../../lib/image-format';
 import { zipStore, type ZipEntry } from '../../lib/zip';
-import { FAVICON_PNGS, htmlSnippet, manifestJson } from './engine';
+import { FAVICON_PNGS, htmlSnippet, manifestJson, type ManifestOptions } from './engine';
 
 export interface FaviconPackage {
   zip: Blob;
@@ -29,7 +29,7 @@ function fit(size: number, width: number, height: number): { width: number; heig
   };
 }
 
-export async function buildFavicons(file: File): Promise<FaviconResult> {
+export async function buildFavicons(file: File, options: ManifestOptions): Promise<FaviconResult> {
   const tooBig = byteLimitMessage(file.size);
   if (tooBig !== null) return { ok: false, message: tooBig };
 
@@ -76,7 +76,7 @@ export async function buildFavicons(file: File): Promise<FaviconResult> {
     const icoBytes = wrapIcoMulti(layers);
     entries.push({ name: 'favicon.ico', bytes: icoBytes });
 
-    const manifest = new TextEncoder().encode(manifestJson());
+    const manifest = new TextEncoder().encode(manifestJson(options));
     const snippet = htmlSnippet();
     entries.push({ name: 'site.webmanifest', bytes: manifest });
     entries.push({ name: 'html-snippet.txt', bytes: new TextEncoder().encode(`${snippet}\n`) });

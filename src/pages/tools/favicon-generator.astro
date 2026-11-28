@@ -27,6 +27,11 @@ const faq = [
       'favicon.ico with 16, 32, 48 and 256 pixel layers; favicon-16x16.png; favicon-32x32.png; apple-touch-icon.png (180); android-chrome-192x192.png; android-chrome-512x512.png; site.webmanifest; and html-snippet.txt with the link tags.',
   },
   {
+    question: 'Can I set the app name and colours?',
+    answer:
+      'Yes. The App name, Short name, Theme colour and Background colour fields are written into site.webmanifest. Any CSS colour works, such as “white”, “navy” or a hex value.',
+  },
+  {
     question: 'Does it crop my logo?',
     answer:
       'No. The image is scaled to fit inside each square and centred, with transparent padding. If you want an edge-to-edge icon, crop the source to a square first.',
@@ -54,7 +59,7 @@ const faq = [
           items={[
             'It does not crop, round corners, remove a background or add padding beyond fitting the square.',
             'It does not choose colours or generate artwork; the source image is used as-is.',
-            'The manifest uses placeholder names and white colours; edit them for your site.',
+            'The manifest only lists the two Android icons it generates; add more sizes by hand if you need them.',
             'It only reads formats your browser can decode; HEIC and TIFF often fail.',
             'Images are limited to 25 MB and 40 megapixels.',
           ]}

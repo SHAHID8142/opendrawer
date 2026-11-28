@@ -5,6 +5,7 @@ import { FileDrop } from '../../components/FileDrop';
 import { downloadBlob } from '../../lib/download';
 import { byteLimitMessage } from '../../lib/image-format';
 import { decodeImageFile } from '../../lib/decode-image';
+import { DEFAULT_MANIFEST, type ManifestOptions } from './engine';
 import { buildFavicons, type FaviconPackage } from './favicon';
 
 type Phase = 'idle' | 'working' | 'done' | 'error';
@@ -15,6 +16,7 @@ export default function Tool() {
   const [pack, setPack] = useState<FaviconPackage | null>(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [manifest, setManifest] = useState<ManifestOptions>(DEFAULT_MANIFEST);
   const [notice, setNotice] = useState('');
   const [ready, setReady] = useState(false);
   const previewRef = useRef('');
@@ -44,7 +46,7 @@ export default function Tool() {
     if (!file) return;
     clearResult();
     setPhase('working');
-    const result = await buildFavicons(file);
+    const result = await buildFavicons(file, manifest);
     if (!result.ok) {
       setError(result.message);
       setPhase('error');
@@ -108,6 +110,73 @@ export default function Tool() {
             clearResult();
           }}
         />
+
+        <div className="form__row">
+          <div className="field">
+            <label className="field__label" htmlFor="favicon-name">
+              App name
+            </label>
+            <input
+              id="favicon-name"
+              className="input"
+              value={manifest.name}
+              disabled={busy}
+              onChange={(event) => {
+                setManifest({ ...manifest, name: event.target.value });
+                clearResult();
+              }}
+            />
+          </div>
+          <div className="field">
+            <label className="field__label" htmlFor="favicon-short">
+              Short name
+            </label>
+            <input
+              id="favicon-short"
+              className="input"
+              value={manifest.shortName}
+              disabled={busy}
+              onChange={(event) => {
+                setManifest({ ...manifest, shortName: event.target.value });
+                clearResult();
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="form__row">
+          <div className="field">
+            <label className="field__label" htmlFor="favicon-theme">
+              Theme colour
+            </label>
+            <input
+              id="favicon-theme"
+              className="input"
+              value={manifest.themeColor}
+              disabled={busy}
+              onChange={(event) => {
+                setManifest({ ...manifest, themeColor: event.target.value });
+                clearResult();
+              }}
+            />
+          </div>
+          <div className="field">
+            <label className="field__label" htmlFor="favicon-background">
+              Background colour
+            </label>
+            <input
+              id="favicon-background"
+              className="input"
+              value={manifest.backgroundColor}
+              disabled={busy}
+              onChange={(event) => {
+                setManifest({ ...manifest, backgroundColor: event.target.value });
+                clearResult();
+              }}
+            />
+          </div>
+        </div>
+        <p className="field__hint">Used in site.webmanifest. Any CSS colour works, for example “white” or “navy”.</p>
 
         <p>
           <button type="button" className="btn btn--primary" disabled={!ready || busy || file === null} onClick={() => void generate()}>
