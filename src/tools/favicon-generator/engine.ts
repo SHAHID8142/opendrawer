@@ -15,6 +15,15 @@ export const FAVICON_PNGS: PngAsset[] = [
   { size: 512, name: 'android-chrome-512x512.png' },
 ];
 
+/** Artwork is kept inside this fraction of a maskable icon so Android can crop safely. */
+export const MASKABLE_SAFE_ZONE = 0.8;
+
+/** Maskable Android icons are full-bleed and padded to the safe zone. */
+export const MASKABLE_ASSETS: PngAsset[] = [
+  { size: 192, name: 'android-chrome-maskable-192x192.png' },
+  { size: 512, name: 'android-chrome-maskable-512x512.png' },
+];
+
 export function htmlSnippet(): string {
   return [
     '<link rel="icon" href="/favicon.ico" sizes="any">',
@@ -30,6 +39,7 @@ export interface ManifestOptions {
   shortName: string;
   themeColor: string;
   backgroundColor: string;
+  maskable: boolean;
 }
 
 export const DEFAULT_MANIFEST: ManifestOptions = {
@@ -37,6 +47,7 @@ export const DEFAULT_MANIFEST: ManifestOptions = {
   shortName: 'Site',
   themeColor: 'black',
   backgroundColor: 'white',
+  maskable: true,
 };
 
 function clean(value: string, fallback: string): string {
@@ -51,6 +62,22 @@ export function manifestJson(options: ManifestOptions = DEFAULT_MANIFEST): strin
       icons: [
         { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        ...(options.maskable
+          ? [
+              {
+                src: '/android-chrome-maskable-192x192.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'maskable',
+              },
+              {
+                src: '/android-chrome-maskable-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
+              },
+            ]
+          : []),
       ],
       theme_color: clean(options.themeColor, DEFAULT_MANIFEST.themeColor),
       background_color: clean(options.backgroundColor, DEFAULT_MANIFEST.backgroundColor),

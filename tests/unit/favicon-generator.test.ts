@@ -14,6 +14,7 @@ const CUSTOM: ManifestOptions = {
   shortName: 'MS',
   themeColor: 'navy',
   backgroundColor: 'white',
+  maskable: true,
 };
 
 test('lists the expected PNG sizes and names', () => {
@@ -32,9 +33,18 @@ test('the HTML snippet references every package file', () => {
   assert.match(snippet, /site\.webmanifest/);
 });
 
-test('the manifest points at both Android icons', () => {
-  const manifest = JSON.parse(manifestJson()) as { icons: { sizes: string }[] };
-  assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ['192x192', '512x512']);
+test('the manifest lists standard and maskable Android icons', () => {
+  const manifest = JSON.parse(manifestJson(CUSTOM)) as { icons: { sizes: string; purpose?: string }[] };
+  assert.deepEqual(manifest.icons.map((icon) => icon.sizes), ['192x192', '512x512', '192x192', '512x512']);
+  assert.equal(manifest.icons.filter((icon) => icon.purpose === 'maskable').length, 2);
+});
+
+test('maskable icons can be turned off', () => {
+  const manifest = JSON.parse(manifestJson({ ...CUSTOM, maskable: false })) as {
+    icons: { purpose?: string }[];
+  };
+  assert.equal(manifest.icons.length, 2);
+  assert.equal(manifest.icons.some((icon) => icon.purpose === 'maskable'), false);
 });
 
 test('the manifest uses custom names and colours, with fallbacks for blanks', () => {

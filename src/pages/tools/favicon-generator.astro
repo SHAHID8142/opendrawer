@@ -24,12 +24,17 @@ const faq = [
   {
     question: 'What is in the ZIP?',
     answer:
-      'favicon.ico with 16, 32, 48 and 256 pixel layers; favicon-16x16.png; favicon-32x32.png; apple-touch-icon.png (180); android-chrome-192x192.png; android-chrome-512x512.png; site.webmanifest; and html-snippet.txt with the link tags.',
+      'favicon.ico with 16, 32, 48 and 256 pixel layers; favicon-16x16.png; favicon-32x32.png; apple-touch-icon.png (180); android-chrome-192x192.png; android-chrome-512x512.png; two maskable Android icons when enabled; site.webmanifest; and html-snippet.txt with the link tags.',
   },
   {
     question: 'Can I set the app name and colours?',
     answer:
       'Yes. The App name, Short name, Theme colour and Background colour fields are written into site.webmanifest. Any CSS colour works, such as “white”, “navy” or a hex value.',
+  },
+  {
+    question: 'What is a maskable icon?',
+    answer:
+      'Android can crop home-screen icons into a circle or another shape. Maskable icons are full-bleed with the artwork kept inside a central safe zone, so nothing important is cut off. This tool pads them to 80% using your background colour.',
   },
   {
     question: 'Does it crop my logo?',
@@ -59,7 +64,8 @@ const faq = [
           items={[
             'It does not crop, round corners, remove a background or add padding beyond fitting the square.',
             'It does not choose colours or generate artwork; the source image is used as-is.',
-            'The manifest only lists the two Android icons it generates; add more sizes by hand if you need them.',
+            'The manifest only lists the Android icons it generates; add more sizes by hand if you need them.',
+            'Maskable icons use a fixed 80% safe zone; the logo is padded, not re-drawn or cropped.',
             'It only reads formats your browser can decode; HEIC and TIFF often fail.',
             'Images are limited to 25 MB and 40 megapixels.',
           ]}

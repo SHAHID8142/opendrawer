@@ -178,6 +178,22 @@ export default function Tool() {
         </div>
         <p className="field__hint">Used in site.webmanifest. Any CSS colour works, for example “white” or “navy”.</p>
 
+        <label className="checkbox">
+          <input
+            type="checkbox"
+            checked={manifest.maskable}
+            disabled={busy}
+            onChange={(event) => {
+              setManifest({ ...manifest, maskable: event.target.checked });
+              clearResult();
+            }}
+          />
+          Add maskable Android icons
+        </label>
+        <p className="field__hint">
+          Full-bleed 192 and 512 icons with the logo inside the safe zone, using the background colour.
+        </p>
+
         <p>
           <button type="button" className="btn btn--primary" disabled={!ready || busy || file === null} onClick={() => void generate()}>
             {busy ? 'Building the icons…' : 'Generate favicons'}

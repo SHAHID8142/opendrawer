@@ -714,7 +714,7 @@ test.describe('UI-G8 and the file flow', () => {
     await page.fill('#favicon-short', 'MS');
     await page.fill('#favicon-theme', 'navy');
     await page.getByRole('button', { name: 'Generate favicons' }).click();
-    await expect(page.getByRole('status')).toContainText('Built 8 files.', { timeout: 60_000 });
+    await expect(page.getByRole('status')).toContainText('Built 10 files.', { timeout: 60_000 });
     await expect(page.getByText('/site.webmanifest', { exact: false })).toBeVisible();
     await expect(page.getByText('favicon.ico', { exact: true })).toBeVisible();
     const download = page.waitForEvent('download');
@@ -722,7 +722,7 @@ test.describe('UI-G8 and the file flow', () => {
     const saved = await download;
     const zip = readFileSync((await saved.path())!);
     expect(zip.subarray(0, 2).toString()).toBe('PK');
-    for (const name of ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-512x512.png', 'site.webmanifest', 'html-snippet.txt', 'My Site', 'navy']) {
+    for (const name of ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-512x512.png', 'android-chrome-maskable-512x512.png', 'site.webmanifest', 'html-snippet.txt', 'My Site', 'navy']) {
       expect(zip.includes(Buffer.from(name))).toBe(true);
     }
     expect(saved.suggestedFilename()).toBe('favicon-package.zip');

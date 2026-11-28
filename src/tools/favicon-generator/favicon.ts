@@ -5,7 +5,14 @@ import { decodeImageFile } from '../../lib/decode-image';
 import { ICO_SIZES, wrapIcoMulti } from '../../lib/ico';
 import { byteLimitMessage, pixelLimitMessage } from '../../lib/image-format';
 import { zipStore, type ZipEntry } from '../../lib/zip';
-import { FAVICON_PNGS, htmlSnippet, manifestJson, type ManifestOptions } from './engine';
+import {
+  FAVICON_PNGS,
+  MASKABLE_ASSETS,
+  MASKABLE_SAFE_ZONE,
+  htmlSnippet,
+  manifestJson,
+  type ManifestOptions,
+} from './engine';
 
 export interface FaviconPackage {
   zip: Blob;
@@ -46,14 +53,25 @@ export async function buildFavicons(file: File, options: ManifestOptions): Promi
     const pixels = pixelLimitMessage(decoded.width, decoded.height);
     if (pixels !== null) return { ok: false, message: pixels };
 
-    const renderPng = async (size: number): Promise<Uint8Array> => {
+    const renderPng = async (size: number, background?: string, scale = 1): Promise<Uint8Array> => {
       const canvas = window.document.createElement('canvas');
       canvas.width = size;
       canvas.height = size;
       const context = canvas.getContext('2d');
       if (!context) throw new Error('no canvas');
-      const box = fit(size, decoded.width, decoded.height);
-      context.drawImage(decoded.source, box.x, box.y, box.width, box.height);
+      if (background !== undefined) {
+        context.fillStyle = background;
+        context.fillRect(0, 0, size, size);
+      }
+      const bound = Math.round(size * scale);
+      const box = fit(bound, decoded.width, decoded.height);
+      context.drawImage(
+        decoded.source,
+        Math.round((size - box.width) / 2),
+        Math.round((size - box.height) / 2),
+        box.width,
+        box.height,
+      );
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob((value) => resolve(value), 'image/png'),
       );
@@ -69,6 +87,18 @@ export async function buildFavicons(file: File, options: ManifestOptions): Promi
       const png = await renderPng(asset.size);
       entries.push({ name: asset.name, bytes: png });
       if (asset.size === 512) preview = new Blob([png], { type: 'image/png' });
+    }
+
+    if (options.maskable) {
+      const background = window.CSS.supports('color', options.backgroundColor)
+        ? options.backgroundColor
+        : 'white';
+      for (const asset of MASKABLE_ASSETS) {
+        entries.push({
+          name: asset.name,
+          bytes: await renderPng(asset.size, background, MASKABLE_SAFE_ZONE),
+        });
+      }
     }
 
     const layers: { png: Uint8Array; size: number }[] = [];
