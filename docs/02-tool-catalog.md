@@ -4,7 +4,7 @@ Every planned phase-1 tool, with its engine, its real limits, and its licence po
 IDs are permanent: they become URLs and must never be renamed.
 
 **Live today:** `inspect-pdf`, `pdf-to-image`, `images-to-pdf`, `merge-pdf`, `split-pdf`,
-`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`, `text-transform`, `text-statistics`, `text-diff`, `image-to-text`, `compress-image`, `crop-image`. The rest are planned.
+`rotate-pdf`, `delete-pages`, `reorder-pages`, `extract-pages`, `page-numbers`, `watermark-pdf`, `crop-pdf`, `flatten-pdf`, `extract-text`, `add-image`, `ocr-pdf`, `resize-pdf`, `compress-pdf`, `protect-pdf`, `unlock-pdf`, `repair-pdf`, `fill-forms`, `extract-images`, `n-up-pdf`, `edit-metadata`, `split-by-bookmarks`, `redact-pdf`, `booklet-pdf`, `writing-check`, `text-transform`, `text-statistics`, `text-diff`, `image-to-text`, `compress-image`, `crop-image`, `rotate-image`. The rest are planned.
 
 Legend for **Reliability**: ●●● exact and predictable · ●● good, with disclosed caveats ·
 ● best-effort, always warn the user.
@@ -70,6 +70,7 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 | `compress-pdf` | Lossless → image recompression → rasterise fallback | pdf-lib + qpdf + Ghostscript + pdf.js | ●● | Scans often shrink 80%+; text PDFs may not shrink at all and can grow. Always report the delta and keep the original. |
 | `compress-image` | Resize and re-encode a photo or screenshot | Canvas | ●●● | Output size depends on the picture and browser encoder. PNG is lossless and may grow. JPEG drops transparency and metadata; animations keep one frame. 25 MB / 40 MP limits. |
 | `crop-image` | Crop to a draggable box or exact pixels | Canvas | ●●● | One rectangle only. No rotation or straightening. Box stays inside the frame. JPEG drops transparency; metadata removed by re-encoding. 25 MB / 40 MP limits. |
+| `rotate-image` | Quarter turns and horizontal/vertical flips | Canvas | ●●● | 90° steps only, no free angle. No crop after rotation. JPEG drops transparency; metadata removed. 25 MB / 40 MP limits. |
 | `compress-to-size` | Hit a target (e.g. 200 KB) | same | ● | Tries progressively harder and stops when it fits; if it cannot, it says so. |
 | `protect-pdf` | AES-256 password + permissions | qpdf WASM | ●●● | Passwords are not recoverable. Permissions are advisory — viewers may ignore them. |
 | `unlock-pdf` | Remove encryption **with the known password** | qpdf WASM | ●●● | Cannot open a file without its user password. Owner-password-only files can be stripped, and the UI explains that this was never security. |
@@ -108,5 +109,5 @@ Legend for **Reliability**: ●●● exact and predictable · ●● good, with
 
 ## Count
 
-6 create + 12 organise + 8 edit + 7 convert + 18 optimise/secure + 5 writing + 3 image ≈ **58 tools**, of which
+6 create + 12 organise + 8 edit + 7 convert + 18 optimise/secure + 5 writing + 4 image ≈ **59 tools**, of which
 about 40 are independent user-facing operations (some share an engine and UI shell).

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image', '/tools/rotate-image'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,39 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('rotates an image by a quarter turn and downloads a valid PNG', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/rotate-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 300;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.fillStyle = '#3d6b8a';
+      context.fillRect(0, 0, 400, 300);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    await page.locator('#rotate-input').setInputFiles({
+      name: 'wide.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(base64, 'base64'),
+    });
+    await page.getByRole('button', { name: 'Rotate right' }).click();
+    await expect(page.getByText('90° clockwise. Output will be 300 × 400 pixels.')).toBeVisible();
+    await page.getByRole('button', { name: 'Apply and preview' }).click();
+    await expect(page.getByRole('status')).toContainText('Rendered 300 × 400 pixels.', { timeout: 30_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the image' }).click();
+    const saved = await download;
+    const bytes = readFileSync((await saved.path())!);
+    expect(bytes.subarray(1, 4).toString()).toBe('PNG');
+    expect(bytes.readUInt32BE(16)).toBe(300);
+    expect(bytes.readUInt32BE(20)).toBe(400);
+    expect(saved.suggestedFilename()).toBe('wide-rotated.png');
   });
 
   test('crops an image to exact pixels and downloads a valid PNG', async ({ page }) => {

@@ -251,4 +251,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Drag a crop box or type exact pixels, preview the result and download locally.',
     status: 'live',
   },
+  {
+    id: 'rotate-image',
+    name: 'Rotate image',
+    category: 'Images',
+    group: 'Edit',
+    accent: 'images',
+    short: 'Quarter turns and flips.',
+    blurb: 'Rotate a photo in 90° steps or mirror it, with an exact preview before download.',
+    status: 'live',
+  },
 ];

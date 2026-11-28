@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/rotate-image/Tool';
+
+const title = 'Rotate and flip images offline';
+const description =
+  'Rotate a PNG, JPEG, WebP or AVIF image in 90° steps, flip it horizontally or vertically, preview and download. Nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Rotate image',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Can I rotate by an arbitrary angle?',
+    answer:
+      'Not yet. This tool offers exact quarter turns and flips, which never blur or crop the image. A free-angle rotation would need either blank corners or a crop.',
+  },
+  {
+    question: 'Does rotating lose quality?',
+    answer:
+      'PNG output is lossless. JPEG and WebP are re-encoded at quality 90, so there is a small loss. The preview shows the exact result before you download.',
+  },
+  {
+    question: 'Is my photo uploaded?',
+    answer: 'No. Rotation happens on a canvas in this tab. There is no server and no account.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="rotate-image"
+      breadcrumbLabel="Rotate image"
+      heading="Rotate and flip image"
+      lead="Turn a photo by 90° or mirror it, check the exact output size, then download. The image never leaves this tab."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not rotate by arbitrary angles or straighten a crooked scan.',
+            'It does not crop or trim after rotation.',
+            'Animated images keep only the first frame.',
+            'JPEG has no transparency; transparent areas become white.',
+            'It does not read or write EXIF orientation; re-encoding removes metadata.',
+            'Images are limited to 25 MB and 40 megapixels.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="rotate-image" />
+      </aside>
+    </div>
+  </div>
+</Base>
