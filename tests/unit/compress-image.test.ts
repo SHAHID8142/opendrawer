@@ -7,6 +7,7 @@ import {
   fitDimensions,
   mimeFor,
   outputName,
+  uniqueOutputName,
 } from '../../src/tools/compress-image/engine.ts';
 
 test('fits large images inside a square bound and keeps the aspect ratio', () => {
@@ -32,4 +33,10 @@ test('clamps quality to the supported range', () => {
   assert.equal(clampQuality(10), 40);
   assert.equal(clampQuality(100), 95);
   assert.equal(clampQuality(81.4), 81);
+});
+
+test('batch output names never collide', () => {
+  const used = new Set<string>();
+  assert.equal(uniqueOutputName('photo-compressed.jpg', used), 'photo-compressed.jpg');
+  assert.equal(uniqueOutputName('photo-compressed.jpg', used), 'photo-compressed-2.jpg');
 });

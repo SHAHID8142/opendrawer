@@ -1,29 +1,37 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// UI for compress-image: local resize and JPEG/WebP/PNG re-encoding with before/after sizes.
+// UI for compress-image: resize and re-encode one image or a batch, with a ZIP for many.
 import { useEffect, useRef, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { decodeImageFile } from '../../lib/decode-image';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
-import { byteLimitMessage, sniffImage } from '../../lib/image-format';
-import { compressImage, type CompressResult } from './compress';
+import { byteLimitMessage } from '../../lib/image-format';
+import { zipStore } from '../../lib/zip';
+import { ResultList } from './ResultList';
+import { compressImage } from './compress';
 import {
   MAX_EDGE_OPTIONS,
   QUALITY_MAX,
   QUALITY_MIN,
   clampQuality,
   outputName,
+  uniqueOutputName,
   type OutputFormat,
 } from './engine';
+import type { CompressedFile, Failure } from './types';
 
 type Phase = 'idle' | 'working' | 'done' | 'error';
 
 export default function Tool() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [format, setFormat] = useState<OutputFormat>('jpeg');
   const [quality, setQuality] = useState(80);
   const [maxEdge, setMaxEdge] = useState(1920);
   const [phase, setPhase] = useState<Phase>('idle');
-  const [result, setResult] = useState<CompressResult | null>(null);
+  const [results, setResults] = useState<CompressedFile[]>([]);
+  const [failures, setFailures] = useState<Failure[]>([]);
+  const [zip, setZip] = useState<Blob | null>(null);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [previewUrl, setPreviewUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -38,8 +46,11 @@ export default function Tool() {
 
   const busy = phase === 'working';
 
-  function resetResult() {
-    setResult(null);
+  function clearResults() {
+    setResults([]);
+    setFailures([]);
+    setZip(null);
+    setProgress({ done: 0, total: 0 });
     setError(null);
     setPhase('idle');
     if (previewRef.current) {
@@ -49,67 +60,106 @@ export default function Tool() {
     }
   }
 
-  async function choose(files: File[]) {
-    const chosen = files[0];
-    if (!chosen) return;
-    resetResult();
-    const tooBig = byteLimitMessage(chosen.size);
-    if (tooBig !== null) {
-      setFile(null);
-      setError(tooBig);
-      setPhase('error');
-      return;
+  async function choose(selected: File[]) {
+    clearResults();
+    const valid: File[] = [];
+    const rejected: string[] = [];
+    for (const file of selected) {
+      const tooBig = byteLimitMessage(file.size);
+      if (tooBig !== null) {
+        rejected.push(`${file.name}: ${tooBig}`);
+        continue;
+      }
+      const decoded = await decodeImageFile(file);
+      if (!decoded) {
+        rejected.push(`${file.name}: not an image this browser can read.`);
+        continue;
+      }
+      decoded.close();
+      valid.push(file);
     }
-    const sniffed = sniffImage(new Uint8Array(await chosen.arrayBuffer()));
-    if (!sniffed.ok) {
-      setFile(null);
-      setError(sniffed.message);
-      setPhase('error');
-      return;
+    setFiles(valid);
+    if (rejected.length > 0) {
+      setError(rejected.join(' '));
+      if (valid.length === 0) setPhase('error');
     }
-    setFile(chosen);
   }
 
-  async function compress() {
-    if (!file) return;
-    resetResult();
+  async function compressAll() {
+    if (files.length === 0) return;
+    clearResults();
     setPhase('working');
-    const outcome = await compressImage(file, { format, quality: clampQuality(quality), maxEdge });
-    if (!outcome.ok) {
-      setError(outcome.message);
+    setProgress({ done: 0, total: files.length });
+    const used = new Set<string>();
+    const compressed: CompressedFile[] = [];
+    const failed: Failure[] = [];
+
+    for (const [index, file] of files.entries()) {
+      const outcome = await compressImage(file, { format, quality: clampQuality(quality), maxEdge });
+      if (outcome.ok) {
+        compressed.push({
+          name: uniqueOutputName(outputName(file.name, format), used),
+          sourceName: file.name,
+          blob: outcome.result.blob,
+          originalBytes: outcome.result.originalBytes,
+          width: outcome.result.width,
+          height: outcome.result.height,
+          originalWidth: outcome.result.originalWidth,
+          originalHeight: outcome.result.originalHeight,
+        });
+      } else {
+        failed.push({ name: file.name, message: outcome.message });
+      }
+      setProgress({ done: index + 1, total: files.length });
+    }
+
+    setResults(compressed);
+    setFailures(failed);
+    if (compressed.length === 0) {
+      setError(failed[0]?.message ?? 'No image could be compressed.');
       setPhase('error');
       return;
     }
-    setResult(outcome.result);
-    const url = URL.createObjectURL(outcome.result.blob);
-    previewRef.current = url;
-    setPreviewUrl(url);
+
+    const first = compressed[0];
+    if (first) {
+      const url = URL.createObjectURL(first.blob);
+      previewRef.current = url;
+      setPreviewUrl(url);
+    }
+    const bytes = await Promise.all(
+      compressed.map(async (entry) => ({ name: entry.name, bytes: new Uint8Array(await entry.blob.arrayBuffer()) })),
+    );
+    setZip(zipStore(bytes));
     setPhase('done');
   }
-
-  const saved =
-    result === null ? 0 : Math.round((1 - result.blob.size / result.originalBytes) * 100);
-  const larger = result !== null && result.blob.size >= result.originalBytes;
 
   return (
     <div className="stack" data-ready={ready ? 'true' : 'false'}>
       <div className="card stack">
         <FileDrop
           id="compress-input"
-          accept="image/png,image/jpeg,image/webp,image/avif"
-          label="Image to compress"
-          hint="PNG, JPEG, WebP or AVIF up to 25 MB. Photos and screenshots work; animated images keep one frame."
-          buttonLabel="Choose an image"
+          accept="image/*"
+          multiple
+          label="Images to compress"
+          hint="Select one or several images up to 25 MB each. PNG, JPEG, WebP, AVIF, GIF, BMP or ICO; animated images keep one frame."
+          buttonLabel="Choose images"
           working={busy}
           disabled={!ready || busy}
-          selectedFile={file ? { name: file.name, size: file.size } : null}
-          previewFiles={file ? [file] : []}
-          onFiles={(files) => void choose(files)}
+          selectedFile={files.length === 1 && files[0] ? { name: files[0].name, size: files[0].size } : null}
+          previewFiles={files}
+          onFiles={(selected) => void choose(selected)}
           onClear={() => {
-            setFile(null);
-            resetResult();
+            setFiles([]);
+            clearResults();
           }}
         />
+
+        {files.length > 0 && (
+          <p className="muted">
+            {files.length} image{files.length === 1 ? '' : 's'} · {formatBytes(files.reduce((sum, file) => sum + file.size, 0))} total
+          </p>
+        )}
 
         <div className="form__row">
           <div className="field">
@@ -123,7 +173,7 @@ export default function Tool() {
               disabled={!ready || busy}
               onChange={(event) => {
                 setFormat(event.target.value as OutputFormat);
-                resetResult();
+                clearResults();
               }}
             >
               <option value="jpeg">JPEG</option>
@@ -143,7 +193,7 @@ export default function Tool() {
               disabled={!ready || busy}
               onChange={(event) => {
                 setMaxEdge(Number(event.target.value));
-                resetResult();
+                clearResults();
               }}
             >
               {MAX_EDGE_OPTIONS.map((edge) => (
@@ -169,15 +219,15 @@ export default function Tool() {
             disabled={!ready || busy || format === 'png'}
             onChange={(event) => {
               setQuality(Number(event.target.value));
-              resetResult();
+              clearResults();
             }}
           />
           <p className="field__hint">Lower is smaller and softer. PNG keeps every pixel, so quality does not apply.</p>
         </div>
 
         <p>
-          <button type="button" className="btn btn--primary" disabled={!ready || busy || file === null} onClick={() => void compress()}>
-            {busy ? 'Compressing…' : 'Compress the image'}
+          <button type="button" className="btn btn--primary" disabled={!ready || busy || files.length === 0} onClick={() => void compressAll()}>
+            {busy ? `Compressing ${progress.done + 1} of ${progress.total}…` : 'Compress the images'}
           </button>
         </p>
       </div>
@@ -185,12 +235,12 @@ export default function Tool() {
       <p className="status" role="status" aria-live="polite">
         {phase === 'error'
           ? 'Nothing was produced. The reason is below.'
-          : !file
-            ? 'No image yet. Choose one to see the trade-off.'
+          : files.length === 0
+            ? 'No images yet. Choose one or several.'
             : busy
-              ? 'Re-encoding in this tab. Nothing is uploaded.'
-              : phase === 'done' && result
-                ? `${formatBytes(result.originalBytes)} → ${formatBytes(result.blob.size)}.`
+              ? `Compressing ${progress.done} of ${progress.total}. Nothing is uploaded.`
+              : phase === 'done'
+                ? `${results.length} of ${files.length} compressed.`
                 : 'Ready to compress.'}
       </p>
 
@@ -201,47 +251,8 @@ export default function Tool() {
         </div>
       )}
 
-      {result && phase === 'done' && (
-        <section className="card stack" aria-labelledby="compress-heading">
-          <h2 id="compress-heading">Result</h2>
-          <dl className="stat-grid">
-            <div><dt>Original</dt><dd>{formatBytes(result.originalBytes)}</dd></div>
-            <div><dt>New size</dt><dd>{formatBytes(result.blob.size)}</dd></div>
-            <div><dt>Saved</dt><dd>{larger ? 'No saving' : `${saved}%`}</dd></div>
-            <div>
-              <dt>Dimensions</dt>
-              <dd>
-                {result.originalWidth} × {result.originalHeight} → {result.width} × {result.height}
-              </dd>
-            </div>
-          </dl>
-
-          {larger && (
-            <div className="note">
-              <h2>This output is larger</h2>
-              <p>
-                Re-encoding added bytes. Try WebP at a lower quality, a smaller size, or keep the original.
-              </p>
-            </div>
-          )}
-
-          {previewUrl && (
-            <div className="compressed-preview">
-              <img src={previewUrl} alt="Compressed preview" />
-            </div>
-          )}
-
-          <p>
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={() => downloadBlob(result.blob, outputName(file?.name ?? 'image', format))}
-            >
-              Download the image
-            </button>
-          </p>
-          <p className="field__hint">Metadata such as camera and location is removed by re-encoding.</p>
-        </section>
+      {results.length > 0 && phase === 'done' && (
+        <ResultList results={results} failures={failures} zip={zip} previewUrl={previewUrl} />
       )}
     </div>
   );

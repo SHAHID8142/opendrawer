@@ -920,15 +920,55 @@ test.describe('UI-G8 and the file flow', () => {
     });
     await page.selectOption('#compress-format', 'jpeg');
     await page.selectOption('#compress-edge', '0');
-    await page.getByRole('button', { name: 'Compress the image' }).click();
-    await expect(page.getByRole('status')).toContainText('→', { timeout: 60_000 });
+    await page.getByRole('button', { name: 'Compress the images' }).click();
+    await expect(page.getByRole('status')).toContainText('1 of 1 compressed.', { timeout: 60_000 });
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download the image' }).click();
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
     const saved = await download;
     const bytes = readFileSync((await saved.path())!);
     expect(bytes.subarray(0, 3).toString('hex')).toBe('ffd8ff');
     expect(bytes.length).toBeLessThan(source.length);
     expect(saved.suggestedFilename()).toBe('noise-compressed.jpg');
+  });
+
+  test('compresses several images into a ZIP', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/compress-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const images = await page.evaluate(() =>
+      ['one', 'two'].map(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 600;
+        canvas.height = 400;
+        const context = canvas.getContext('2d');
+        if (!context) return '';
+        const image = context.createImageData(600, 400);
+        for (let index = 0; index < image.data.length; index += 4) {
+          image.data[index] = Math.random() * 255;
+          image.data[index + 1] = Math.random() * 255;
+          image.data[index + 2] = Math.random() * 255;
+          image.data[index + 3] = 255;
+        }
+        context.putImageData(image, 0, 0);
+        return canvas.toDataURL('image/png').split(',')[1] ?? '';
+      }),
+    );
+    await page.locator('#compress-input').setInputFiles([
+      { name: 'first.png', mimeType: 'image/png', buffer: Buffer.from(images[0] ?? '', 'base64') },
+      { name: 'second.png', mimeType: 'image/png', buffer: Buffer.from(images[1] ?? '', 'base64') },
+    ]);
+    await page.selectOption('#compress-format', 'jpeg');
+    await page.selectOption('#compress-edge', '0');
+    await page.getByRole('button', { name: 'Compress the images' }).click();
+    await expect(page.getByRole('status')).toContainText('2 of 2 compressed.', { timeout: 60_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as .zip' }).click();
+    const saved = await download;
+    const zip = readFileSync((await saved.path())!);
+    expect(zip.subarray(0, 2).toString()).toBe('PK');
+    expect(zip.includes(Buffer.from('first-compressed.jpg'))).toBe(true);
+    expect(zip.includes(Buffer.from('second-compressed.jpg'))).toBe(true);
+    expect(saved.suggestedFilename()).toBe('compressed-images.zip');
   });
 
   test('reads text from an image with the local OCR engine', async ({ page }) => {
