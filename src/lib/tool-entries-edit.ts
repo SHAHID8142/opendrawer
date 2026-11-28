@@ -261,4 +261,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Rotate a photo in 90° steps or mirror it, with an exact preview before download.',
     status: 'live',
   },
+  {
+    id: 'convert-image',
+    name: 'Image converter',
+    category: 'Images',
+    group: 'Convert',
+    accent: 'images',
+    short: 'PNG, JPEG and WebP.',
+    blurb: 'Change an image format locally, with transparency kept where the format allows.',
+    status: 'live',
+  },
 ];

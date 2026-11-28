@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image', '/tools/rotate-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image', '/tools/rotate-image', '/tools/convert-image'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,61 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('converts a transparent PNG to JPEG without changing dimensions', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/convert-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 300;
+      canvas.height = 200;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.fillStyle = '#c93914';
+      context.fillRect(150, 0, 150, 200);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    await page.locator('#convert-input').setInputFiles({
+      name: 'alpha.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(base64, 'base64'),
+    });
+    await page.selectOption('#convert-format', 'jpeg');
+    await page.getByRole('button', { name: 'Convert the image' }).click();
+    await expect(page.getByRole('status')).toContainText('PNG converted to JPEG.', { timeout: 30_000 });
+    await expect(page.getByText('300 × 200')).toBeVisible();
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    const saved = await download;
+    const bytes = readFileSync((await saved.path())!);
+    expect(bytes.subarray(0, 3).toString('hex')).toBe('ffd8ff');
+    expect(saved.suggestedFilename()).toBe('alpha-converted.jpg');
+
+    await page.selectOption('#convert-format', 'bmp');
+    await page.getByRole('button', { name: 'Convert the image' }).click();
+    await expect(page.getByRole('status')).toContainText('converted to BMP.', { timeout: 30_000 });
+    const bmpDownload = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    const bmpSaved = await bmpDownload;
+    const bmp = readFileSync((await bmpSaved.path())!);
+    expect(bmp.subarray(0, 2).toString()).toBe('BM');
+    expect(bmp.readUInt32LE(18)).toBe(300);
+    expect(bmp.readUInt32LE(22)).toBe(200);
+    expect(bmpSaved.suggestedFilename()).toBe('alpha-converted.bmp');
+
+    await page.selectOption('#convert-format', 'ico');
+    await page.getByRole('button', { name: 'Convert the image' }).click();
+    await expect(page.getByRole('status')).toContainText('converted to ICO.', { timeout: 30_000 });
+    const icoDownload = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    const icoSaved = await icoDownload;
+    const ico = readFileSync((await icoSaved.path())!);
+    expect(ico.readUInt16LE(2)).toBe(1);
+    expect(ico[6]).toBe(0);
+    expect(ico.subarray(22, 26).toString('hex')).toBe('89504e47');
+    expect(icoSaved.suggestedFilename()).toBe('alpha-converted.ico');
   });
 
   test('rotates an image by a quarter turn and downloads a valid PNG', async ({ page }) => {

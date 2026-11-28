@@ -1,0 +1,70 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/convert-image/Tool';
+
+const title = 'Image converter: PNG, JPEG, WebP, BMP and ICO offline';
+const description =
+  'Convert any image your browser can read to PNG, JPEG, WebP, BMP or ICO. Transparency is kept where the format allows; nothing is uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Image converter',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'Which formats can I convert between?',
+    answer:
+      'Input is anything the browser decodes: PNG, JPEG, WebP, AVIF, GIF, BMP, ICO and SVG usually work, while HEIC and TIFF depend on the browser. Output is PNG, JPEG, WebP, BMP or ICO. GIF and AVIF output are not offered because browsers cannot encode them reliably.',
+  },
+  {
+    question: 'What happens to transparency and icons?',
+    answer:
+      'PNG, WebP and ICO keep transparency. JPEG and BMP cannot store it, so transparent areas are filled with white. ICO output becomes one square 256 × 256 PNG icon.',
+  },
+  {
+    question: 'Does converting upload my image?',
+    answer: 'No. Decoding and encoding happen in this tab. There is no server, account or analytics.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="convert-image"
+      breadcrumbLabel="Image converter"
+      heading="Image converter"
+      lead="Change the file format without changing the pixels. Pick PNG, JPEG or WebP, preview the result and download."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It only opens formats your browser can decode; HEIC and TIFF often need another converter.',
+            'It cannot output GIF or AVIF, because browsers do not encode them reliably.',
+            'It does not resize, crop, rotate or retouch the image.',
+            'ICO output is a single square 256 × 256 icon, not a multi-size icon set.',
+            'JPEG and BMP have no transparency; transparent areas become white.',
+            'Animated images keep only the first frame.',
+            'Re-encoding removes EXIF metadata; it cannot be preserved.',
+            'Images are limited to 25 MB and 40 megapixels.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="convert-image" />
+      </aside>
+    </div>
+  </div>
+</Base>
