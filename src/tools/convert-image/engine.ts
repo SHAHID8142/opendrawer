@@ -76,3 +76,22 @@ export function encodeBmp(pixels: Uint8ClampedArray, width: number, height: numb
   }
   return bytes;
 }
+
+/** Adds -2, -3… before the extension so a batch ZIP never contains duplicate names. */
+export function uniqueFileName(name: string, used: Set<string>): string {
+  if (!used.has(name)) {
+    used.add(name);
+    return name;
+  }
+  const dot = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name;
+  const extension = dot > 0 ? name.slice(dot) : '';
+  let index = 2;
+  let candidate = `${base}-${index}${extension}`;
+  while (used.has(candidate)) {
+    index += 1;
+    candidate = `${base}-${index}${extension}`;
+  }
+  used.add(candidate);
+  return candidate;
+}

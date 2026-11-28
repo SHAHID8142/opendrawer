@@ -1,0 +1,101 @@
+/* Compressed preview: keep a wide photo inside the card. */
+.compressed-preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* Crop image: stage, box and resize handle. */
+.crop-stage {
+  position: relative;
+  width: 100%;
+  max-width: 52rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  touch-action: none;
+  user-select: none;
+}
+
+.crop-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.crop-box {
+  position: absolute;
+  border: 2px solid var(--color-on-accent);
+  box-shadow: 0 0 0 9999px color-mix(in srgb, var(--color-text) 45%, transparent);
+  cursor: move;
+}
+
+.crop-handle {
+  position: absolute;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  width: var(--tap-target);
+  height: var(--tap-target);
+  border: 2px solid var(--color-on-accent);
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: nwse-resize;
+}
+
+.crop-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-3);
+}
+
+/* Favicon package preview and snippet. */
+.favicon-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.favicon-preview img {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+}
+
+.code-block {
+  margin: 0;
+  padding: var(--space-3);
+  overflow-x: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  white-space: pre;
+}
+
+/* Batch conversion results: one row per file. */
+.converted-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.converted-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: var(--space-3);
+}
+
+.converted-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}

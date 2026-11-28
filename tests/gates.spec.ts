@@ -687,6 +687,41 @@ test.describe('UI-G8 and the file flow', () => {
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
   });
 
+  test('converts several images at once into a ZIP', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/convert-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const images = await page.evaluate(() => {
+      return ['One', 'Two'].map((label, index) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 80;
+        const context = canvas.getContext('2d');
+        context.fillStyle = index === 0 ? '#c93914' : '#16653c';
+        context.fillRect(0, 0, 120, 80);
+        context.fillStyle = '#ffffff';
+        context.font = '24px Arial';
+        context.fillText(label, 22, 48);
+        return canvas.toDataURL('image/png').split(',')[1] ?? '';
+      });
+    });
+    await page.locator('#convert-input').setInputFiles([
+      { name: 'one.png', mimeType: 'image/png', buffer: Buffer.from(images[0] ?? '', 'base64') },
+      { name: 'two.png', mimeType: 'image/png', buffer: Buffer.from(images[1] ?? '', 'base64') },
+    ]);
+    await page.selectOption('#convert-format', 'webp');
+    await page.getByRole('button', { name: 'Convert the images' }).click();
+    await expect(page.getByRole('status')).toContainText('2 of 2 converted.', { timeout: 60_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as .zip' }).click();
+    const saved = await download;
+    const zip = readFileSync((await saved.path())!);
+    expect(zip.subarray(0, 2).toString()).toBe('PK');
+    expect(zip.includes(Buffer.from('one-converted.webp'))).toBe(true);
+    expect(zip.includes(Buffer.from('two-converted.webp'))).toBe(true);
+    expect(saved.suggestedFilename()).toBe('converted-images.zip');
+  });
+
   test('builds a favicon package with icons, manifest and snippet', async ({ page }) => {
     test.setTimeout(120_000);
     await page.goto('/tools/favicon-generator');
@@ -749,10 +784,10 @@ test.describe('UI-G8 and the file flow', () => {
     });
     await page.selectOption('#convert-format', 'jpeg');
     await page.getByRole('button', { name: 'Convert the image' }).click();
-    await expect(page.getByRole('status')).toContainText('PNG converted to JPEG.', { timeout: 30_000 });
+    await expect(page.getByRole('status')).toContainText('1 of 1 converted.', { timeout: 30_000 });
     await expect(page.getByText('300 × 200')).toBeVisible();
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
     const saved = await download;
     const bytes = readFileSync((await saved.path())!);
     expect(bytes.subarray(0, 3).toString('hex')).toBe('ffd8ff');
@@ -760,9 +795,9 @@ test.describe('UI-G8 and the file flow', () => {
 
     await page.selectOption('#convert-format', 'bmp');
     await page.getByRole('button', { name: 'Convert the image' }).click();
-    await expect(page.getByRole('status')).toContainText('converted to BMP.', { timeout: 30_000 });
+    await expect(page.getByRole('status')).toContainText('1 of 1 converted.', { timeout: 30_000 });
     const bmpDownload = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
     const bmpSaved = await bmpDownload;
     const bmp = readFileSync((await bmpSaved.path())!);
     expect(bmp.subarray(0, 2).toString()).toBe('BM');
@@ -772,9 +807,9 @@ test.describe('UI-G8 and the file flow', () => {
 
     await page.selectOption('#convert-format', 'ico');
     await page.getByRole('button', { name: 'Convert the image' }).click();
-    await expect(page.getByRole('status')).toContainText('converted to ICO.', { timeout: 30_000 });
+    await expect(page.getByRole('status')).toContainText('1 of 1 converted.', { timeout: 30_000 });
     const icoDownload = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download the converted image' }).click();
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
     const icoSaved = await icoDownload;
     const ico = readFileSync((await icoSaved.path())!);
     expect(ico.readUInt16LE(2)).toBe(1);

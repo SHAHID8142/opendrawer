@@ -9,6 +9,7 @@ import {
   encodeBmp,
   keepsTransparency,
   wrapIco,
+  uniqueFileName,
   wrapIcoMulti,
 } from '../../src/tools/convert-image/engine.ts';
 
@@ -92,4 +93,11 @@ test('multi-size ICO lists every entry and payload offset', () => {
   assert.equal(view.getUint32(22 + 12, true), 41);
   assert.deepEqual([...ico.subarray(38, 41)], [1, 2, 3]);
   assert.deepEqual([...ico.subarray(41, 45)], [4, 5, 6, 7]);
+});
+
+test('batch output names never collide', () => {
+  const used = new Set<string>();
+  assert.equal(uniqueFileName('photo-converted.jpg', used), 'photo-converted.jpg');
+  assert.equal(uniqueFileName('photo-converted.jpg', used), 'photo-converted-2.jpg');
+  assert.equal(uniqueFileName('photo-converted.jpg', used), 'photo-converted-3.jpg');
 });

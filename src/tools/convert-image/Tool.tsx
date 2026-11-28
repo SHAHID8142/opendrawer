@@ -1,101 +1,132 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// UI for convert-image: change the encoding locally and preview the result.
-import { useEffect, useRef, useState } from 'react';
+// UI for convert-image: batch conversion with a ZIP download and per-file results.
+import { useEffect, useState } from 'react';
 import { FileDrop } from '../../components/FileDrop';
+import { decodeImageFile } from '../../lib/decode-image';
 import { downloadBlob } from '../../lib/download';
 import { formatBytes } from '../../lib/format';
 import { byteLimitMessage } from '../../lib/image-format';
+import { zipStore } from '../../lib/zip';
 import { convertImage } from './convert';
-import { decodeImageFile } from './decode';
 import {
   QUALITY_MAX,
   QUALITY_MIN,
   clampQuality,
   convertFileName,
   keepsTransparency,
+  uniqueFileName,
   type ConvertFormat,
 } from './engine';
 
 type Phase = 'idle' | 'working' | 'done' | 'error';
 
-interface Output {
-  blob: Blob;
-  url: string;
+interface ConvertedFile {
+  name: string;
+  sourceName: string;
+  bytes: Uint8Array;
   width: number;
   height: number;
   sourceLabel: string;
 }
 
+interface Failure {
+  name: string;
+  message: string;
+}
+
 export default function Tool() {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [format, setFormat] = useState<ConvertFormat>('webp');
   const [quality, setQuality] = useState(85);
   const [phase, setPhase] = useState<Phase>('idle');
-  const [output, setOutput] = useState<Output | null>(null);
+  const [results, setResults] = useState<ConvertedFile[]>([]);
+  const [failures, setFailures] = useState<Failure[]>([]);
+  const [zip, setZip] = useState<Blob | null>(null);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
-  const outputUrl = useRef('');
 
-  useEffect(() => {
-    setReady(true);
-    return () => {
-      if (outputUrl.current) URL.revokeObjectURL(outputUrl.current);
-    };
-  }, []);
-
+  useEffect(() => setReady(true), []);
   const busy = phase === 'working';
 
-  function clearOutput() {
-    setOutput(null);
+  function clearResults() {
+    setResults([]);
+    setFailures([]);
+    setZip(null);
     setError(null);
+    setProgress({ done: 0, total: 0 });
     setPhase('idle');
-    if (outputUrl.current) {
-      URL.revokeObjectURL(outputUrl.current);
-      outputUrl.current = '';
+  }
+
+  async function choose(selected: File[]) {
+    clearResults();
+    const valid: File[] = [];
+    const rejected: string[] = [];
+    for (const file of selected) {
+      const tooBig = byteLimitMessage(file.size);
+      if (tooBig !== null) {
+        rejected.push(`${file.name}: ${tooBig}`);
+        continue;
+      }
+      const decoded = await decodeImageFile(file);
+      if (!decoded) {
+        rejected.push(`${file.name}: not an image this browser can read.`);
+        continue;
+      }
+      decoded.close();
+      valid.push(file);
+    }
+    setFiles(valid);
+    if (rejected.length > 0) {
+      setError(rejected.join(' '));
+      if (valid.length === 0) setPhase('error');
     }
   }
 
-  async function choose(files: File[]) {
-    const chosen = files[0];
-    if (!chosen) return;
-    clearOutput();
-    const tooBig = byteLimitMessage(chosen.size);
-    if (tooBig !== null) {
-      setFile(null);
-      setError(tooBig);
-      setPhase('error');
-      return;
-    }
-    const decoded = await decodeImageFile(chosen);
-    if (!decoded) {
-      setFile(null);
-      setError(
-        'That file could not be decoded as an image. This browser reads PNG, JPEG, WebP, AVIF, GIF, BMP, ICO and SVG; HEIC and TIFF depend on the browser.',
-      );
-      setPhase('error');
-      return;
-    }
-    decoded.close();
-    setFile(chosen);
-  }
-
-  async function convert() {
-    if (!file) return;
-    clearOutput();
+  async function convertAll() {
+    if (files.length === 0) return;
+    clearResults();
     setPhase('working');
-    const result = await convertImage(file, format, clampQuality(quality));
-    if (!result.ok) {
-      setError(result.message);
+    setProgress({ done: 0, total: files.length });
+    const used = new Set<string>();
+    const converted: ConvertedFile[] = [];
+    const failed: Failure[] = [];
+
+    for (const [index, file] of files.entries()) {
+      const outcome = await convertImage(file, format, clampQuality(quality));
+      if (outcome.ok) {
+        const bytes = new Uint8Array(await outcome.outcome.blob.arrayBuffer());
+        converted.push({
+          name: uniqueFileName(convertFileName(file.name, format), used),
+          sourceName: file.name,
+          bytes,
+          width: outcome.outcome.width,
+          height: outcome.outcome.height,
+          sourceLabel: outcome.outcome.sourceLabel,
+        });
+      } else {
+        failed.push({ name: file.name, message: outcome.message });
+      }
+      setProgress({ done: index + 1, total: files.length });
+    }
+
+    setResults(converted);
+    setFailures(failed);
+    if (converted.length === 0) {
+      setError(failed[0]?.message ?? 'No image could be converted.');
       setPhase('error');
       return;
     }
-    const url = URL.createObjectURL(result.outcome.blob);
-    outputUrl.current = url;
-    setOutput({ ...result.outcome, url });
+    setZip(zipStore(converted.map((entry) => ({ name: entry.name, bytes: entry.bytes }))));
     setPhase('done');
   }
 
-  const larger = output !== null && file !== null && output.blob.size >= file.size;
+  function updateFormat(next: ConvertFormat) {
+    setFormat(next);
+    clearResults();
+  }
+
+  const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
 
   return (
     <div className="stack" data-ready={ready ? 'true' : 'false'}>
@@ -103,45 +134,49 @@ export default function Tool() {
         <FileDrop
           id="convert-input"
           accept="image/*"
-          label="Image to convert"
-          hint="Any image your browser can read, up to 25 MB: PNG, JPEG, WebP, AVIF, GIF, BMP, ICO or SVG. The pixels stay the same; only the encoding changes."
-          buttonLabel="Choose an image"
+          multiple
+          label="Images to convert"
+          hint="Select one or several images up to 25 MB each — PNG, JPEG, WebP, AVIF, GIF, BMP, ICO or SVG. Output is a ZIP when more than one succeeds."
+          buttonLabel="Choose images"
           working={busy}
           disabled={!ready || busy}
-          selectedFile={file ? { name: file.name, size: file.size } : null}
-          previewFiles={file ? [file] : []}
-          onFiles={(files) => void choose(files)}
+          selectedFile={files.length === 1 && files[0] ? { name: files[0].name, size: files[0].size } : null}
+          previewFiles={files}
+          onFiles={(selected) => void choose(selected)}
           onClear={() => {
-            setFile(null);
-            clearOutput();
+            setFiles([]);
+            clearResults();
           }}
         />
 
+        {files.length > 0 && (
+          <p className="muted">
+            {files.length} image{files.length === 1 ? '' : 's'} · {formatBytes(totalBytes)} total
+          </p>
+        )}
+
         <div className="field">
           <label className="field__label" htmlFor="convert-format">
-            Convert to
+            Convert all to
           </label>
           <select
             id="convert-format"
             className="select"
             value={format}
             disabled={!ready || busy}
-            onChange={(event) => {
-              setFormat(event.target.value as ConvertFormat);
-              clearOutput();
-            }}
+            onChange={(event) => updateFormat(event.target.value as ConvertFormat)}
           >
             <option value="webp">WebP</option>
             <option value="jpeg">JPEG</option>
             <option value="png">PNG (lossless)</option>
             <option value="bmp">BMP (lossless, large)</option>
-            <option value="ico">ICO (256 × 256 icon)</option>
+            <option value="ico">ICO (16/32/48/256 icon)</option>
           </select>
           <p className="field__hint">
             {format === 'ico'
-              ? 'One .ico holds 16, 32, 48 and 256 px PNG icons; transparency is kept.'
+              ? 'Each image becomes one multi-size .ico; transparency is kept.'
               : keepsTransparency(format)
-                ? 'Transparency is kept.'
+                ? 'Transparency is kept where the format allows.'
                 : 'This format has no transparency; transparent areas become white.'}
           </p>
         </div>
@@ -160,14 +195,14 @@ export default function Tool() {
             disabled={!ready || busy || format === 'png' || format === 'bmp' || format === 'ico'}
             onChange={(event) => {
               setQuality(Number(event.target.value));
-              clearOutput();
+              clearResults();
             }}
           />
         </div>
 
         <p>
-          <button type="button" className="btn btn--primary" disabled={!ready || busy || file === null} onClick={() => void convert()}>
-            {busy ? 'Converting…' : 'Convert the image'}
+          <button type="button" className="btn btn--primary" disabled={!ready || busy || files.length === 0} onClick={() => void convertAll()}>
+            {busy ? `Converting ${progress.done + 1} of ${progress.total}…` : 'Convert the images'}
           </button>
         </p>
       </div>
@@ -175,12 +210,12 @@ export default function Tool() {
       <p className="status" role="status" aria-live="polite">
         {phase === 'error'
           ? 'Nothing was produced. The reason is below.'
-          : !file
-            ? 'No image yet. Choose one to convert.'
+          : files.length === 0
+            ? 'No images yet. Choose one or several.'
             : busy
-              ? 'Encoding in this tab. Nothing is uploaded.'
-              : phase === 'done' && output
-                ? `${output.sourceLabel} converted to ${format === 'ico' ? 'ICO' : format.toUpperCase()}.`
+              ? `Converting ${progress.done} of ${progress.total}. Nothing is uploaded.`
+              : phase === 'done'
+                ? `${results.length} of ${files.length} converted.`
                 : 'Ready to convert.'}
       </p>
 
@@ -191,33 +226,55 @@ export default function Tool() {
         </div>
       )}
 
-      {output && phase === 'done' && file && (
+      {results.length > 0 && phase === 'done' && (
         <section className="card stack" aria-labelledby="convert-heading">
-          <h2 id="convert-heading">Result</h2>
-          <div className="compressed-preview">
-            <img src={output.url} alt="Converted preview" />
-          </div>
-          <dl className="stat-grid">
-            <div><dt>From</dt><dd>{output.sourceLabel}</dd></div>
-            <div><dt>To</dt><dd>{format.toUpperCase()}</dd></div>
-            <div><dt>Dimensions</dt><dd>{output.width} × {output.height}</dd></div>
-            <div><dt>Size</dt><dd>{formatBytes(file.size)} → {formatBytes(output.blob.size)}</dd></div>
-          </dl>
-          {larger && (
+          <h2 id="convert-heading">Converted files</h2>
+          <ul className="converted-list">
+            {results.map((entry) => (
+              <li key={entry.name}>
+                <span>
+                  <strong>{entry.name}</strong>
+                  <br />
+                  <span className="muted">
+                    {entry.sourceLabel} → {format.toUpperCase()} · {entry.width} × {entry.height} · {formatBytes(entry.bytes.length)}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={() => downloadBlob(new Blob([entry.bytes], { type: 'application/octet-stream' }), entry.name)}
+                >
+                  Download
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {failures.length > 0 && (
             <div className="note">
-              <h2>This output is larger</h2>
-              <p>The new encoding needs more bytes. Try WebP at a lower quality, or keep the original.</p>
+              <h2>{failures.length} file{failures.length === 1 ? '' : 's'} skipped</h2>
+              <ul>
+                {failures.map((failure) => (
+                  <li key={failure.name}>
+                    {failure.name}: {failure.message}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
-          <p>
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={() => downloadBlob(output.blob, convertFileName(file.name, format))}
-            >
-              Download the converted image
-            </button>
-          </p>
+
+          {zip && (
+            <p>
+              <button
+                type="button"
+                className="btn btn--primary"
+                disabled={results.length === 0}
+                onClick={() => downloadBlob(zip, 'converted-images.zip')}
+              >
+                Download all as .zip
+              </button>
+            </p>
+          )}
           <p className="field__hint">Re-encoding removes EXIF metadata, including camera details and GPS location.</p>
         </section>
       )}

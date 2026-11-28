@@ -8,7 +8,7 @@ import Tool from '../../tools/convert-image/Tool';
 
 const title = 'Image converter: PNG, JPEG, WebP, BMP and ICO offline';
 const description =
-  'Convert any image your browser can read to PNG, JPEG, WebP, BMP or ICO. Transparency is kept where the format allows; nothing is uploaded.';
+  'Convert one or many images your browser can read to PNG, JPEG, WebP, BMP or ICO. Get a ZIP for batches; nothing is uploaded.';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -44,7 +44,7 @@ const faq = [
       id="convert-image"
       breadcrumbLabel="Image converter"
       heading="Image converter"
-      lead="Change the file format without changing the pixels. Pick PNG, JPEG or WebP, preview the result and download."
+      lead="Change the file format without changing the pixels. Convert one image or a whole batch to PNG, JPEG, WebP, BMP or ICO."
     />
     <div class="tool-layout">
       <div class="tool-main stack-lg"><Tool client:load /></div>
@@ -54,6 +54,7 @@ const faq = [
           items={[
             'It only opens formats your browser can decode; HEIC and TIFF often need another converter.',
             'It cannot output GIF or AVIF, because browsers do not encode them reliably.',
+            'Batches use one output format and quality for every file.',
             'It does not resize, crop, rotate or retouch the image.',
             'ICO output is a square icon set (16/32/48/256 px); source images are fitted, not cropped.',
             'JPEG and BMP have no transparency; transparent areas become white.',
