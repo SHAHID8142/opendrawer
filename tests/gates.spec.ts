@@ -737,8 +737,12 @@ test.describe('UI-G8 and the file flow', () => {
     const icoSaved = await icoDownload;
     const ico = readFileSync((await icoSaved.path())!);
     expect(ico.readUInt16LE(2)).toBe(1);
-    expect(ico[6]).toBe(0);
-    expect(ico.subarray(22, 26).toString('hex')).toBe('89504e47');
+    expect(ico.readUInt16LE(4)).toBe(4);
+    expect([ico[6], ico[22], ico[38], ico[54]]).toEqual([16, 32, 48, 0]);
+    for (let index = 0; index < 4; index += 1) {
+      const offset = ico.readUInt32LE(6 + index * 16 + 12);
+      expect(ico.subarray(offset, offset + 4).toString('hex')).toBe('89504e47');
+    }
     expect(icoSaved.suggestedFilename()).toBe('alpha-converted.ico');
   });
 

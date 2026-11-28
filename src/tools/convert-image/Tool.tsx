@@ -139,7 +139,7 @@ export default function Tool() {
           </select>
           <p className="field__hint">
             {format === 'ico'
-              ? 'A square 256 × 256 PNG icon is wrapped in an .ico file; transparency is kept.'
+              ? 'One .ico holds 16, 32, 48 and 256 px PNG icons; transparency is kept.'
               : keepsTransparency(format)
                 ? 'Transparency is kept.'
                 : 'This format has no transparency; transparent areas become white.'}

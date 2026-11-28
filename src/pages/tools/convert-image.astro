@@ -29,7 +29,7 @@ const faq = [
   {
     question: 'What happens to transparency and icons?',
     answer:
-      'PNG, WebP and ICO keep transparency. JPEG and BMP cannot store it, so transparent areas are filled with white. ICO output becomes one square 256 × 256 PNG icon.',
+      'PNG, WebP and ICO keep transparency. JPEG and BMP cannot store it, so transparent areas are filled with white. ICO output contains 16, 32, 48 and 256 pixel PNG icons.',
   },
   {
     question: 'Does converting upload my image?',
@@ -55,7 +55,7 @@ const faq = [
             'It only opens formats your browser can decode; HEIC and TIFF often need another converter.',
             'It cannot output GIF or AVIF, because browsers do not encode them reliably.',
             'It does not resize, crop, rotate or retouch the image.',
-            'ICO output is a single square 256 × 256 icon, not a multi-size icon set.',
+            'ICO output is a square icon set (16/32/48/256 px); source images are fitted, not cropped.',
             'JPEG and BMP have no transparency; transparent areas become white.',
             'Animated images keep only the first frame.',
             'Re-encoding removes EXIF metadata; it cannot be preserved.',

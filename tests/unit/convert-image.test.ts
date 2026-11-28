@@ -9,6 +9,7 @@ import {
   encodeBmp,
   keepsTransparency,
   wrapIco,
+  wrapIcoMulti,
 } from '../../src/tools/convert-image/engine.ts';
 
 test('maps formats to MIME types and output names', () => {
@@ -71,4 +72,24 @@ test('ICO wraps a PNG in a single 256px entry', () => {
   assert.equal(view.getUint32(14, true), png.length);
   assert.equal(view.getUint32(18, true), 22);
   assert.deepEqual([...ico.subarray(22)], [...png]);
+});
+
+
+test('multi-size ICO lists every entry and payload offset', () => {
+  const small = new Uint8Array([1, 2, 3]);
+  const large = new Uint8Array([4, 5, 6, 7]);
+  const ico = wrapIcoMulti([
+    { png: small, size: 16 },
+    { png: large, size: 256 },
+  ]);
+  const view = new DataView(ico.buffer);
+  assert.equal(view.getUint16(4, true), 2);
+  assert.equal(ico[6], 16);
+  assert.equal(view.getUint32(6 + 8, true), 3);
+  assert.equal(view.getUint32(6 + 12, true), 38);
+  assert.equal(ico[22], 0);
+  assert.equal(view.getUint32(22 + 8, true), 4);
+  assert.equal(view.getUint32(22 + 12, true), 41);
+  assert.deepEqual([...ico.subarray(38, 41)], [1, 2, 3]);
+  assert.deepEqual([...ico.subarray(41, 45)], [4, 5, 6, 7]);
 });
