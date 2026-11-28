@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image', '/tools/rotate-image', '/tools/convert-image'];
+const ROUTES = ['/', '/privacy', '/tools/inspect-pdf', '/tools/pdf-to-image', '/tools/images-to-pdf', '/tools/merge-pdf', '/tools/split-pdf', '/tools/rotate-pdf', '/tools/delete-pages', '/tools/reorder-pages', '/tools/extract-pages', '/tools/page-numbers', '/tools/watermark-pdf', '/tools/crop-pdf', '/tools/flatten-pdf', '/tools/extract-text', '/tools/add-image', '/tools/ocr-pdf', '/tools/resize-pdf', '/tools/compress-pdf', '/tools/protect-pdf', '/tools/unlock-pdf', '/tools/repair-pdf', '/tools/fill-forms', '/tools/extract-images', '/tools/n-up-pdf', '/tools/edit-metadata', '/tools/split-by-bookmarks', '/tools/redact-pdf', '/tools/booklet-pdf', '/tools/writing-check', '/tools/text-transform', '/tools/text-statistics', '/tools/text-diff', '/tools/image-to-text', '/tools/compress-image', '/tools/crop-image', '/tools/rotate-image', '/tools/convert-image', '/tools/favicon-generator'];
 
 async function createPdf(
   pageCount: number,
@@ -685,6 +685,44 @@ test.describe('UI-G8 and the file flow', () => {
     expect(pdf.getPageCount()).toBe(2);
     expect(Math.abs(pdf.getPage(0).getWidth() - 612)).toBeLessThan(0.01);
     expect(Math.abs(pdf.getPage(0).getHeight() - 792)).toBeLessThan(0.01);
+  });
+
+  test('builds a favicon package with icons, manifest and snippet', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/favicon-generator');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const base64 = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 384;
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.fillStyle = '#c93914';
+      context.fillRect(0, 0, 512, 384);
+      context.fillStyle = '#ffffff';
+      context.beginPath();
+      context.arc(256, 192, 120, 0, Math.PI * 2);
+      context.fill();
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    });
+    await page.locator('#favicon-input').setInputFiles({
+      name: 'logo.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(base64, 'base64'),
+    });
+    await page.getByRole('button', { name: 'Generate favicons' }).click();
+    await expect(page.getByRole('status')).toContainText('Built 8 files.', { timeout: 60_000 });
+    await expect(page.getByText('/site.webmanifest', { exact: false })).toBeVisible();
+    await expect(page.getByText('favicon.ico', { exact: true })).toBeVisible();
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download the .zip' }).click();
+    const saved = await download;
+    const zip = readFileSync((await saved.path())!);
+    expect(zip.subarray(0, 2).toString()).toBe('PK');
+    for (const name of ['favicon.ico', 'apple-touch-icon.png', 'android-chrome-512x512.png', 'site.webmanifest', 'html-snippet.txt']) {
+      expect(zip.includes(Buffer.from(name))).toBe(true);
+    }
+    expect(saved.suggestedFilename()).toBe('favicon-package.zip');
   });
 
   test('converts a transparent PNG to JPEG without changing dimensions', async ({ page }) => {

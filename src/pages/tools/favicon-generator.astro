@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import ToolHeader from '../../components/ToolHeader.astro';
+import ToolFaq from '../../components/ToolFaq.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
+import LimitsNote from '../../components/LimitsNote.astro';
+import Tool from '../../tools/favicon-generator/Tool';
+
+const title = 'Favicon generator: ICO, PNG and manifest offline';
+const description =
+  'Turn a logo into favicon.ico, 16/32/180/192/512 PNG icons, a web manifest and an HTML snippet. Built locally, nothing uploaded.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'OpenDrawer — Favicon generator',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  description,
+};
+
+const faq = [
+  {
+    question: 'What is in the ZIP?',
+    answer:
+      'favicon.ico with 16, 32, 48 and 256 pixel layers; favicon-16x16.png; favicon-32x32.png; apple-touch-icon.png (180); android-chrome-192x192.png; android-chrome-512x512.png; site.webmanifest; and html-snippet.txt with the link tags.',
+  },
+  {
+    question: 'Does it crop my logo?',
+    answer:
+      'No. The image is scaled to fit inside each square and centred, with transparent padding. If you want an edge-to-edge icon, crop the source to a square first.',
+  },
+  {
+    question: 'Is my logo uploaded?',
+    answer: 'No. Every icon is rendered in this tab. There is no server and no account.',
+  },
+];
+---
+
+<Base title={`${title} — OpenDrawer`} description={description} jsonLd={jsonLd}>
+  <div class="stack-lg">
+    <ToolHeader
+      id="favicon-generator"
+      breadcrumbLabel="Favicon generator"
+      heading="Favicon generator"
+      lead="One logo in, a complete icon set out: multi-size .ico, platform PNGs, a manifest and the HTML to paste."
+    />
+    <div class="tool-layout">
+      <div class="tool-main stack-lg"><Tool client:load /></div>
+      <aside class="tool-aside stack">
+        <LimitsNote
+          title="What this tool cannot do"
+          items={[
+            'It does not crop, round corners, remove a background or add padding beyond fitting the square.',
+            'It does not choose colours or generate artwork; the source image is used as-is.',
+            'The manifest uses placeholder names and white colours; edit them for your site.',
+            'It only reads formats your browser can decode; HEIC and TIFF often fail.',
+            'Images are limited to 25 MB and 40 megapixels.',
+          ]}
+        />
+        <ToolFaq items={faq} />
+        <RelatedTools currentId="favicon-generator" />
+      </aside>
+    </div>
+  </div>
+</Base>

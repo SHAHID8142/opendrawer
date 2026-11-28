@@ -271,4 +271,14 @@ export const editTools: ToolEntry[] = [
     blurb: 'Change an image format locally, with transparency kept where the format allows.',
     status: 'live',
   },
+  {
+    id: 'favicon-generator',
+    name: 'Favicon generator',
+    category: 'Images',
+    group: 'Create',
+    accent: 'images',
+    short: 'ICO, PNG, manifest and snippet.',
+    blurb: 'Turn a logo into a multi-size favicon.ico, platform PNGs, a web manifest and HTML tags.',
+    status: 'live',
+  },
 ];
