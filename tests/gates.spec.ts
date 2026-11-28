@@ -763,6 +763,39 @@ test.describe('UI-G8 and the file flow', () => {
     expect(saved.suggestedFilename()).toBe('favicon-package.zip');
   });
 
+  test('rotates several images into a ZIP', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/tools/rotate-image');
+    await expect(page.locator('[data-ready="true"]')).toBeVisible();
+    const images = await page.evaluate(() => ['One', 'Two'].map((label, index) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 200;
+      const context = canvas.getContext('2d');
+      context.fillStyle = index === 0 ? '#c93914' : '#16653c';
+      context.fillRect(0, 0, 320, 200);
+      context.fillStyle = '#ffffff';
+      context.font = '28px Arial';
+      context.fillText(label, 24, 110);
+      return canvas.toDataURL('image/png').split(',')[1] ?? '';
+    }));
+    await page.locator('#rotate-input').setInputFiles([
+      { name: 'one.png', mimeType: 'image/png', buffer: Buffer.from(images[0] ?? '', 'base64') },
+      { name: 'two.png', mimeType: 'image/png', buffer: Buffer.from(images[1] ?? '', 'base64') },
+    ]);
+    await page.getByRole('button', { name: 'Rotate right' }).click();
+    await page.getByRole('button', { name: 'Rotate the images' }).click();
+    await expect(page.getByRole('status')).toContainText('2 of 2 transformed.', { timeout: 60_000 });
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download all as .zip' }).click();
+    const saved = await download;
+    const zip = readFileSync((await saved.path())!);
+    expect(zip.subarray(0, 2).toString()).toBe('PK');
+    expect(zip.includes(Buffer.from('one-rotated.png'))).toBe(true);
+    expect(zip.includes(Buffer.from('two-rotated.png'))).toBe(true);
+    expect(saved.suggestedFilename()).toBe('rotated-images.zip');
+  });
+
   test('converts a transparent PNG to JPEG without changing dimensions', async ({ page }) => {
     test.setTimeout(120_000);
     await page.goto('/tools/convert-image');
@@ -842,11 +875,11 @@ test.describe('UI-G8 and the file flow', () => {
       buffer: Buffer.from(base64, 'base64'),
     });
     await page.getByRole('button', { name: 'Rotate right' }).click();
-    await expect(page.getByText('90° clockwise. Output will be 300 × 400 pixels.')).toBeVisible();
-    await page.getByRole('button', { name: 'Apply and preview' }).click();
-    await expect(page.getByRole('status')).toContainText('Rendered 300 × 400 pixels.', { timeout: 30_000 });
+    await expect(page.getByText('90° clockwise. Applied to every selected image.')).toBeVisible();
+    await page.getByRole('button', { name: 'Rotate the images' }).click();
+    await expect(page.getByRole('status')).toContainText('1 of 1 transformed.', { timeout: 30_000 });
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download the image' }).click();
+    await page.getByRole('button', { name: 'Download', exact: true }).click();
     const saved = await download;
     const bytes = readFileSync((await saved.path())!);
     expect(bytes.subarray(1, 4).toString()).toBe('PNG');

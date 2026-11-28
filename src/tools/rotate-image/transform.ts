@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Browser rotation and flipping with canvas. No pixels leave the tab.
 
-import { byteLimitMessage, pixelLimitMessage, sniffImage } from '../../lib/image-format';
+import { byteLimitMessage, pixelLimitMessage } from '../../lib/image-format';
+import { decodeImageFile, type DecodedImage } from '../../lib/decode-image';
 import {
   rotateMime,
   transformSize,
@@ -24,21 +25,17 @@ export async function rotateImage(
 ): Promise<RotateResult> {
   const tooBig = byteLimitMessage(file.size);
   if (tooBig !== null) return { ok: false, message: tooBig };
-  const sniffed = sniffImage(new Uint8Array(await file.arrayBuffer()));
-  if (!sniffed.ok) return { ok: false, message: sniffed.message };
-
-  let bitmap: ImageBitmap | null = null;
+  let decoded: DecodedImage | null = null;
   let canvas: HTMLCanvasElement | null = null;
   try {
-    try {
-      bitmap = await createImageBitmap(file);
-    } catch {
+    decoded = await decodeImageFile(file);
+    if (!decoded) {
       return { ok: false, message: 'The image could not be decoded. Re-export it as PNG or JPEG and try again.' };
     }
-    const pixels = pixelLimitMessage(bitmap.width, bitmap.height);
+    const pixels = pixelLimitMessage(decoded.width, decoded.height);
     if (pixels !== null) return { ok: false, message: pixels };
 
-    const size = transformSize(bitmap.width, bitmap.height, state.rotation);
+    const size = transformSize(decoded.width, decoded.height, state.rotation);
     canvas = window.document.createElement('canvas');
     canvas.width = size.width;
     canvas.height = size.height;
@@ -52,7 +49,7 @@ export async function rotateImage(
     context.translate(size.width / 2, size.height / 2);
     context.rotate((state.rotation * Math.PI) / 180);
     context.scale(state.flipHorizontal ? -1 : 1, state.flipVertical ? -1 : 1);
-    context.drawImage(bitmap, -bitmap.width / 2, -bitmap.height / 2, bitmap.width, bitmap.height);
+    context.drawImage(decoded.source, -decoded.width / 2, -decoded.height / 2, decoded.width, decoded.height);
 
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas?.toBlob((value) => resolve(value), rotateMime(format), format === 'png' ? undefined : 0.9),
@@ -62,7 +59,7 @@ export async function rotateImage(
   } catch {
     return { ok: false, message: 'The image could not be transformed. Reload the page and try again.' };
   } finally {
-    if (bitmap) bitmap.close();
+    if (decoded) decoded.close();
     if (canvas) {
       canvas.width = 0;
       canvas.height = 0;

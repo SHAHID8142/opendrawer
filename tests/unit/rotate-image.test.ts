@@ -8,6 +8,7 @@ import {
   rotateFileName,
   rotateMime,
   transformSize,
+  uniqueRotateName,
 } from '../../src/tools/rotate-image/engine.ts';
 
 test('rotation steps wrap in both directions', () => {
@@ -38,4 +39,10 @@ test('describes flips together with rotation', () => {
     describeTransform({ rotation: 90, flipHorizontal: true, flipVertical: true }),
     '90° clockwise, flipped horizontally, flipped vertically',
   );
+});
+
+test('batch output names never collide', () => {
+  const used = new Set<string>();
+  assert.equal(uniqueRotateName('photo-rotated.png', used), 'photo-rotated.png');
+  assert.equal(uniqueRotateName('photo-rotated.png', used), 'photo-rotated-2.png');
 });
